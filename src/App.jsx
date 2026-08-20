@@ -40,6 +40,7 @@ export default function App() {
 
         {/* Fullscreen clean layout for the dedicated iframe Watch Player */}
         <Route path="/watch/:type/:id" element={<WatchPage />} />
+        <Route path="/watch/:type/:id/:season/:episode" element={<WatchPage />} />
       </Routes>
     </BrowserRouter>
   );

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { fetchTrendingShows, fetchPopularShows, fetchTopRatedShows } from '../services/tmdb';
 import Hero from '../components/Hero';
 import MediaRow from '../components/MediaRow';
+import useDocumentTitle from '../hooks/useDocumentTitle';
 
 const TV_GENRES = [
   { id: 'all', name: 'All' },
@@ -12,6 +13,7 @@ const TV_GENRES = [
 ];
 
 export default function TVShows() {
+  useDocumentTitle('TV Shows');
   const [heroContent, setHeroContent] = useState(null);
   const [shows, setShows] = useState([]);
   const [topRatedShows, setTopRatedShows] = useState([]);

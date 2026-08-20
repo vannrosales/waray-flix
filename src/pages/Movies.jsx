@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { fetchTrendingMovies, fetchPopularMovies, fetchTopRatedMovies } from '../services/tmdb';
 import Hero from '../components/Hero';
 import MediaRow from '../components/MediaRow';
+import useDocumentTitle from '../hooks/useDocumentTitle';
 
 const GENRES = [
   { id: 'all', name: 'All' },
@@ -12,6 +13,7 @@ const GENRES = [
 ];
 
 export default function Movies() {
+  useDocumentTitle('Movies');
   const [heroContent, setHeroContent] = useState(null);
   const [movies, setMovies] = useState([]);
   const [topRated, setTopRated] = useState([]);

@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchMediaDetails, fetchSeasonDetails, IMAGE_BASE_URL } from '../services/tmdb';
 import { Play, ArrowLeft, Star, Clock, Layers, Film } from 'lucide-react';
+import useDocumentTitle from '../hooks/useDocumentTitle';
 
 export default function DetailPage() {
+  useDocumentTitle(media ? media.title || media.name : 'Loading Details');
   const { type, id } = useParams();
   const navigate = useNavigate();
   const [media, setMedia] = useState(null);
@@ -147,12 +149,10 @@ export default function DetailPage() {
             <div className="pt-2">
               <button 
                 onClick={() => navigate(`/watch/${type}/${media.id}`)}
-                className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-white hover:bg-zinc-200 text-black font-extrabold text-xs flex items-center justify-center gap-3 transition-all duration-300 shadow-2xl"
+                className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-transparent hover:bg-white text-zinc-300 hover:text-black font-semibold text-xs tracking-widest uppercase flex items-center justify-center gap-2.5 transition-all duration-300 border border-white/20 hover:border-white"
               >
-                <div className="w-4 h-4 rounded-full bg-black text-white flex items-center justify-center">
-                  <Play className="w-2.5 h-2.5 fill-current ml-0.5" />
-                </div>
-                <span>Stream Media Streamline</span>
+                <Play className="w-3 h-3 fill-current" />
+                <span>Play</span>
               </button>
             </div>
           </div>
