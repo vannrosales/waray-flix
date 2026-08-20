@@ -99,6 +99,9 @@ export default function Navbar() {
           >
             Series
           </Link>
+          <Link to="/category/anime" className="text-xs font-mono text-zinc-400 hover:text-white transition-colors">
+            Anime
+          </Link>
         </div>
 
         {/* Right: Clean Minimal Search & Mobile Toggle */}

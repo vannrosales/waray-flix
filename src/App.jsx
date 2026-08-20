@@ -10,6 +10,7 @@ import WatchPage from './pages/WatchPage';
 import SearchPage from './pages/SearchPage';
 import NetworkHubPage from './pages/NetworkHubPage';
 import ScrollToTop from './components/ScrollToTop'; 
+import AnimePage from './pages/AnimePage';
 
 function Layout() {
   return (
@@ -36,6 +37,7 @@ export default function App() {
           <Route path="/details/:type/:id" element={<DetailPage />} />
           <Route path="/search" element={<SearchPage />} />
           <Route path="/network/:networkName/:id" element={<NetworkHubPage />} />
+          <Route path="/category/anime" element={<AnimePage />} />
         </Route>
 
         {/* Fullscreen clean layout for the dedicated iframe Watch Player */}
