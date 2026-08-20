@@ -1,6 +1,6 @@
 export const CONFIG = {
-  websiteName: "w-flix",
-  logoText: "wflix",
+  websiteName: "warayFlix",
+  logoText: "w-flix",
   primaryColor: "bg-[#8B1E2D] hover:bg-[#a52335] text-white font-bold shadow-[0_0_20px_rgba(139,30,45,0.4)]",
   accentColor: "text-[#8B1E2D]",
   secondaryBg: "bg-[#1D2128]",
