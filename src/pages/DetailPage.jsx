@@ -5,7 +5,7 @@ import { Play, ArrowLeft, Star, Clock, Layers, Film } from 'lucide-react';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 
 export default function DetailPage() {
-  useDocumentTitle(media ? media.title || media.name : 'Loading Details');
+  
   const { type, id } = useParams();
   const navigate = useNavigate();
   const [media, setMedia] = useState(null);
@@ -46,6 +46,14 @@ export default function DetailPage() {
       loadSeason();
     }
   }, [id, type, selectedSeason]);
+  
+  const backdrop = media?.backdrop_path ? `${IMAGE_BASE_URL}${media.backdrop_path}` : null;
+  const poster = media?.poster_path ? `${IMAGE_BASE_URL}${media.poster_path}` : null;
+  const releaseYear = media?.release_date?.substring(0, 4) || media?.first_air_date?.substring(0, 4) || '2026';
+  const runtime = media?.runtime || media?.episode_run_time?.[0] || 120;
+
+  
+  useDocumentTitle(media ? media.title || media.name : 'Loading Details');
 
   if (loading) {
     return (
@@ -56,12 +64,7 @@ export default function DetailPage() {
   }
 
   if (!media) return null;
-
-  const backdrop = media.backdrop_path ? `${IMAGE_BASE_URL}${media.backdrop_path}` : null;
-  const poster = media.poster_path ? `${IMAGE_BASE_URL}${media.poster_path}` : null;
-  const releaseYear = media.release_date?.substring(0, 4) || media.first_air_date?.substring(0, 4) || '2026';
-  const runtime = media.runtime || media.episode_run_time?.[0] || 120;
-
+  
   return (
     <div className="min-h-screen bg-[#0B0D10] text-white selection:bg-white selection:text-black">
       
