@@ -12,8 +12,8 @@ export default function DetailPage() {
   const [seasonData, setSeasonData] = useState(null);
   const [loading, setLoading] = useState(true);
   
-  // Trailer states for left panel
-  const [trailerKey, setTrailerKey] = useState(null);
+  // Teaser preview states for left panel
+  const [teaserKey, setTeaserKey] = useState(null);
   const [isMuted, setIsMuted] = useState(true);
   const [showVideo, setShowVideo] = useState(false);
 
@@ -28,11 +28,12 @@ export default function DetailPage() {
           setSelectedSeason(firstSeason.season_number);
         }
 
-        // Fetch videos/trailers for the left visual panel
         const videos = await fetchMediaVideos(id, type);
-        const trailer = videos.find(v => v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser'));
-        if (trailer) {
-          setTrailerKey(trailer.key);
+        const preview = videos.find(v => v.site === 'YouTube' && v.type === 'Teaser') || 
+                        videos.find(v => v.site === 'YouTube' && v.type === 'Clip');
+        
+        if (preview) {
+          setTeaserKey(preview.key);
           setTimeout(() => setShowVideo(true), 1200);
         }
       } catch (err) {
@@ -79,59 +80,57 @@ export default function DetailPage() {
   return (
     <div className="min-h-screen bg-[#0B0D10] text-white selection:bg-white selection:text-black">
       
-      {/* Safe Dedicated Return Header Bar */}
-      <div className="w-full px-6 pt-6 pb-2 lg:fixed lg:top-24 lg:left-16 lg:z-40 lg:pb-0 lg:pt-0">
-        <button 
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#1D2128]/80 hover:bg-[#1D2128] text-xs font-mono text-zinc-300 hover:text-white border border-white/10 backdrop-blur-md transition-all shadow-lg cursor-pointer"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          <span>BACK</span>
-        </button>
-      </div>
-
       {/* Split-Screen Grid Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 min-h-screen">
         
-        {/* Left Architectural Visual Panel with Autoplaying Trailer */}
-        <div className="lg:col-span-5 relative h-[40vh] sm:h-[50vh] lg:h-screen w-full bg-[#0B0D10] border-r border-white/5 overflow-hidden lg:sticky lg:top-0">
+        {/* Left Architectural Visual Panel with Floating Back Button & Teaser Preview */}
+        <div className="lg:col-span-5 relative h-[45vh] sm:h-[50vh] lg:h-screen w-full bg-[#0B0D10] border-r border-white/5 overflow-hidden lg:sticky lg:top-0">
           
-          {/* Static Backdrop Image with Fade-Out */}
+          {/* Floating Back Button Placed Securely Inside the Visual Panel */}
+          <div className="absolute top-20 sm:top-24 left-6 z-40">
+            <button 
+              onClick={() => navigate(-1)}
+              className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-black/60 hover:bg-black/80 text-xs font-mono text-zinc-300 hover:text-white border border-white/10 backdrop-blur-md transition-all shadow-lg cursor-pointer"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>BACK</span>
+            </button>
+          </div>
+
+          {/* Static Backdrop Image with Smooth Fade-Out */}
           {backdrop && (
             <img 
               src={backdrop} 
               alt="" 
               className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-1000 ${
-                showVideo && trailerKey ? 'opacity-0' : 'opacity-40'
+                showVideo && teaserKey ? 'opacity-0' : 'opacity-40'
               }`}
             />
           )}
 
-          {/* Autoplaying YouTube Trailer Container with Fade-In */}
-          {trailerKey && (
-            <div className={`absolute inset-0 w-full h-full pointer-events-none overflow-hidden flex items-center justify-center transition-opacity duration-1000 ${
-              showVideo ? 'opacity-80' : 'opacity-0'
+          {/* Autoplaying Netflix-Style Teaser Clip Container */}
+          {teaserKey && (
+            <div className={`absolute inset-0 w-full h-full pointer-events-none overflow-hidden flex items-center justify-center transition-opacity duration-1000 bg-black ${
+              showVideo ? 'opacity-90' : 'opacity-0'
             }`}>
-              <div className="absolute w-[350%] h-[350%] md:w-[250%] md:h-[250%]">
-                <iframe
-                  src={`https://www.youtube-nocookie.com/embed/${trailerKey}?autoplay=1&mute=${isMuted ? 1 : 0}&controls=0&loop=1&playlist=${trailerKey}&rel=0&iv_load_policy=3&disablekb=1&modestbranding=1`}
-                  title="Detail Trailer"
-                  className="w-full h-full object-cover border-0"
-                  allow="autoplay"
-                />
-              </div>
+              <iframe
+                src={`https://www.youtube-nocookie.com/embed/${teaserKey}?autoplay=1&mute=${isMuted ? 1 : 0}&controls=0&loop=1&playlist=${teaserKey}&rel=0&iv_load_policy=3&cc_load_policy=0&disablekb=1&modestbranding=1&playsinline=1`}
+                title="Media Preview Teaser"
+                className="absolute w-[180%] h-[180%] sm:w-[140%] sm:h-[140%] lg:w-full lg:h-full object-cover border-0 scale-125 lg:scale-100"
+                allow="autoplay"
+              />
             </div>
           )}
 
           <div className="absolute inset-0 bg-gradient-to-t from-[#0B0D10] via-[#0B0D10]/40 to-transparent lg:bg-gradient-to-r lg:from-transparent lg:to-[#0B0D10]" />
           
           {/* Mute/Unmute Toggle Button */}
-          {showVideo && trailerKey && (
-            <div className="absolute bottom-8 right-8 z-30">
+          {showVideo && teaserKey && (
+            <div className="absolute bottom-6 right-6 z-30">
               <button
                 onClick={() => setIsMuted(!isMuted)}
                 className="w-9 h-9 rounded-full bg-black/60 hover:bg-black/90 border border-white/10 flex items-center justify-center text-white backdrop-blur-md transition-all cursor-pointer"
-                title={isMuted ? "Unmute Trailer" : "Mute Trailer"}
+                title={isMuted ? "Unmute Preview" : "Mute Preview"}
               >
                 {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
               </button>
