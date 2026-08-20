@@ -197,6 +197,13 @@ export default function Navbar() {
           >
             Series
           </Link>
+          <Link
+           to="/category/anime"
+           onClick={() => setIsMobileMenuOpen(false)}
+           className={`block text-sm font-medium transition ${location.pathname === '/category/anime' ? 'text-white font-bold' : 'text-zinc-400'}`}
+           >
+            Anime
+           </Link>
         </div>
       )}
     </header>

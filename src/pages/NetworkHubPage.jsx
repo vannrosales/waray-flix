@@ -1,34 +1,65 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchMediaByProvider, fetchMediaByCompany, IMAGE_BASE_URL } from '../services/tmdb';
-import { ArrowLeft, Film, Star } from 'lucide-react';
+import { ArrowLeft, Film, Star, ChevronDown } from 'lucide-react';
 
 export default function NetworkHubPage() {
   const { networkName, id } = useParams();
   const navigate = useNavigate();
   const [items, setItems] = useState([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   useEffect(() => {
-    async function loadNetworkMedia() {
+    async function loadInitialNetworkMedia() {
       try {
         setLoading(true);
-        // Try fetching via provider first, fallback or combine company endpoints as needed
-        let data = [];
+        setPage(1);
+        let data = { results: [], total_pages: 1 };
+        
         try {
-          data = await fetchMediaByProvider(id, 'movie', 1);
+          // Attempt provider fetch first if compatible
+          const res = await fetchMediaByProvider(id, 'movie', 1);
+          data = { results: res || [], total_pages: 5 }; // Fallback total pages if structure varies
         } catch {
-          data = await fetchMediaByCompany(id);
+          const res = await fetchMediaByCompany(id, 1);
+          data = { results: res || [], total_pages: 5 };
         }
-        setItems(data || []);
+
+        setItems(data.results || []);
+        setTotalPages(data.total_pages || 1);
       } catch (err) {
         console.error(err);
       } finally {
         setLoading(false);
       }
     }
-    loadNetworkMedia();
+    loadInitialNetworkMedia();
   }, [id]);
+
+  const loadMoreItems = async () => {
+    if (page >= totalPages) return;
+    try {
+      setLoadingMore(true);
+      const nextPage = page + 1;
+      let moreData = [];
+
+      try {
+        moreData = await fetchMediaByProvider(id, 'movie', nextPage);
+      } catch {
+        moreData = await fetchMediaByCompany(id, nextPage);
+      }
+
+      setItems((prev) => [...prev, ...(moreData || [])]);
+      setPage(nextPage);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#0B0D10] text-white pb-20 pt-28 px-6 md:px-16">
@@ -38,7 +69,7 @@ export default function NetworkHubPage() {
         <div className="space-y-4">
           <button 
             onClick={() => navigate(-1)}
-            className="inline-flex items-center gap-2 text-xs text-zinc-400 hover:text-white bg-[#1D2128]/50 hover:bg-[#1D2128] px-4 py-2 rounded-full border border-white/5 transition"
+            className="inline-flex items-center gap-2 text-xs text-zinc-400 hover:text-white bg-[#1D2128]/50 hover:bg-[#1D2128] px-4 py-2 rounded-full border border-white/5 transition cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" /> Back
           </button>
@@ -53,52 +84,68 @@ export default function NetworkHubPage() {
 
         {/* Media Grid */}
         {loading ? (
-          <div className="text-xs font-mono text-zinc-500 py-20 text-center">Loading hub catalog...</div>
+          <div className="text-xs font-mono text-zinc-500 py-20 text-center">LOADING_HUB_CATALOG...</div>
         ) : items.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {items.map((item) => {
-              const poster = item.poster_path ? `${IMAGE_BASE_URL}${item.poster_path}` : null;
-              const itemType = item.media_type || 'movie';
+          <div className="space-y-12">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              {items.map((item) => {
+                const poster = item.poster_path ? `${IMAGE_BASE_URL}${item.poster_path}` : null;
+                const itemType = item.media_type || 'movie';
 
-              return (
-                <div
-                  key={item.id}
-                  onClick={() => navigate(`/details/${itemType}/${item.id}`)}
-                  className="group cursor-pointer rounded-2xl overflow-hidden bg-[#1D2128]/40 border border-white/5 hover:border-white/10 transition-all duration-300 flex flex-col"
-                >
-                  <div className="w-full aspect-[2/3] bg-[#0B0D10] relative overflow-hidden">
-                    {poster ? (
-                      <img 
-                        src={poster} 
-                        alt="" 
-                        className="w-full h-full object-cover group-hover:scale-105 transition duration-500" 
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-zinc-600 text-xs">
-                        <Film className="w-6 h-6 opacity-30" />
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="p-3 space-y-1">
-                    <div className="flex items-center justify-between text-[10px] text-zinc-500 font-mono">
-                      <span>{item.release_date?.substring(0, 4) || item.first_air_date?.substring(0, 4) || '2026'}</span>
-                      {item.vote_average > 0 && (
-                        <span className="flex items-center gap-0.5 text-amber-400">
-                          <Star className="w-2.5 h-2.5 fill-current" /> {item.vote_average.toFixed(1)}
-                        </span>
+                return (
+                  <div
+                    key={`${item.id}-${Math.random()}`}
+                    onClick={() => navigate(`/details/${itemType}/${item.id}`)}
+                    className="group cursor-pointer rounded-2xl overflow-hidden bg-[#1D2128]/40 border border-white/5 hover:border-white/10 transition-all duration-300 flex flex-col"
+                  >
+                    <div className="w-full aspect-[2/3] bg-[#0B0D10] relative overflow-hidden">
+                      {poster ? (
+                        <img 
+                          src={poster} 
+                          alt="" 
+                          className="w-full h-full object-cover group-hover:scale-105 transition duration-500" 
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-zinc-600 text-xs">
+                          <Film className="w-6 h-6 opacity-30" />
+                        </div>
                       )}
                     </div>
-                    <h3 className="text-xs font-bold text-zinc-200 group-hover:text-white line-clamp-1 transition-colors">
-                      {item.title || item.name}
-                    </h3>
+
+                    <div className="p-3 space-y-1">
+                      <div className="flex items-center justify-between text-[10px] text-zinc-500 font-mono">
+                        <span>{item.release_date?.substring(0, 4) || item.first_air_date?.substring(0, 4) || '2026'}</span>
+                        {item.vote_average > 0 && (
+                          <span className="flex items-center gap-0.5 text-amber-400">
+                            <Star className="w-2.5 h-2.5 fill-current" /> {item.vote_average.toFixed(1)}
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="text-xs font-bold text-zinc-200 group-hover:text-white line-clamp-1 transition-colors">
+                        {item.title || item.name}
+                      </h3>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
+
+            {/* Load More Button */}
+            {page < totalPages && (
+              <div className="flex justify-center pt-4">
+                <button
+                  onClick={loadMoreItems}
+                  disabled={loadingMore}
+                  className="px-8 py-3 rounded-full bg-[#1D2128]/60 hover:bg-[#1D2128] border border-white/10 hover:border-white/20 text-zinc-300 hover:text-white text-xs font-mono tracking-widest uppercase transition-all duration-300 flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  <span>{loadingMore ? 'LOADING_MORE...' : 'LOAD MORE TITLES'}</span>
+                  {!loadingMore && <ChevronDown className="w-3.5 h-3.5" />}
+                </button>
+              </div>
+            )}
           </div>
         ) : (
-          <div className="text-xs text-zinc-500 py-20 text-center">No titles found for this studio hub.</div>
+          <div className="text-xs text-zinc-500 py-20 text-center font-mono">NO_TITLES_FOUND_FOR_THIS_STUDIO</div>
         )}
 
       </div>
