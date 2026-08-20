@@ -3,6 +3,8 @@ import { CONFIG } from '../config/siteConfig';
 const BASE_URL = "https://api.themoviedb.org/3";
 export const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/original";
 
+const API_KEY = CONFIG.tmdbApiKey;
+
 export async function fetchFromTMDB(endpoint, params = {}) {
   const urlParams = new URLSearchParams({
     api_key: CONFIG.tmdbApiKey,
@@ -74,4 +76,15 @@ export async function fetchMediaByCompany(companyId) {
   return fetchFromTMDB('/discover/movie', {
     with_companies: companyId
   });
+}
+
+export async function fetchMediaVideos(id, type) {
+  try {
+    const res = await fetch(`${BASE_URL}/${type}/${id}/videos?api_key=${API_KEY}`);
+    const data = await res.json();
+    return data.results || [];  
+  } catch (err) {
+    console.error("Error fetching media videos:", err);
+    return [];
+  }
 }
