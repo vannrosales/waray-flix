@@ -40,6 +40,22 @@ export async function fetchTopRatedShows() {
   return fetchFromTMDB('/tv/top_rated');
 }
 
+export async function fetchUpcomingMovies() {
+  return fetchFromTMDB('/movie/upcoming');
+}
+
+export async function fetchNowPlayingMovies() {
+  return fetchFromTMDB('/movie/now_playing');
+}
+
+export async function fetchAiringTodayShows() {
+  return fetchFromTMDB('/tv/airing_today');
+}
+
+export async function fetchOnTheAirShows() {
+  return fetchFromTMDB('/tv/on_the_air');
+}
+
 export async function fetchMoviesByGenre(genreId) {
   const data = await fetchFromTMDB('/discover/movie', { with_genres: genreId });
   return data;
@@ -72,9 +88,11 @@ export async function fetchMediaByProvider(providerId, type = 'movie', page = 1)
   });
 }
 
-export async function fetchMediaByCompany(companyId) {
+
+export async function fetchMediaByCompany(companyId, page = 1) {
   return fetchFromTMDB('/discover/movie', {
-    with_companies: companyId
+    with_companies: companyId,
+    page: page
   });
 }
 

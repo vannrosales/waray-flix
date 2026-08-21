@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { fetchTrendingMovies, fetchPopularShows, fetchMediaByProvider, fetchMediaByCompany } from '../services/tmdb';
+import { 
+  fetchTrendingMovies, 
+  fetchPopularShows, 
+  fetchMediaByProvider, 
+  fetchMediaByCompany,
+  fetchNowPlayingMovies,
+  fetchUpcomingMovies,
+  fetchTopRatedMovies,
+  fetchAiringTodayShows
+} from '../services/tmdb';
 import Hero from '../components/Hero';
 import MediaRow from '../components/MediaRow';
 import NetworkSelector from '../components/NetworkSelector';
@@ -9,12 +18,16 @@ import MyListRow from '../components/MyListRow';
 export default function Home() {
   const [trendingMovies, setTrendingMovies] = useState([]);
   const [popularShows, setPopularShows] = useState([]);
+  const [nowPlayingMovies, setNowPlayingMovies] = useState([]);
+  const [upcomingMovies, setUpcomingMovies] = useState([]);
+  const [topRatedMovies, setTopRatedMovies] = useState([]);
+  const [airingTodayShows, setAiringTodayShows] = useState([]);
+
   const [heroContent, setHeroContent] = useState(null);
   const [selectedNetwork, setSelectedNetwork] = useState(null);
   
   const [continueWatchingList, setContinueWatchingList] = useState([]);
-
-  // Load user watch history strictly from localStorage (on your end only)
+  
   useEffect(() => {
     try {
       const savedHistory = JSON.parse(localStorage.getItem('warayflix_watch_history') || '[]');
@@ -24,7 +37,6 @@ export default function Home() {
     }
   }, []);
 
-  // Handle removing a single item from local continue watching history
   const handleRemoveHistory = (id) => {
     const updated = continueWatchingList.filter(item => item.id !== id);
     setContinueWatchingList(updated);
@@ -39,10 +51,30 @@ export default function Home() {
     async function load() {
       try {
         if (!selectedNetwork) {
-          const movies = await fetchTrendingMovies();
-          const shows = await fetchPopularShows();
+          // Fetch all rows concurrently for maximum performance
+          const [
+            movies, 
+            shows, 
+            nowPlaying, 
+            upcoming, 
+            topRated, 
+            airingToday
+          ] = await Promise.all([
+            fetchTrendingMovies(),
+            fetchPopularShows(),
+            fetchNowPlayingMovies(),
+            fetchUpcomingMovies(),
+            fetchTopRatedMovies(),
+            fetchAiringTodayShows()
+          ]);
+
           setTrendingMovies(movies);
           setPopularShows(shows);
+          setNowPlayingMovies(nowPlaying);
+          setUpcomingMovies(upcoming);
+          setTopRatedMovies(topRated);
+          setAiringTodayShows(airingToday);
+
           if (movies.length > 0) setHeroContent(movies[0]);
         } else {
           const results = selectedNetwork.type === 'provider'
@@ -81,8 +113,12 @@ export default function Home() {
         {/* My Saved List Row */}
         {!selectedNetwork && <MyListRow />}
 
-        <MediaRow title={selectedNetwork ? `${selectedNetwork.name} Selection` : "Trending Movies"} items={trendingMovies} type="movie" />
-        <MediaRow title={selectedNetwork ? `${selectedNetwork.name} Series` : "Popular TV Shows"} items={popularShows} type="tv" />
+        <MediaRow title="Trending Movies Today" items={trendingMovies} type="movie" />
+        <MediaRow title="Popular TV Shows" items={popularShows} type="tv" />
+        <MediaRow title="Now Playing in Theaters" items={nowPlayingMovies} type="movie" />
+        <MediaRow title="Upcoming Releases" items={upcomingMovies} type="movie" />
+        <MediaRow title="Top Rated Masterpieces" items={topRatedMovies} type="movie" />
+        <MediaRow title="Airing Today Shows" items={airingTodayShows} type="tv" />
       </div>
     </div>
   );
