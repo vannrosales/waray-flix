@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { CONFIG } from '../config/siteConfig';
 import { IMAGE_BASE_URL } from '../services/tmdb';
 import Hero from '../components/Hero';
-import { Star, Play, Layers, ChevronDown } from 'lucide-react';
+import { Star, Layers, ChevronDown, Film } from 'lucide-react';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 
 const BASE_URL = 'https://api.themoviedb.org/3';
@@ -78,7 +78,7 @@ export default function TVShows() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0B0D10] text-white selection:bg-white selection:text-black">
+    <div className="min-h-screen bg-[#0B0D10] text-white selection:bg-white selection:text-black font-sans">
       
       {/* Cinematic Hero Section */}
       {heroContent && <Hero content={heroContent} />}
@@ -113,43 +113,55 @@ export default function TVShows() {
           </div>
         </div>
 
-        {/* TV Shows Grid */}
+        {/* TV Shows Grid matching the row card layout */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
           {shows.map((item) => {
-            const poster = item.poster_path ? `${IMAGE_BASE_URL}${item.poster_path}` : null;
+            const poster = item.poster_path ? `${IMAGE_BASE_URL}${item.poster_path}` : (item.backdrop_path ? `${IMAGE_BASE_URL}${item.backdrop_path}` : null);
             const year = item.first_air_date?.substring(0, 4) || '2026';
             
             return (
               <div
                 key={item.id}
                 onClick={() => navigate(`/details/tv/${item.id}`)}
-                className="group relative bg-[#1D2128]/20 hover:bg-[#1D2128]/60 rounded-2xl p-3 border border-white/5 cursor-pointer transition-all duration-300 space-y-3"
+                className="cursor-pointer group/item flex flex-col gap-2 flex-shrink-0 transition-all duration-300"
               >
-                <div className="aspect-[2/3] w-full rounded-xl bg-[#0B0D10] overflow-hidden relative">
+                {/* Poster Card Container */}
+                <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden bg-[#1D2128]/40 border border-white/5 group-hover/item:border-white/20 transition-all duration-300 group-hover/item:scale-[1.03] shadow-xl">
                   {poster ? (
-                    <img src={poster} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                    <img 
+                      src={poster} 
+                      alt={item.name} 
+                      loading="lazy"
+                      className="absolute inset-0 w-full h-full object-cover transition duration-500 group-hover/item:brightness-105"
+                    />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-zinc-700 text-xs font-mono">NO_POSTER</div>
-                  )}
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <div className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg transform scale-90 group-hover:scale-100 transition">
-                      <Play className="w-4 h-4 fill-current ml-0.5" />
+                    <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center text-zinc-600 bg-[#14171F]">
+                      <Film className="w-8 h-8 mb-1 opacity-40" />
+                      <span className="text-[10px]">{item.name}</span>
                     </div>
-                  </div>
+                  )}
+                  
+                  {/* Rating Badge Overlay */}
+                  {item.vote_average > 0 && (
+                    <div className="absolute top-2.5 right-2.5 bg-black/75 backdrop-blur-md px-2.5 py-1 rounded-full flex items-center gap-1 border border-white/10 z-20 shadow-md">
+                      <Star className="w-3 h-3 text-amber-400 fill-current" />
+                      <span className="text-[11px] font-bold text-white font-mono">{item.vote_average.toFixed(1)}</span>
+                    </div>
+                  )}
                 </div>
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between text-[10px] font-mono text-zinc-500">
-                    <span>{year}</span>
-                    {item.vote_average > 0 && (
-                      <span className="flex items-center gap-1 text-amber-400 font-bold">
-                        <Star className="w-3 h-3 fill-current" /> {item.vote_average.toFixed(1)}
-                      </span>
-                    )}
-                  </div>
-                  <h3 className="text-xs font-medium text-zinc-200 group-hover:text-white transition-colors truncate">
+
+                {/* Title & Metadata Below Card */}
+                <div className="space-y-0.5 px-1">
+                  <h3 className="text-xs font-bold text-zinc-200 line-clamp-1 group-hover/item:text-white transition">
                     {item.name}
                   </h3>
+                  <div className="flex items-center gap-2 text-[10px] text-zinc-400 font-mono">
+                    <span>{year}</span>
+                    <span>•</span>
+                    <span className="uppercase">tv</span>
+                  </div>
                 </div>
+
               </div>
             );
           })}

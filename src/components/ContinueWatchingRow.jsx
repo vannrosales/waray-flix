@@ -18,7 +18,7 @@ export default function ContinueWatchingRow({ items, onRemove }) {
   if (!items || items.length === 0) return null;
 
   return (
-    <div className="space-y-3 px-6 md:px-16 my-10 max-w-[1400px] mx-auto font-sans">
+    <div className="space-y-4 px-6 md:px-16 my-12 max-w-[1400px] mx-auto font-sans">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-bold tracking-tight text-white flex items-center gap-2">
           <Clock className="w-4 h-4 text-zinc-400" />
@@ -42,14 +42,13 @@ export default function ContinueWatchingRow({ items, onRemove }) {
       </div>
 
       <div className="relative group">
-        <div ref={rowRef} className="flex gap-4 overflow-x-auto scrollbar-none scroll-smooth pb-4 pt-1">
+        <div ref={rowRef} className="flex gap-4 overflow-x-auto scrollbar-none scroll-smooth pb-4 pt-2">
           {items.map((item) => {
             const itemType = item.media_type || (item.title ? 'movie' : 'tv');
-            const imagePath = item.backdrop_path || item.poster_path;
-            const backdropImg = imagePath ? `${IMAGE_BASE_URL}${imagePath}` : null;
+            const posterImg = item.poster_path ? `${IMAGE_BASE_URL}${item.poster_path}` : (item.backdrop_path ? `${IMAGE_BASE_URL}${item.backdrop_path}` : null);
+            const releaseYear = item.release_date?.substring(0, 4) || item.first_air_date?.substring(0, 4) || '2026';
             
             const totalSeconds = item.lastWatchedSeconds || (item.lastWatchedMinute ? item.lastWatchedMinute * 60 : 0);
-            const displayMinutes = Math.floor(totalSeconds / 60);
 
             const watchPath = itemType === 'tv'
               ? `/watch/tv/${item.id}/${item.season || 1}/${item.episode || 1}${totalSeconds > 0 ? `?startAt=${totalSeconds}` : ''}`
@@ -59,51 +58,59 @@ export default function ContinueWatchingRow({ items, onRemove }) {
               <div 
                 key={item.id}
                 onClick={() => navigate(watchPath)}
-                className="min-w-[280px] sm:min-w-[320px] md:min-w-[360px] h-[200px] cursor-pointer group/item relative rounded-2xl overflow-hidden bg-[#1D2128]/40 flex-shrink-0 transition-all duration-300 hover:scale-[1.02]"
+                className="min-w-[170px] sm:min-w-[200px] md:min-w-[220px] cursor-pointer group/item flex flex-col gap-2 flex-shrink-0 transition-all duration-300"
               >
-                {backdropImg ? (
-                  <img 
-                    src={backdropImg} 
-                    alt={item.title || item.name} 
-                    className="absolute inset-0 w-full h-full object-cover transition duration-500 group-hover/item:brightness-[0.6]"
-                  />
-                ) : (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center text-zinc-600 bg-[#14171F]">
-                    <Film className="w-8 h-8 mb-1 opacity-40" />
-                    <span className="text-xs">{item.title || item.name}</span>
-                  </div>
-                )}
-
-                {onRemove && (
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onRemove(item.id);
-                    }}
-                    className="absolute top-3 right-3 p-1.5 rounded-full bg-black/60 hover:bg-black text-zinc-300 hover:text-white transition opacity-0 group-hover/item:opacity-100 z-20 cursor-pointer"
-                    title="Remove from history"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                )}
-
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0B0D10]/90 via-transparent to-transparent opacity-80" />
-
-                <div className="absolute bottom-0 left-0 right-0 p-4 z-10 flex items-end justify-between">
-                  <div className="space-y-0.5">
-                    <div className="flex items-center gap-2 text-[10px] text-zinc-400 font-mono">
-                      <span>{displayMinutes > 0 ? `Watched at ${displayMinutes} min` : 'Resume playback'}</span>
-                      {item.vote_average > 0 && (
-                        <span className="flex items-center gap-0.5 text-amber-400">
-                          <Star className="w-2.5 h-2.5 fill-current" /> {item.vote_average.toFixed(1)}
-                        </span>
-                      )}
+                {/* Poster Card Container */}
+                <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden bg-[#1D2128]/40 border border-white/5 group-hover/item:border-white/20 transition-all duration-300 group-hover/item:scale-[1.03] shadow-xl">
+                  {posterImg ? (
+                    <img 
+                      src={posterImg} 
+                      alt={item.title || item.name} 
+                      loading="lazy"
+                      className="absolute inset-0 w-full h-full object-cover transition duration-500 group-hover/item:brightness-105"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center text-zinc-600 bg-[#14171F]">
+                      <Film className="w-8 h-8 mb-1 opacity-40" />
+                      <span className="text-[10px]">{item.title || item.name}</span>
                     </div>
-                    <h3 className="text-xs font-bold text-white line-clamp-1 group-hover/item:text-zinc-200">
-                      {item.title || item.name} {itemType === 'tv' && item.season && `— S${item.season}E${item.episode}`}
-                    </h3>
+                  )}
+
+                  {/* Remove Button on Hover */}
+                  {onRemove && (
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onRemove(item.id);
+                      }}
+                      className="absolute top-3 right-3 p-1.5 rounded-full bg-black/70 hover:bg-black text-zinc-300 hover:text-white transition opacity-0 group-hover/item:opacity-100 z-30 cursor-pointer shadow-lg"
+                      title="Remove from history"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                  
+                  {/* Rating Badge Overlay matching your reference image */}
+                  {item.vote_average > 0 && (
+                    <div className="absolute top-2.5 right-2.5 bg-black/75 backdrop-blur-md px-2.5 py-1 rounded-full flex items-center gap-1 border border-white/10 z-20 shadow-md">
+                      <Star className="w-3 h-3 text-amber-400 fill-current" />
+                      <span className="text-[11px] font-bold text-white font-mono">{item.vote_average.toFixed(1)}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Title & Metadata Below Card */}
+                <div className="space-y-0.5 px-1">
+                  <h3 className="text-xs font-bold text-zinc-200 line-clamp-1 group-hover/item:text-white transition">
+                    {item.title || item.name} {itemType === 'tv' && item.season && `— S${item.season}E${item.episode}`}
+                  </h3>
+                  <div className="flex items-center gap-2 text-[10px] text-zinc-400 font-mono">
+                    <span>{releaseYear}</span>
+                    <span>•</span>
+                    <span className="uppercase">{itemType}</span>
                   </div>
                 </div>
+
               </div>
             );
           })}

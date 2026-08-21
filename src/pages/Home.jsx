@@ -7,7 +7,9 @@ import {
   fetchNowPlayingMovies,
   fetchUpcomingMovies,
   fetchTopRatedMovies,
-  fetchAiringTodayShows
+  fetchAiringTodayShows,
+  fetchTop10MoviesToday,
+  fetchTop10ShowsToday
 } from '../services/tmdb';
 import Hero from '../components/Hero';
 import MediaRow from '../components/MediaRow';
@@ -22,6 +24,8 @@ export default function Home() {
   const [upcomingMovies, setUpcomingMovies] = useState([]);
   const [topRatedMovies, setTopRatedMovies] = useState([]);
   const [airingTodayShows, setAiringTodayShows] = useState([]);
+  const [top10Movies, setTop10Movies] = useState([]);
+  const [top10Shows, setTop10Shows] = useState([]);
 
   const [heroContent, setHeroContent] = useState(null);
   const [selectedNetwork, setSelectedNetwork] = useState(null);
@@ -58,14 +62,18 @@ export default function Home() {
             nowPlaying, 
             upcoming, 
             topRated, 
-            airingToday
+            airingToday,
+            top10Mov,
+            top10Shw
           ] = await Promise.all([
             fetchTrendingMovies(),
             fetchPopularShows(),
             fetchNowPlayingMovies(),
             fetchUpcomingMovies(),
             fetchTopRatedMovies(),
-            fetchAiringTodayShows()
+            fetchAiringTodayShows(),
+            fetchTop10MoviesToday(),
+            fetchTop10ShowsToday()
           ]);
 
           setTrendingMovies(movies);
@@ -74,6 +82,8 @@ export default function Home() {
           setUpcomingMovies(upcoming);
           setTopRatedMovies(topRated);
           setAiringTodayShows(airingToday);
+          setTop10Movies(top10Mov);
+          setTop10Shows(top10Shw);
 
           if (movies.length > 0) setHeroContent(movies[0]);
         } else {
@@ -113,6 +123,8 @@ export default function Home() {
         {/* My Saved List Row */}
         {!selectedNetwork && <MyListRow />}
 
+        <MediaRow title="Top 10 Movies Today" items={top10Movies} type="movie" />
+        <MediaRow title="Top 10 Series Today" items={top10Shows} type="tv" />
         <MediaRow title="Trending Movies Today" items={trendingMovies} type="movie" />
         <MediaRow title="Popular TV Shows" items={popularShows} type="tv" />
         <MediaRow title="Now Playing in Theaters" items={nowPlayingMovies} type="movie" />

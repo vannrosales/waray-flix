@@ -106,3 +106,13 @@ export async function fetchMediaVideos(id, type) {
     return [];
   }
 }
+
+export async function fetchTop10MoviesToday() {
+  const data = await fetchFromTMDB('/trending/movie/day');
+  return (data || []).slice(0, 10);
+}
+
+export async function fetchTop10ShowsToday() {
+  const data = await fetchFromTMDB('/trending/tv/day');
+  return (data || []).slice(0, 10);
+}
