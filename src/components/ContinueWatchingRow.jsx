@@ -49,16 +49,23 @@ export default function ContinueWatchingRow({ items, onRemove }) {
           {items.map((item) => {
             const itemType = item.media_type || (item.title ? 'movie' : 'tv');
             
-            {/* Fallback image resolution check for history objects */}
+            // Fallback image resolution check for history objects
             const imagePath = item.backdrop_path || item.poster_path;
             const backdropImg = imagePath ? `${IMAGE_BASE_URL}${imagePath}` : null;
             
-            const watchMinute = item.lastWatchedMinute || 0;
+            // Support both old minute-based items and new second-based startAt items
+            const totalSeconds = item.lastWatchedSeconds || (item.lastWatchedMinute ? item.lastWatchedMinute * 60 : 0);
+            const displayMinutes = Math.floor(totalSeconds / 60);
+
+            // Construct route with proper ?startAt= parameter for VidLink Pro
+            const watchPath = itemType === 'tv'
+              ? `/watch/tv/${item.id}/${item.season || 1}/${item.episode || 1}${totalSeconds > 0 ? `?startAt=${totalSeconds}` : ''}`
+              : `/watch/movie/${item.id}${totalSeconds > 0 ? `?startAt=${totalSeconds}` : ''}`;
 
             return (
               <div 
                 key={item.id}
-                onClick={() => navigate(`/watch/${itemType}/${item.id}?t=${watchMinute}`)}
+                onClick={() => navigate(watchPath)}
                 className="min-w-[280px] sm:min-w-[320px] md:min-w-[360px] h-[200px] cursor-pointer group/item relative rounded-2xl overflow-hidden bg-[#1D2128]/40 flex-shrink-0 transition-all duration-300 hover:scale-[1.02]"
               >
                 {backdropImg ? (
@@ -95,7 +102,7 @@ export default function ContinueWatchingRow({ items, onRemove }) {
                 <div className="absolute bottom-0 left-0 right-0 p-4 z-10 flex items-end justify-between">
                   <div className="space-y-0.5">
                     <div className="flex items-center gap-2 text-[10px] text-zinc-400 font-mono">
-                      <span>Watched at {watchMinute} min</span>
+                      <span>{displayMinutes > 0 ? `Watched at ${displayMinutes} min` : 'Resume playback'}</span>
                       {item.vote_average > 0 && (
                         <span className="flex items-center gap-0.5 text-amber-400">
                           <Star className="w-2.5 h-2.5 fill-current" /> {item.vote_average.toFixed(1)}
@@ -103,7 +110,7 @@ export default function ContinueWatchingRow({ items, onRemove }) {
                       )}
                     </div>
                     <h3 className="text-xs font-bold text-white line-clamp-1 group-hover/item:text-zinc-200">
-                      {item.title || item.name}
+                      {item.title || item.name} {itemType === 'tv' && item.season && `— S${item.season}E${item.episode}`}
                     </h3>
                   </div>
                 </div>
