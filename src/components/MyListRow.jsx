@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IMAGE_BASE_URL } from '../services/tmdb';
 import { storageService } from '../services/storageService';
-import { ChevronLeft, ChevronRight, Film, Star, BookmarkCheck } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Film, Star, BookmarkCheck, X } from 'lucide-react';
 
 export default function MyListRow() {
   const rowRef = useRef(null);
@@ -19,6 +19,12 @@ export default function MyListRow() {
       const amount = direction === 'left' ? scrollLeft - clientWidth / 1.5 : scrollLeft + clientWidth / 1.5;
       rowRef.current.scrollTo({ left: amount, behavior: 'smooth' });
     }
+  };
+
+  const handleRemove = (e, id) => {
+    e.stopPropagation();
+    storageService.removeFromPlaylist(id);
+    setMyList(storageService.getPlaylist());
   };
 
   if (!myList || myList.length === 0) return null;
@@ -79,7 +85,16 @@ export default function MyListRow() {
                     </div>
                   )}
                   
-                  {/* Rating Badge Overlay */}
+                  {/* Remove Button on Hover (Top-Left) */}
+                  <button 
+                    onClick={(e) => handleRemove(e, item.id)}
+                    className="absolute top-2.5 left-2.5 p-1.5 rounded-full bg-black/70 hover:bg-black text-zinc-300 hover:text-white transition opacity-0 group-hover/item:opacity-100 z-30 cursor-pointer shadow-lg backdrop-blur-md border border-white/10"
+                    title="Remove from My List"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+
+                  {/* Rating Badge Overlay (Top-Right) */}
                   {item.vote_average > 0 && (
                     <div className="absolute top-2.5 right-2.5 bg-black/75 backdrop-blur-md px-2.5 py-1 rounded-full flex items-center gap-1 border border-white/10 z-20 shadow-md">
                       <Star className="w-3 h-3 text-amber-400 fill-current" />
