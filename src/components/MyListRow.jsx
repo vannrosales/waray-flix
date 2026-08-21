@@ -21,9 +21,10 @@ export default function MyListRow() {
     }
   };
 
-  const handleRemove = (e, id) => {
+  const handleRemove = (e, item) => {
     e.stopPropagation();
-    storageService.removeFromPlaylist(id);
+    // Using storageService toggle or direct state filter
+    storageService.togglePlaylistItem(item);
     setMyList(storageService.getPlaylist());
   };
 
@@ -87,7 +88,7 @@ export default function MyListRow() {
                   
                   {/* Remove Button on Hover (Top-Left) */}
                   <button 
-                    onClick={(e) => handleRemove(e, item.id)}
+                    onClick={(e) => handleRemove(e, item)}
                     className="absolute top-2.5 left-2.5 p-1.5 rounded-full bg-black/70 hover:bg-black text-zinc-300 hover:text-white transition opacity-0 group-hover/item:opacity-100 z-30 cursor-pointer shadow-lg backdrop-blur-md border border-white/10"
                     title="Remove from My List"
                   >
