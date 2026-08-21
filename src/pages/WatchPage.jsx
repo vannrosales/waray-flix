@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { CONFIG } from '../config/siteConfig';
-import { ArrowLeft, Server, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Server, ChevronDown, Play } from 'lucide-react';
 
 export default function WatchPage() {
   const { type, id, season, episode } = useParams();
@@ -15,6 +15,7 @@ export default function WatchPage() {
   const [mediaTitle, setMediaTitle] = useState('');
   const [selectedPlayerId, setSelectedPlayerId] = useState(CONFIG.players[0].id);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isMobileReady, setIsMobileReady] = useState(false);
   
   const menuRef = useRef(null);
 
@@ -39,6 +40,10 @@ export default function WatchPage() {
       document.removeEventListener('touchstart', handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    setIsMobileReady(false);
+  }, [selectedPlayerId]);
 
   useEffect(() => {
     let isMounted = true;
@@ -83,15 +88,29 @@ export default function WatchPage() {
     <div className="fixed inset-0 z-50 bg-black flex flex-col font-sans overflow-hidden">
       
       {/* Fullscreen Video Player */}
-      <div className="absolute inset-0 w-full h-full z-0">
+      <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
         <iframe 
           src={embedUrl}
           key={selectedPlayerId}
           title={`${activePlayer.name} Video Player`}
-          className="w-full h-full border-0 touch-auto"
+          className="w-full h-full border-0 pointer-events-auto"
           allowFullScreen
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         />
+
+        {!isMobileReady && (
+          <div 
+            onClick={() => setIsMobileReady(true)}
+            className="absolute inset-0 z-20 bg-black/40 backdrop-blur-[2px] flex flex-col items-center justify-center cursor-pointer md:hidden transition-opacity duration-300"
+          >
+            <div className="w-16 h-16 rounded-full bg-[#8B1E2D] flex items-center justify-center shadow-[0_0_30px_rgba(139,30,45,0.8)] animate-pulse">
+              <Play className="w-8 h-8 text-white fill-white ml-1" />
+            </div>
+            <p className="mt-4 text-xs font-mono text-zinc-300 tracking-wider bg-black/60 px-4 py-2 rounded-full border border-white/10">
+              Tap to Enable Player Controls
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Top Overlay Bar Container */}

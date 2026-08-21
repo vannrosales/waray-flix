@@ -29,8 +29,8 @@ export const CONFIG = {
     {
       id: 'cinesrc',
       name: 'CineSrc',
-      getMovieUrl: (id, start) => `https://cinesrc.st/embed/movie?tmdb=${id}${start ? `&startAt=${start}` : ''}`,
-      getTvUrl: (id, s, e, start) => `https://cinesrc.st/embed/tv?tmdb=${id}&season=${s}&episode=${e}${start ? `&startAt=${start}` : ''}`
+      getMovieUrl: (id, start) => `https://cinesrc.st/embed/movie/${id}${start ? `?t=${start}` : ''}`,
+      getTvUrl: (id, s, e, start) => `https://cinesrc.st/embed/tv/${id}/${s}/${e}${start ? `?t=${start}` : ''}`
     },
     {
       id: 'videasy',
