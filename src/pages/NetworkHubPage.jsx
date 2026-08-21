@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { fetchMediaByProvider, fetchMediaByCompany, IMAGE_BASE_URL } from '../services/tmdb';
 import { ArrowLeft, Film, Star, ChevronDown, Play, Sparkles } from 'lucide-react';
 import useDocumentTitle from '../hooks/useDocumentTitle';
+import { STUDIOS_LIST } from '../constants/studios';
 
 export default function NetworkHubPage() {
   const { networkName, id } = useParams();
