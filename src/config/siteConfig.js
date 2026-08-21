@@ -9,6 +9,12 @@ export const CONFIG = {
 
   players: [
     {
+      id: 'vidsrc',
+      name: 'VidSrc',
+      getMovieUrl: (id, start) => `https://vidsrc.to/embed/movie/${id}${start ? `?t=${start}` : ''}`,
+      getTvUrl: (id, s, e, start) => `https://vidsrc.to/embed/tv/${id}/${s}/${e}${start ? `?t=${start}` : ''}`
+    },
+    {
       id: 'zoryva',
       name: 'Zoryva',
       getMovieUrl: (id, start) => `https://zoryva.me/embedded/movie/${id}${start ? `?startAt=${start}` : ''}`,

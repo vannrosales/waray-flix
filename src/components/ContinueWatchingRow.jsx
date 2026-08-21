@@ -18,15 +18,13 @@ export default function ContinueWatchingRow({ items, onRemove }) {
   if (!items || items.length === 0) return null;
 
   return (
-    <div className="space-y-3 px-6 md:px-16 my-10 max-w-[1400px] mx-auto">
-      {/* Clean Minimalist Header */}
+    <div className="space-y-3 px-6 md:px-16 my-10 max-w-[1400px] mx-auto font-sans">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-bold tracking-tight text-white flex items-center gap-2">
           <Clock className="w-4 h-4 text-zinc-400" />
           <span>Continue Watching</span>
         </h2>
 
-        {/* Subtle Navigation Arrows */}
         <div className="flex items-center gap-1">
           <button 
             onClick={() => handleScroll('left')} 
@@ -44,20 +42,15 @@ export default function ContinueWatchingRow({ items, onRemove }) {
       </div>
 
       <div className="relative group">
-        {/* Horizontal Scrollable Track */}
         <div ref={rowRef} className="flex gap-4 overflow-x-auto scrollbar-none scroll-smooth pb-4 pt-1">
           {items.map((item) => {
             const itemType = item.media_type || (item.title ? 'movie' : 'tv');
-            
-            // Fallback image resolution check for history objects
             const imagePath = item.backdrop_path || item.poster_path;
             const backdropImg = imagePath ? `${IMAGE_BASE_URL}${imagePath}` : null;
             
-            // Support both old minute-based items and new second-based startAt items
             const totalSeconds = item.lastWatchedSeconds || (item.lastWatchedMinute ? item.lastWatchedMinute * 60 : 0);
             const displayMinutes = Math.floor(totalSeconds / 60);
 
-            // Construct route with proper ?startAt= parameter for VidLink Pro
             const watchPath = itemType === 'tv'
               ? `/watch/tv/${item.id}/${item.season || 1}/${item.episode || 1}${totalSeconds > 0 ? `?startAt=${totalSeconds}` : ''}`
               : `/watch/movie/${item.id}${totalSeconds > 0 ? `?startAt=${totalSeconds}` : ''}`;
@@ -81,7 +74,6 @@ export default function ContinueWatchingRow({ items, onRemove }) {
                   </div>
                 )}
 
-                {/* Remove button from local history */}
                 {onRemove && (
                   <button 
                     onClick={(e) => {
@@ -95,10 +87,8 @@ export default function ContinueWatchingRow({ items, onRemove }) {
                   </button>
                 )}
 
-                {/* Clean Bottom Gradient */}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0B0D10]/90 via-transparent to-transparent opacity-80" />
 
-                {/* Details Overlay */}
                 <div className="absolute bottom-0 left-0 right-0 p-4 z-10 flex items-end justify-between">
                   <div className="space-y-0.5">
                     <div className="flex items-center gap-2 text-[10px] text-zinc-400 font-mono">
