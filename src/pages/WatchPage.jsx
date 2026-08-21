@@ -1,38 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { CONFIG } from '../config/siteConfig';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Server } from 'lucide-react';
 
 export default function WatchPage() {
   const { type, id, season, episode } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  // Accept either 't' (from your existing history links) or 'startAt' (seconds)
   const startParam = searchParams.get('startAt') || searchParams.get('t');
-
   const currentSeason = season || 1;
   const currentEpisode = episode || 1;
 
   const [mediaTitle, setMediaTitle] = useState('');
+  const [selectedPlayerId, setSelectedPlayerId] = useState(CONFIG.players[0].id);
 
-  // Construct VidLink Pro URL format with ?startAt= if available
-  let embedUrl = type === 'movie'
-    ? `${CONFIG.embedDomain}/movie/${id}`
-    : `${CONFIG.embedDomain}/tv/${id}/${currentSeason}/${currentEpisode}`;
+  // Find active player configuration
+  const activePlayer = CONFIG.players.find(p => p.id === selectedPlayerId) || CONFIG.players[0];
 
-  if (startParam) {
-    // If your old history stores minutes (e.g. ?t=5m), convert to seconds, else use raw seconds
-    const seconds = startParam.endsWith('m') 
-      ? parseInt(startParam) * 60 
-      : parseInt(startParam);
+  const seconds = startParam ? (startParam.endsWith('m') ? parseInt(startParam) * 60 : parseInt(startParam)) : 0;
 
-    if (!isNaN(seconds)) {
-      embedUrl += `?startAt=${seconds}`;
-    }
-  }
+  // Generate embed URL using selected player's logic
+  const embedUrl = type === 'movie'
+    ? activePlayer.getMovieUrl(id, seconds)
+    : activePlayer.getTvUrl(id, currentSeason, currentEpisode, seconds);
 
-  // Save/Update watch history locally when the page loads
+  // Save history on initial load
   useEffect(() => {
     let isMounted = true;
 
@@ -54,7 +47,7 @@ export default function WatchPage() {
           media_type: type,
           season: type === 'tv' ? currentSeason : undefined,
           episode: type === 'tv' ? currentEpisode : undefined,
-          lastWatchedSeconds: startParam ? parseInt(startParam) : 0, 
+          lastWatchedSeconds: seconds,
           updatedAt: Date.now()
         };
 
@@ -70,31 +63,63 @@ export default function WatchPage() {
     return () => {
       isMounted = false;
     };
-  }, [type, id, currentSeason, currentEpisode, startParam]);
+  }, [type, id, currentSeason, currentEpisode, seconds]);
 
   return (
-    <div className="fixed inset-0 z-50 bg-black flex flex-col">
-      {/* Top Header Bar */}
-      <div className="absolute top-6 left-6 z-50 flex items-center gap-4">
-        <button 
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#1D2128]/80 hover:bg-[#1D2128] text-xs font-mono text-zinc-300 hover:text-white border border-white/10 backdrop-blur-md transition-all cursor-pointer"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          <span>BACK</span>
-        </button>
-        {mediaTitle && (
-          <span className="hidden sm:inline-block text-xs font-bold text-zinc-400 bg-black/50 px-3 py-1.5 rounded-full backdrop-blur-md border border-white/5">
-            {mediaTitle} {type === 'tv' && `— S${currentSeason} E${currentEpisode}`}
-          </span>
-        )}
+    <div className="fixed inset-0 z-50 bg-black flex flex-col font-sans">
+      {/* Top Overlay Bar */}
+      <div className="absolute top-6 left-6 right-6 z-50 flex items-center justify-between gap-4 pointer-events-none">
+        
+        {/* Left: Back Button & Title */}
+        <div className="flex items-center gap-4 pointer-events-auto">
+          <button 
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#1D2128]/80 hover:bg-[#1D2128] text-xs font-sans font-medium tracking-wide text-zinc-300 hover:text-white border border-white/10 backdrop-blur-md transition-all cursor-pointer shadow-lg"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>BACK</span>
+          </button>
+          {mediaTitle && (
+            <span className="hidden sm:inline-block text-xs font-sans font-semibold tracking-wide text-zinc-300 bg-[#1D2128]/70 px-4 py-2 rounded-full backdrop-blur-md border border-white/10 shadow-lg">
+              {mediaTitle} {type === 'tv' && `— S${currentSeason} E${currentEpisode}`}
+            </span>
+          )}
+        </div>
+
+        {/* Right: Server Switcher matching WarayFlix design */}
+        <div className="flex items-center gap-2 bg-[#1D2128]/90 p-1.5 rounded-full backdrop-blur-md border border-white/10 pointer-events-auto shadow-xl">
+          <div className="flex items-center gap-1.5 px-3 text-zinc-400 text-xs font-sans font-medium tracking-wide hidden md:flex">
+            <Server className="w-3.5 h-3.5 text-white" />
+            <span>Server:</span>
+          </div>
+          <div className="flex items-center gap-1">
+            {CONFIG.players.map((player) => {
+              const isSelected = player.id === selectedPlayerId;
+              return (
+                <button
+                  key={player.id}
+                  onClick={() => setSelectedPlayerId(player.id)}
+                  className={`px-4 py-1.5 rounded-full text-xs font-sans font-semibold tracking-wide transition-all cursor-pointer ${
+                    isSelected 
+                      ? 'bg-white text-black shadow-[0_0_12px_rgba(255,255,255,0.3)]' 
+                      : 'text-zinc-400 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  {player.name}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
       </div>
 
       {/* Fullscreen Video Player */}
       <div className="w-full h-full relative">
         <iframe 
           src={embedUrl}
-          title="VidLink Video Player"
+          key={selectedPlayerId}
+          title={`${activePlayer.name} Video Player`}
           className="w-full h-full border-0"
           allowFullScreen
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
