@@ -19,12 +19,14 @@ export default function ContinueWatchingRow({ items, onRemove }) {
 
   return (
     <div className="space-y-4 px-6 md:px-16 my-12 max-w-[1400px] mx-auto font-sans">
+      {/* Clean Minimalist Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-bold tracking-tight text-white flex items-center gap-2">
           <Clock className="w-4 h-4 text-zinc-400" />
           <span>Continue Watching</span>
         </h2>
-
+        
+        {/* Subtle Navigation Arrows */}
         <div className="flex items-center gap-1">
           <button 
             onClick={() => handleScroll('left')} 
@@ -40,24 +42,27 @@ export default function ContinueWatchingRow({ items, onRemove }) {
           </button>
         </div>
       </div>
-
+      
       <div className="relative group">
+        {/* Horizontal Scrollable Track */}
         <div ref={rowRef} className="flex gap-4 overflow-x-auto scrollbar-none scroll-smooth pb-4 pt-2">
           {items.map((item) => {
+            if (!item || !item.id) return null;
+
             const itemType = item.media_type || (item.title ? 'movie' : 'tv');
             const posterImg = item.poster_path ? `${IMAGE_BASE_URL}${item.poster_path}` : (item.backdrop_path ? `${IMAGE_BASE_URL}${item.backdrop_path}` : null);
             const releaseYear = item.release_date?.substring(0, 4) || item.first_air_date?.substring(0, 4) || '2026';
             
-            const totalSeconds = item.lastWatchedSeconds || (item.lastWatchedMinute ? item.lastWatchedMinute * 60 : 0);
+            const totalSeconds = item.lastWatchedSeconds || 0;
+            const durationSeconds = item.durationSeconds || (itemType === 'movie' ? 7200 : 2700);
+            const progressPercent = durationSeconds > 0 ? Math.min(Math.round((totalSeconds / durationSeconds) * 100), 100) : 0;
 
-            const watchPath = itemType === 'tv'
-              ? `/watch/tv/${item.id}/${item.season || 1}/${item.episode || 1}${totalSeconds > 0 ? `?startAt=${totalSeconds}` : ''}`
-              : `/watch/movie/${item.id}${totalSeconds > 0 ? `?startAt=${totalSeconds}` : ''}`;
+            const detailPath = `/details/${itemType}/${item.id}`;
 
             return (
               <div 
                 key={item.id}
-                onClick={() => navigate(watchPath)}
+                onClick={() => navigate(detailPath)}
                 className="w-[160px] sm:w-[200px] md:w-[220px] flex-shrink-0 cursor-pointer group/item flex flex-col gap-2 transition-all duration-300"
               >
                 {/* Poster Card Container */}
@@ -83,7 +88,7 @@ export default function ContinueWatchingRow({ items, onRemove }) {
                         e.stopPropagation();
                         onRemove(item.id);
                       }}
-                      className="absolute top-3 right-3 p-1.5 rounded-full bg-black/70 hover:bg-black text-zinc-300 hover:text-white transition opacity-0 group-hover/item:opacity-100 z-30 cursor-pointer shadow-lg"
+                      className="absolute top-2.5 left-2.5 p-1.5 rounded-full bg-black/70 hover:bg-black text-zinc-300 hover:text-white transition opacity-0 group-hover/item:opacity-100 z-30 cursor-pointer shadow-lg"
                       title="Remove from history"
                     >
                       <X className="w-3.5 h-3.5" />
@@ -97,6 +102,16 @@ export default function ContinueWatchingRow({ items, onRemove }) {
                       <span className="text-[11px] font-bold text-white font-mono">{item.vote_average.toFixed(1)}</span>
                     </div>
                   )}
+
+                  {/* Redesigned Modern Gradient Progress Bar Overlay */}
+                  <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-2 z-20">
+                    <div className="w-full bg-[#0A0C10]/90 h-2 rounded-full overflow-hidden p-0.5 border border-white/10">
+                      <div 
+                        className="bg-gradient-to-r from-zinc-300 to-white h-full rounded-full transition-all duration-500 shadow-[0_0_10px_rgba(255,255,255,0.5)]" 
+                        style={{ width: `${progressPercent}%` }}
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 {/* Title & Metadata Below Card */}
@@ -104,10 +119,9 @@ export default function ContinueWatchingRow({ items, onRemove }) {
                   <h3 className="text-xs font-bold text-zinc-200 line-clamp-1 group-hover/item:text-white transition">
                     {item.title || item.name} {itemType === 'tv' && item.season && `— S${item.season}E${item.episode}`}
                   </h3>
-                  <div className="flex items-center gap-2 text-[10px] text-zinc-400 font-mono">
+                  <div className="flex items-center justify-between text-[10px] text-zinc-400 font-mono">
                     <span>{releaseYear}</span>
-                    <span>•</span>
-                    <span className="uppercase">{itemType}</span>
+                    <span className="text-zinc-300 font-semibold">{progressPercent}% watched</span>
                   </div>
                 </div>
 

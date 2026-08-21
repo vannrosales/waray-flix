@@ -9,6 +9,12 @@ export const CONFIG = {
 
   players: [
     {
+      id: 'cinesrc',
+      name: 'CineSrc',
+      getMovieUrl: (id, start) => `https://cinesrc.st/embed/movie/${id}${start ? `?t=${start}` : ''}`,
+      getTvUrl: (id, s, e, start) => `https://cinesrc.st/embed/tv/${id}/${s}/${e}${start ? `?t=${start}` : ''}`
+    },
+    {
       id: 'vidsrc',
       name: 'VidSrc',
       getMovieUrl: (id, start) => `https://vidsrc.to/embed/movie/${id}${start ? `?t=${start}` : ''}`,
@@ -25,12 +31,6 @@ export const CONFIG = {
       name: 'VidCore',
       getMovieUrl: (id, start) => `https://www.vidcore.org/embed/movie/${id}${start ? `?startAt=${start}` : ''}`,
       getTvUrl: (id, s, e, start) => `https://www.vidcore.org/embed/tv/${id}/${s}/${e}${start ? `?startAt=${start}` : ''}`
-    },
-    {
-      id: 'cinesrc',
-      name: 'CineSrc',
-      getMovieUrl: (id, start) => `https://cinesrc.st/embed/movie/${id}${start ? `?t=${start}` : ''}`,
-      getTvUrl: (id, s, e, start) => `https://cinesrc.st/embed/tv/${id}/${s}/${e}${start ? `?t=${start}` : ''}`
     },
     {
       id: 'videasy',

@@ -19,11 +19,15 @@ export default function WatchPage() {
   const menuRef = useRef(null);
 
   const activePlayer = CONFIG.players.find(p => p.id === selectedPlayerId) || CONFIG.players[0];
-  const seconds = startParam ? (startParam.endsWith('m') ? parseInt(startParam) * 60 : parseInt(startParam)) : 0;
+  
+  // Parse explicit seek / skip timestamp from URL params
+  const currentSeconds = startParam 
+    ? (startParam.endsWith('m') ? parseInt(startParam) * 60 : parseInt(startParam)) 
+    : 0;
 
   const embedUrl = type === 'movie'
-    ? activePlayer.getMovieUrl(id, seconds)
-    : activePlayer.getTvUrl(id, currentSeason, currentEpisode, seconds);
+    ? activePlayer.getMovieUrl(id, currentSeconds)
+    : activePlayer.getTvUrl(id, currentSeason, currentEpisode, currentSeconds);
 
   // Close mobile dropdown when clicking outside
   useEffect(() => {
@@ -40,10 +44,38 @@ export default function WatchPage() {
     };
   }, []);
 
+  // 1. Listen for real-time postMessages from the player iframe (e.g. precise timestamp tracking)
+  useEffect(() => {
+    function handlePlayerMessage(event) {
+      if (event.data && (event.data.type === 'MEDIA_PROGRESS' || event.data.currentTime !== undefined)) {
+        const preciseCurrentSecs = Math.floor(event.data.currentTime);
+        const preciseTotalDuration = Math.floor(event.data.duration || 7200);
+
+        try {
+          const existingHistory = JSON.parse(localStorage.getItem('warayflix_watch_history') || '[]');
+          const targetIndex = existingHistory.findIndex(item => item.id.toString() === id.toString());
+
+          if (targetIndex > -1) {
+            existingHistory[targetIndex].lastWatchedSeconds = preciseCurrentSecs;
+            existingHistory[targetIndex].durationSeconds = preciseTotalDuration;
+            existingHistory[targetIndex].updatedAt = Date.now();
+            localStorage.setItem('warayflix_watch_history', JSON.stringify(existingHistory));
+          }
+        } catch (e) {
+          console.error('Failed to update live player progress frame:', e);
+        }
+      }
+    }
+
+    window.addEventListener('message', handlePlayerMessage);
+    return () => window.removeEventListener('message', handlePlayerMessage);
+  }, [id]);
+
+  // 2. Fetch media details and set initial watch state on mount / skip change
   useEffect(() => {
     let isMounted = true;
 
-    async function saveInitialHistory() {
+    async function updateWatchHistory() {
       try {
         const res = await fetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=${CONFIG.tmdbApiKey}`);
         if (!res.ok) return;
@@ -53,15 +85,22 @@ export default function WatchPage() {
         const title = data.title || data.name;
         setMediaTitle(title);
 
+        const estimatedDuration = type === 'movie' ? 7200 : 2700;
+
         const historyItem = {
           id: data.id,
           title: title,
           poster_path: data.poster_path,
           backdrop_path: data.backdrop_path,
+          overview: data.overview,
+          vote_average: data.vote_average,
+          release_date: data.release_date,
+          first_air_date: data.first_air_date,
           media_type: type,
           season: type === 'tv' ? currentSeason : undefined,
           episode: type === 'tv' ? currentEpisode : undefined,
-          lastWatchedSeconds: seconds,
+          lastWatchedSeconds: currentSeconds, 
+          durationSeconds: estimatedDuration,
           updatedAt: Date.now()
         };
 
@@ -69,15 +108,16 @@ export default function WatchPage() {
         const filtered = existingHistory.filter(item => item.id.toString() !== id.toString());
         localStorage.setItem('warayflix_watch_history', JSON.stringify([historyItem, ...filtered]));
       } catch (err) {
-        console.error('Failed to save watch history:', err);
+        console.error('Failed to update watch history:', err);
       }
     }
-    saveInitialHistory();
+
+    updateWatchHistory();
 
     return () => {
       isMounted = false;
     };
-  }, [type, id, currentSeason, currentEpisode, seconds]);
+  }, [type, id, currentSeason, currentEpisode, currentSeconds]);
 
   return (
     <div className="fixed inset-0 z-50 bg-black flex flex-col font-sans overflow-hidden">

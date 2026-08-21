@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchMediaDetails, fetchSeasonDetails, fetchMediaVideos, IMAGE_BASE_URL } from '../services/tmdb';
-import { Play, ArrowLeft, Star, Clock, Layers, VolumeX, Volume2, Bookmark, Check } from 'lucide-react';
+import { Play, ArrowLeft, Star, Clock, Layers, VolumeX, Volume2, Bookmark } from 'lucide-react';
 import useDocumentTitle from '../hooks/useDocumentTitle';
-import { usePlaylist } from '../hooks/usePlaylist'; // Import your pro hook
+import { usePlaylist } from '../hooks/usePlaylist';
 
 export default function DetailPage() {
   const { type, id } = useParams();
@@ -16,8 +16,8 @@ export default function DetailPage() {
   const [trailerKey, setTrailerKey] = useState(null);
   const [isMuted, setIsMuted] = useState(true);
   const [showVideo, setShowVideo] = useState(false);
+  const [watchProgress, setWatchProgress] = useState(null);
 
-  // Initialize playlist hook safely using the route parameter 'id'
   const { isAdded, toggle } = usePlaylist(id);
 
   useEffect(() => {
@@ -36,6 +36,12 @@ export default function DetailPage() {
         if (trailer) {
           setTrailerKey(trailer.key);
           setTimeout(() => setShowVideo(true), 1200);
+        }
+
+        const savedHistory = JSON.parse(localStorage.getItem('warayflix_watch_history') || '[]');
+        const existingProgress = savedHistory.find(item => item.id.toString() === id.toString());
+        if (existingProgress) {
+          setWatchProgress(existingProgress);
         }
       } catch (err) {
         console.error(err);
@@ -64,6 +70,22 @@ export default function DetailPage() {
   const backdrop = media?.backdrop_path ? `${IMAGE_BASE_URL}${media.backdrop_path}` : null;
   const releaseYear = media?.release_date?.substring(0, 4) || media?.first_air_date?.substring(0, 4) || '2026';
   const runtime = media?.runtime || media?.episode_run_time?.[0] || 120;
+
+  const totalSeconds = watchProgress?.lastWatchedSeconds || 0;
+  const durationSeconds = watchProgress?.durationSeconds || (type === 'movie' ? 7200 : 2700);
+  const progressPercent = durationSeconds > 0 ? Math.min(Math.round((totalSeconds / durationSeconds) * 100), 100) : 0;
+
+  const handlePlayClick = () => {
+    if (type === 'tv' && watchProgress) {
+      const targetSeason = watchProgress.season || selectedSeason;
+      const targetEpisode = watchProgress.episode || 1;
+      navigate(`/watch/tv/${id}/${targetSeason}/${targetEpisode}${totalSeconds > 0 ? `?startAt=${totalSeconds}` : ''}`);
+    } else if (type === 'tv') {
+      navigate(`/watch/tv/${id}/${selectedSeason}/1`);
+    } else {
+      navigate(`/watch/movie/${id}${totalSeconds > 0 ? `?startAt=${totalSeconds}` : ''}`);
+    }
+  };
 
   useDocumentTitle(media ? media.title || media.name : 'Loading Details');
 
@@ -141,32 +163,33 @@ export default function DetailPage() {
         <div className="lg:col-span-7 px-6 sm:px-12 lg:px-20 py-8 lg:py-32 space-y-16">
           
           <div className="space-y-6">
-            <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-500 font-mono tracking-wider">
+            <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-400 font-mono tracking-wider">
               <span className="text-white font-medium">{releaseYear}</span>
-              <span>•</span>
+              <span>·</span>
               <span className="uppercase">{type}</span>
               {media.vote_average > 0 && (
                 <>
-                  <span>•</span>
+                  <span>·</span>
                   <span className="flex items-center gap-1 text-amber-400 font-bold">
                     <Star className="w-3.5 h-3.5 fill-current" /> {media.vote_average.toFixed(1)}
                   </span>
                 </>
               )}
-              <span>•</span>
+              <span>·</span>
               <span className="flex items-center gap-1">
                 <Clock className="w-3.5 h-3.5" /> {runtime}m
               </span>
             </div>
 
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white font-['Outfit'] leading-tight">
+            {/* Hero Font Integration (Outfit) */}
+            <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-white font-['Outfit'] leading-[1.05]">
               {media.title || media.name}
             </h1>
 
-            {media.genres && (
+            {media.genres && media.genres.length > 0 && (
               <div className="flex flex-wrap gap-2 pt-2">
                 {media.genres.map((g) => (
-                  <span key={g.id} className="px-3 py-1 rounded-lg bg-[#1D2128]/50 border border-white/5 text-[11px] text-zinc-400 font-mono">
+                  <span key={g.id} className="px-3.5 py-1.5 rounded-full bg-[#1D2128]/50 border border-white/10 text-xs text-zinc-300 font-mono">
                     {g.name}
                   </span>
                 ))}
@@ -176,20 +199,36 @@ export default function DetailPage() {
 
           <div className="space-y-8 border-t border-white/5 pt-8">
             <div className="space-y-3">
-              <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Synopsis</span>
+              <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">SYNOPSIS</span>
               <p className="text-zinc-300 text-sm sm:text-base leading-relaxed font-light">
                 {media.overview || "No synopsis available for this selection."}
               </p>
             </div>
 
-            {/* Action Deck with Play and Bookmark Toggle */}
+            {/* Monochromatic Progress Bar matching screenshot styling */}
+            {watchProgress && totalSeconds > 0 && (
+              <div className="space-y-2.5 max-w-lg pt-2">
+                <div className="flex items-center justify-between text-[10px] font-mono text-zinc-500 tracking-widest">
+                  <span>SAVED PROGRESS</span>
+                  <span className="text-zinc-400 font-medium">{progressPercent}% Completed</span>
+                </div>
+                <div className="w-full bg-zinc-800/80 h-1 rounded-full overflow-hidden">
+                  <div 
+                    className="bg-white h-full rounded-full transition-all duration-300 shadow-[0_0_8px_rgba(255,255,255,0.4)]"
+                    style={{ width: `${progressPercent}%` }}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Action Deck */}
             <div className="flex items-center gap-4 pt-2">
               <button 
-                onClick={() => navigate(`/watch/${type}/${media.id}`)}
-                className="px-8 py-3.5 rounded-full bg-white text-black font-semibold text-xs tracking-widest uppercase flex items-center justify-center gap-2.5 transition hover:bg-zinc-200 cursor-pointer"
+                onClick={handlePlayClick}
+                className="px-8 py-3.5 rounded-full bg-white text-black font-semibold text-xs tracking-widest uppercase flex items-center justify-center gap-2.5 transition hover:bg-zinc-200 cursor-pointer shadow-lg"
               >
                 <Play className="w-3 h-3 fill-current" />
-                <span>Play</span>
+                <span>{watchProgress && totalSeconds > 0 ? 'Resume Watching' : 'Play'}</span>
               </button>
 
               <button 
@@ -201,17 +240,8 @@ export default function DetailPage() {
                 }`}
                 title={isAdded ? "Remove from My List" : "Add to My List"}
               >
-                {isAdded ? (
-                  <>
-                    <Bookmark className="w-4 h-4 fill-current text-white" />
-                    <span className="text-xs font-semibold tracking-wider uppercase">In My List</span>
-                  </>
-                ) : (
-                  <>
-                    <Bookmark className="w-4 h-4 text-zinc-400" />
-                    <span className="text-xs font-semibold tracking-wider uppercase">Add to List</span>
-                  </>
-                )}
+                <Bookmark className={`w-4 h-4 ${isAdded ? 'fill-current text-white' : 'text-zinc-400'}`} />
+                <span className="text-xs font-semibold tracking-wider uppercase">{isAdded ? 'In My List' : 'Add to List'}</span>
               </button>
             </div>
           </div>
