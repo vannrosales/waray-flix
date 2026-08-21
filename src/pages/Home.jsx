@@ -3,12 +3,37 @@ import { fetchTrendingMovies, fetchPopularShows, fetchMediaByProvider, fetchMedi
 import Hero from '../components/Hero';
 import MediaRow from '../components/MediaRow';
 import NetworkSelector from '../components/NetworkSelector';
+import ContinueWatchingRow from '../components/ContinueWatchingRow';
+import MyListRow from '../components/MyListRow';
 
 export default function Home() {
   const [trendingMovies, setTrendingMovies] = useState([]);
   const [popularShows, setPopularShows] = useState([]);
   const [heroContent, setHeroContent] = useState(null);
   const [selectedNetwork, setSelectedNetwork] = useState(null);
+  
+  const [continueWatchingList, setContinueWatchingList] = useState([]);
+
+  // Load user watch history strictly from localStorage (on your end only)
+  useEffect(() => {
+    try {
+      const savedHistory = JSON.parse(localStorage.getItem('warayflix_watch_history') || '[]');
+      setContinueWatchingList(savedHistory);
+    } catch (e) {
+      console.error('Failed to load watch history:', e);
+    }
+  }, []);
+
+  // Handle removing a single item from local continue watching history
+  const handleRemoveHistory = (id) => {
+    const updated = continueWatchingList.filter(item => item.id !== id);
+    setContinueWatchingList(updated);
+    try {
+      localStorage.setItem('warayflix_watch_history', JSON.stringify(updated));
+    } catch (e) {
+      console.error('Failed to update watch history:', e);
+    }
+  };
 
   useEffect(() => {
     async function load() {
@@ -20,13 +45,12 @@ export default function Home() {
           setPopularShows(shows);
           if (movies.length > 0) setHeroContent(movies[0]);
         } else {
-          // Fetch data specific to the chosen provider/studio
           const results = selectedNetwork.type === 'provider'
             ? await fetchMediaByProvider(selectedNetwork.code, 'movie')
             : await fetchMediaByCompany(selectedNetwork.code);
           
           setTrendingMovies(results);
-          setPopularShows(results); // Or separate tv endpoint if applicable
+          setPopularShows(results);
           if (results.length > 0) setHeroContent(results[0]);
         }
       } catch (err) {
@@ -47,6 +71,16 @@ export default function Home() {
       />
 
       <div className="space-y-4 pb-12">
+        {continueWatchingList.length > 0 && !selectedNetwork && (
+          <ContinueWatchingRow 
+            items={continueWatchingList} 
+            onRemove={handleRemoveHistory} 
+          />
+        )}
+
+        {/* My Saved List Row */}
+        {!selectedNetwork && <MyListRow />}
+
         <MediaRow title={selectedNetwork ? `${selectedNetwork.name} Selection` : "Trending Movies"} items={trendingMovies} type="movie" />
         <MediaRow title={selectedNetwork ? `${selectedNetwork.name} Series` : "Popular TV Shows"} items={popularShows} type="tv" />
       </div>

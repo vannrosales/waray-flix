@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchMediaDetails, fetchSeasonDetails, fetchMediaVideos, IMAGE_BASE_URL } from '../services/tmdb';
-import { Play, ArrowLeft, Star, Clock, Layers, Film, VolumeX, Volume2 } from 'lucide-react';
+import { Play, ArrowLeft, Star, Clock, Layers, VolumeX, Volume2, Bookmark, Check } from 'lucide-react';
 import useDocumentTitle from '../hooks/useDocumentTitle';
+import { usePlaylist } from '../hooks/usePlaylist'; // Import your pro hook
 
 export default function DetailPage() {
   const { type, id } = useParams();
@@ -12,10 +13,12 @@ export default function DetailPage() {
   const [seasonData, setSeasonData] = useState(null);
   const [loading, setLoading] = useState(true);
   
-  // Trailer states for left panel
   const [trailerKey, setTrailerKey] = useState(null);
   const [isMuted, setIsMuted] = useState(true);
   const [showVideo, setShowVideo] = useState(false);
+
+  // Initialize playlist hook safely using the route parameter 'id'
+  const { isAdded, toggle } = usePlaylist(id);
 
   useEffect(() => {
     async function loadDetails() {
@@ -28,7 +31,6 @@ export default function DetailPage() {
           setSelectedSeason(firstSeason.season_number);
         }
 
-        // Fetch videos/trailers for the left visual panel
         const videos = await fetchMediaVideos(id, type);
         const trailer = videos.find(v => v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser'));
         if (trailer) {
@@ -60,7 +62,6 @@ export default function DetailPage() {
   }, [id, type, selectedSeason]);
   
   const backdrop = media?.backdrop_path ? `${IMAGE_BASE_URL}${media.backdrop_path}` : null;
-  const poster = media?.poster_path ? `${IMAGE_BASE_URL}${media.poster_path}` : null;
   const releaseYear = media?.release_date?.substring(0, 4) || media?.first_air_date?.substring(0, 4) || '2026';
   const runtime = media?.runtime || media?.episode_run_time?.[0] || 120;
 
@@ -96,7 +97,6 @@ export default function DetailPage() {
         {/* Left Architectural Visual Panel with Autoplaying Trailer */}
         <div className="lg:col-span-5 relative h-[40vh] sm:h-[50vh] lg:h-screen w-full bg-[#0B0D10] border-r border-white/5 overflow-hidden lg:sticky lg:top-0">
           
-          {/* Static Backdrop Image with Fade-Out */}
           {backdrop && (
             <img 
               src={backdrop} 
@@ -107,7 +107,6 @@ export default function DetailPage() {
             />
           )}
 
-          {/* Autoplaying YouTube Trailer Container with Fade-In */}
           {trailerKey && (
             <div className={`absolute inset-0 w-full h-full pointer-events-none overflow-hidden flex items-center justify-center transition-opacity duration-1000 ${
               showVideo ? 'opacity-80' : 'opacity-0'
@@ -125,7 +124,6 @@ export default function DetailPage() {
 
           <div className="absolute inset-0 bg-gradient-to-t from-[#0B0D10] via-[#0B0D10]/40 to-transparent lg:bg-gradient-to-r lg:from-transparent lg:to-[#0B0D10]" />
           
-          {/* Mute/Unmute Toggle Button */}
           {showVideo && trailerKey && (
             <div className="absolute bottom-8 right-8 z-30">
               <button
@@ -137,18 +135,11 @@ export default function DetailPage() {
               </button>
             </div>
           )}
-
-          <div className="absolute bottom-8 left-8 hidden lg:block">
-            <span className="text-[10px] font-mono text-zinc-500 tracking-[0.3em] uppercase">
-              WARAYFLIX ARCHITECTURAL FEED
-            </span>
-          </div>
         </div>
 
         {/* Right Scrollable Content Stream */}
         <div className="lg:col-span-7 px-6 sm:px-12 lg:px-20 py-8 lg:py-32 space-y-16">
           
-          {/* Title & Metadata Header */}
           <div className="space-y-6">
             <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-500 font-mono tracking-wider">
               <span className="text-white font-medium">{releaseYear}</span>
@@ -183,7 +174,6 @@ export default function DetailPage() {
             )}
           </div>
 
-          {/* Action Deck & Synopsis Block */}
           <div className="space-y-8 border-t border-white/5 pt-8">
             <div className="space-y-3">
               <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Synopsis</span>
@@ -192,28 +182,49 @@ export default function DetailPage() {
               </p>
             </div>
 
-            <div className="pt-2">
+            {/* Action Deck with Play and Bookmark Toggle */}
+            <div className="flex items-center gap-4 pt-2">
               <button 
                 onClick={() => navigate(`/watch/${type}/${media.id}`)}
-                className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-transparent hover:bg-white text-zinc-300 hover:text-black font-semibold text-xs tracking-widest uppercase flex items-center justify-center gap-2.5 transition-all duration-300 border border-white/20 hover:border-white cursor-pointer"
+                className="px-8 py-3.5 rounded-full bg-white text-black font-semibold text-xs tracking-widest uppercase flex items-center justify-center gap-2.5 transition hover:bg-zinc-200 cursor-pointer"
               >
                 <Play className="w-3 h-3 fill-current" />
                 <span>Play</span>
               </button>
+
+              <button 
+                onClick={() => toggle({ ...media, media_type: type })}
+                className={`px-6 py-3.5 rounded-full border transition-all duration-300 flex items-center gap-2.5 cursor-pointer ${
+                  isAdded 
+                    ? 'bg-white/10 border-white/40 text-white' 
+                    : 'bg-transparent border-white/20 text-zinc-400 hover:border-white/50 hover:text-white'
+                }`}
+                title={isAdded ? "Remove from My List" : "Add to My List"}
+              >
+                {isAdded ? (
+                  <>
+                    <Bookmark className="w-4 h-4 fill-current text-white" />
+                    <span className="text-xs font-semibold tracking-wider uppercase">In My List</span>
+                  </>
+                ) : (
+                  <>
+                    <Bookmark className="w-4 h-4 text-zinc-400" />
+                    <span className="text-xs font-semibold tracking-wider uppercase">Add to List</span>
+                  </>
+                )}
+              </button>
             </div>
           </div>
 
-          {/* TV Series Minimalist Chapter List with Stills */}
+          {/* TV Series Minimalist Chapter List */}
           {type === 'tv' && media.seasons && media.seasons.length > 0 && (
             <div className="border-t border-white/5 pt-12 space-y-8">
-              
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-2.5">
                   <Layers className="w-4 h-4 text-zinc-400" />
                   <h3 className="text-base font-bold text-white">Season Modules</h3>
                 </div>
 
-                {/* Minimalist Dropdown Selector */}
                 <div className="relative w-full sm:w-auto">
                   <select
                     value={selectedSeason}
@@ -226,13 +237,9 @@ export default function DetailPage() {
                       </option>
                     ))}
                   </select>
-                  <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-500 text-[10px]">
-                    ▼
-                  </div>
                 </div>
               </div>
 
-              {/* Episode Sequence with Pictures */}
               <div className="space-y-4">
                 {seasonData && seasonData.episodes && seasonData.episodes.length > 0 ? (
                   seasonData.episodes.map((ep) => {
@@ -243,19 +250,14 @@ export default function DetailPage() {
                         onClick={() => navigate(`/watch/tv/${media.id}/${selectedSeason}/${ep.episode_number}`)}
                         className="group flex flex-col sm:flex-row items-start sm:items-center gap-4 p-3 rounded-2xl bg-[#1D2128]/20 hover:bg-[#1D2128]/60 border border-white/5 cursor-pointer transition-all"
                       >
-                        {/* Episode Still Picture Thumbnail */}
                         <div className="w-full sm:w-36 h-28 sm:h-20 rounded-xl bg-[#0B0D10] overflow-hidden flex-shrink-0 relative">
                           {epStill ? (
                             <img src={epStill} alt="" className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center text-zinc-700 text-[10px] font-mono">NO IMAGE</div>
                           )}
-                          <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition flex items-center justify-center">
-                            <Play className="w-4 h-4 text-white opacity-0 group-hover:opacity-100 transition fill-current" />
-                          </div>
                         </div>
 
-                        {/* Episode Metadata */}
                         <div className="flex-1 min-w-0 space-y-1">
                           <div className="flex items-center justify-between text-[10px] font-mono text-zinc-500">
                             <span>EPISODE {ep.episode_number}</span>
@@ -277,7 +279,6 @@ export default function DetailPage() {
                   </div>
                 )}
               </div>
-
             </div>
           )}
 
