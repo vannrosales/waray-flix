@@ -61,7 +61,7 @@ export default function MyListRow() {
               <div 
                 key={item.id}
                 onClick={() => navigate(`/details/${itemType}/${item.id}`)}
-                className="min-w-[170px] sm:min-w-[200px] md:min-w-[220px] cursor-pointer group/item flex flex-col gap-2 flex-shrink-0 transition-all duration-300"
+                className="w-[160px] sm:w-[200px] md:w-[220px] flex-shrink-0 cursor-pointer group/item flex flex-col gap-2 transition-all duration-300"
               >
                 {/* Poster Card Container */}
                 <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden bg-[#1D2128]/40 border border-white/5 group-hover/item:border-white/20 transition-all duration-300 group-hover/item:scale-[1.03] shadow-xl">
