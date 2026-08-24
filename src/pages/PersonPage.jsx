@@ -33,7 +33,7 @@ export default function PersonPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#090A0F] flex items-center justify-center text-zinc-600 font-mono text-xs">
+      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center text-[#52525B] font-mono text-xs">
         LOADING_CREATIVE_PROFILE...
       </div>
     );
@@ -73,140 +73,132 @@ export default function PersonPage() {
     return (b.popularity || 0) - (a.popularity || 0);
   });
 
-  const age = person.birthday ? new Date().getFullYear() - new Date(person.birthday).getFullYear() : null;
-
   return (
-    <div className="min-h-screen bg-[#090A0F] text-[#EDEDED] pt-24 sm:pt-28 px-6 md:px-12 pb-24 selection:bg-white selection:text-black">
-      <div className="max-w-[1440px] mx-auto space-y-12">
+    <div className="min-h-screen bg-[#FAFAFA] text-[#09090B] pb-24 pt-24 sm:pt-28 px-6 md:px-12 select-none">
+      <div className="max-w-[1440px] mx-auto space-y-10">
         
         {/* Back Button */}
         <div>
           <button 
             onClick={() => navigate(-1)}
-            className="inline-flex items-center gap-2 text-xs text-zinc-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] px-3.5 py-1.5 rounded-full border border-white/[0.08] transition cursor-pointer"
+            className="inline-flex items-center gap-2 text-xs font-mono text-[#52525B] hover:text-[#09090B] bg-white hover:bg-zinc-50 px-3.5 py-1.5 rounded-full border border-black/10 transition cursor-pointer shadow-sm"
           >
             <ArrowLeft className="w-3.5 h-3.5 stroke-[1.5]" /> Back
           </button>
         </div>
 
-        {/* Profile Header Deck */}
-        <div className="flex flex-col md:flex-row gap-8 items-start pb-10 border-b border-white/[0.06]">
-          
+        {/* Profile Header Hero */}
+        <div className="flex flex-col md:flex-row gap-8 items-start pb-8 border-b border-black/[0.08]">
           {/* Avatar Photo */}
-          <div className="w-40 sm:w-52 md:w-60 flex-shrink-0 aspect-[3/4] rounded-2xl overflow-hidden bg-[#11131A] border border-white/10 shadow-2xl relative flex items-center justify-center">
+          <div className="w-36 sm:w-48 aspect-[2/3] rounded-3xl overflow-hidden bg-white border border-black/10 flex-shrink-0 shadow-xl relative">
             {profileImg ? (
-              <img 
-                src={profileImg} 
-                alt={person.name} 
-                fetchPriority="high"
-                onError={(e) => { e.target.style.display = 'none'; }}
-                className="w-full h-full object-cover" 
-              />
+              <img src={profileImg} alt={person.name} className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-zinc-600 font-mono text-xs">
+              <div className="w-full h-full flex items-center justify-center text-zinc-400 bg-zinc-100 font-mono text-xs">
                 NO PHOTO
               </div>
             )}
           </div>
 
-          {/* Bio & Details */}
+          {/* Details */}
           <div className="flex-1 space-y-4">
             <div className="space-y-1">
-              <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">
-                {person.known_for_department || "Artist"} • {allCredits.length} Credits
+              <span className="text-[10px] font-mono text-[#2563EB] font-bold uppercase tracking-widest block">
+                {person.known_for_department || 'Acting & Directing'}
               </span>
-              <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-white font-['Outfit']">
+              <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-[#09090B] font-['Outfit']">
                 {person.name}
               </h1>
             </div>
 
-            {/* Quick Facts */}
-            <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-zinc-400 pt-1">
+            {/* Quick Metadata Chips */}
+            <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-[#52525B]">
               {person.birthday && (
-                <div className="flex items-center gap-1.5">
-                  <Calendar className="w-3.5 h-3.5 stroke-[1.5] text-zinc-500" />
-                  <span>Born {person.birthday} {age ? `(Age ${age})` : ''}</span>
-                </div>
+                <span className="flex items-center gap-1.5">
+                  <Calendar className="w-3.5 h-3.5 stroke-[1.5]" />
+                  <span>Born: {person.birthday}</span>
+                </span>
               )}
               {person.place_of_birth && (
-                <div className="flex items-center gap-1.5">
-                  <MapPin className="w-3.5 h-3.5 stroke-[1.5] text-zinc-500" />
+                <span className="flex items-center gap-1.5">
+                  <MapPin className="w-3.5 h-3.5 stroke-[1.5]" />
                   <span>{person.place_of_birth}</span>
-                </div>
+                </span>
               )}
             </div>
 
             {/* Biography */}
             {person.biography && (
-              <div className="space-y-1.5 pt-2">
-                <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">BIOGRAPHY</span>
-                <p className="text-zinc-300 text-xs sm:text-sm leading-relaxed font-light line-clamp-6 max-w-4xl">
+              <div className="space-y-1 pt-1">
+                <span className="text-[10px] font-mono text-[#52525B] uppercase font-bold tracking-wider block">Biography</span>
+                <p className="text-[#52525B] text-xs sm:text-sm leading-relaxed max-w-3xl line-clamp-4 font-normal">
                   {person.biography}
                 </p>
               </div>
             )}
           </div>
-
         </div>
 
         {/* Filmography Section */}
         <div className="space-y-6">
-          
           {/* Controls Bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-3.5 rounded-2xl bg-[#11131A] border border-white/[0.06]">
-            
-            {/* Filter Pills */}
-            <div className="flex items-center gap-1.5">
-              {[
-                { id: 'all', label: `All (${allCredits.length})` },
-                { id: 'movie', label: `Movies (${allCredits.filter(c => c.media_type === 'movie').length})` },
-                { id: 'tv', label: `Series (${allCredits.filter(c => c.media_type === 'tv').length})` },
-              ].map(tab => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveFilter(tab.id)}
-                  className={`px-3 py-1 rounded-full text-xs font-medium transition cursor-pointer ${
-                    activeFilter === tab.id 
-                      ? 'bg-white text-black font-semibold' 
-                      : 'bg-white/[0.04] text-zinc-400 hover:text-white hover:bg-white/[0.08]'
-                  }`}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <Film className="w-4 h-4 text-[#2563EB] stroke-[1.5]" />
+              <h2 className="text-lg sm:text-xl font-bold text-[#09090B] font-['Outfit']">
+                Filmography ({filteredCredits.length})
+              </h2>
+            </div>
+
+            <div className="flex items-center gap-3">
+              {/* Filter Tabs */}
+              <div className="flex items-center gap-1 bg-black/[0.04] p-1 rounded-full border border-black/[0.06] text-xs font-mono">
+                {['all', 'movie', 'tv'].map((type) => (
+                  <button
+                    key={type}
+                    onClick={() => setActiveFilter(type)}
+                    className={`px-3 py-1 rounded-full transition cursor-pointer capitalize ${
+                      activeFilter === type
+                        ? 'bg-[#09090B] text-white font-bold shadow-sm'
+                        : 'text-[#52525B] hover:text-[#09090B]'
+                    }`}
+                  >
+                    {type === 'all' ? 'All' : type === 'movie' ? 'Movies' : 'Series'}
+                  </button>
+                ))}
+              </div>
+
+              {/* Sort Select */}
+              <div className="relative">
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="appearance-none bg-white hover:bg-zinc-50 border border-black/10 text-[#09090B] text-xs font-mono py-1.5 pl-3 pr-8 rounded-full focus:outline-none focus:border-[#2563EB] transition cursor-pointer shadow-sm"
                 >
-                  {tab.label}
-                </button>
-              ))}
+                  <option value="popularity" className="bg-white text-[#09090B]">Most Popular</option>
+                  <option value="rating" className="bg-white text-[#09090B]">Top Rated</option>
+                  <option value="date" className="bg-white text-[#09090B]">Release Date</option>
+                </select>
+                <SlidersHorizontal className="w-3 h-3 text-[#52525B] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
             </div>
-
-            {/* Sort Selector */}
-            <div className="flex items-center gap-2 text-xs font-mono">
-              <SlidersHorizontal className="w-3 h-3 stroke-[1.5] text-zinc-500" />
-              <span className="text-zinc-500 hidden sm:inline">Sort:</span>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="bg-[#090A0F] border border-white/10 text-zinc-300 text-xs py-1 px-2.5 rounded-lg focus:outline-none transition cursor-pointer"
-              >
-                <option value="popularity">Most Popular</option>
-                <option value="rating">Top Rated</option>
-                <option value="date">Release Date</option>
-              </select>
-            </div>
-
           </div>
 
           {/* Filmography Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5 sm:gap-4">
-            {filteredCredits.map(item => {
-              const itemType = item.media_type || (item.title ? 'movie' : 'tv');
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3.5 sm:gap-4">
+            {filteredCredits.map((item) => {
               const poster = getImageUrl(item.poster_path, 'posterSmall') || getImageUrl(item.backdrop_path, 'backdropSmall');
-              const year = item.release_date?.substring(0, 4) || item.first_air_date?.substring(0, 4) || '—';
+              const itemType = item.media_type || 'movie';
+              const releaseYear = (item.release_date || item.first_air_date || '').substring(0, 4);
 
               return (
                 <div
-                  key={`${item.id}-${item.credit_id || item.character}`}
+                  key={`${item.id}-${itemType}`}
                   onClick={() => navigate(`/details/${itemType}/${item.id}`)}
                   className="cursor-pointer group/item flex flex-col gap-2 flex-shrink-0 transition-all duration-200"
                 >
-                  <div className="relative aspect-[2/3] w-full rounded-xl overflow-hidden bg-[#11131A] border border-white/[0.06] group-hover/item:border-white/20 transition-all duration-200 group-hover/item:scale-[1.02] shadow-sm">
+                  {/* Poster Card */}
+                  <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden bg-white border border-black/[0.06] group-hover/item:border-[#2563EB]/40 transition-all duration-200 group-hover/item:scale-[1.02] shadow-sm hover:shadow-md">
                     {poster ? (
                       <img 
                         src={poster} 
@@ -215,27 +207,31 @@ export default function PersonPage() {
                         className="w-full h-full object-cover transition duration-300 group-hover/item:brightness-105" 
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-zinc-600">
-                        {itemType === 'tv' ? <Tv className="w-6 h-6 stroke-[1.5]" /> : <Film className="w-6 h-6 stroke-[1.5]" />}
+                      <div className="w-full h-full flex flex-col items-center justify-center p-3 text-center text-zinc-400 bg-zinc-100 text-xs">
+                        <Film className="w-6 h-6 opacity-30 stroke-[1.5]" />
                       </div>
                     )}
 
+                    {/* Rating Badge */}
                     {item.vote_average > 0 && (
-                      <div className="absolute top-2 right-2 bg-black/80 backdrop-blur-md px-2 py-0.5 rounded-md flex items-center gap-1 border border-white/10 z-20">
-                        <Star className="w-2.5 h-2.5 text-zinc-400 stroke-[1.5]" />
-                        <span className="text-[10px] font-mono text-zinc-300">{item.vote_average.toFixed(1)}</span>
+                      <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-md px-2 py-0.5 rounded-md flex items-center gap-1 border border-black/10 z-20 shadow-sm">
+                        <Star className="w-2.5 h-2.5 text-[#2563EB] fill-[#2563EB] stroke-[1.5]" />
+                        <span className="text-[10px] font-mono font-bold text-[#09090B]">{item.vote_average.toFixed(1)}</span>
                       </div>
                     )}
                   </div>
 
+                  {/* Title & Role */}
                   <div className="space-y-0.5 px-0.5">
-                    <h3 className="text-xs font-semibold text-zinc-200 line-clamp-1 group-hover/item:text-white transition">
+                    <h3 className="text-xs font-semibold text-[#09090B] line-clamp-1 group-hover/item:text-[#2563EB] transition">
                       {item.title || item.name}
                     </h3>
-                    <div className="flex items-center justify-between text-[10px] text-zinc-500 font-mono">
-                      <span>{year}</span>
+                    <div className="flex items-center justify-between text-[10px] text-[#52525B] font-mono">
+                      <span>{releaseYear || '—'}</span>
                       {item.character && (
-                        <span className="truncate max-w-[100px] text-zinc-400">as {item.character}</span>
+                        <span className="text-[#52525B] truncate max-w-[90px]" title={item.character}>
+                          as {item.character}
+                        </span>
                       )}
                     </div>
                   </div>
@@ -243,7 +239,6 @@ export default function PersonPage() {
               );
             })}
           </div>
-
         </div>
 
       </div>
@@ -251,7 +246,7 @@ export default function PersonPage() {
       {quickMedia && (
         <QuickViewModal
           media={quickMedia}
-          type={quickMedia.media_type || 'movie'}
+          type="movie"
           isOpen={Boolean(quickMedia)}
           onClose={() => setQuickMedia(null)}
         />
@@ -259,4 +254,3 @@ export default function PersonPage() {
     </div>
   );
 }
-

@@ -4,7 +4,7 @@ export const STUDIOS_LIST = [
     name: 'Netflix', 
     code: 8, 
     type: 'provider', 
-    fontStyle: 'font-black tracking-[0.2em] uppercase text-white',
+    fontStyle: 'font-black tracking-[0.2em] uppercase text-[#09090B]',
     category: 'Stream Originals'
   },
   { 
@@ -12,7 +12,7 @@ export const STUDIOS_LIST = [
     name: 'Disney+', 
     code: 337, 
     type: 'provider', 
-    fontStyle: 'font-serif italic font-bold tracking-wider text-white',
+    fontStyle: 'font-serif italic font-bold tracking-wider text-[#09090B]',
     category: 'Cinema Classics'
   },
   { 
@@ -20,7 +20,7 @@ export const STUDIOS_LIST = [
     name: 'Prime Video', 
     code: 9, 
     type: 'provider', 
-    fontStyle: 'font-semibold tracking-tight text-white',
+    fontStyle: 'font-semibold tracking-tight text-[#09090B]',
     category: 'Amazon Originals'
   },
   { 
@@ -28,7 +28,7 @@ export const STUDIOS_LIST = [
     name: 'Apple TV+', 
     code: 350, 
     type: 'provider', 
-    fontStyle: 'font-light tracking-widest uppercase text-white',
+    fontStyle: 'font-light tracking-widest uppercase text-[#09090B]',
     category: 'Original Films'
   },
   { 
@@ -36,7 +36,7 @@ export const STUDIOS_LIST = [
     name: 'HBO Max', 
     code: 384, 
     type: 'provider', 
-    fontStyle: 'font-extrabold tracking-widest uppercase text-white',
+    fontStyle: 'font-extrabold tracking-widest uppercase text-[#09090B]',
     category: 'Prestige Drama'
   },
   { 
@@ -44,7 +44,7 @@ export const STUDIOS_LIST = [
     name: 'Hulu', 
     code: 453, 
     type: 'provider', 
-    fontStyle: 'font-bold tracking-tighter text-white',
+    fontStyle: 'font-bold tracking-tighter text-[#09090B]',
     category: 'Series & Exclusives'
   },
   { 
@@ -52,7 +52,7 @@ export const STUDIOS_LIST = [
     name: 'Marvel', 
     code: 420, 
     type: 'company', 
-    fontStyle: 'font-black tracking-[0.15em] uppercase text-white',
+    fontStyle: 'font-black tracking-[0.15em] uppercase text-[#09090B]',
     category: 'MCU Catalog'
   },
   { 
@@ -60,7 +60,7 @@ export const STUDIOS_LIST = [
     name: 'Paramount+', 
     code: 175, 
     type: 'provider', 
-    fontStyle: 'font-serif italic font-medium text-white',
+    fontStyle: 'font-serif italic font-medium text-[#09090B]',
     category: 'Studio Vault'
   },
   { 
@@ -68,7 +68,7 @@ export const STUDIOS_LIST = [
     name: 'A24', 
     code: 41077, 
     type: 'company', 
-    fontStyle: 'font-mono font-bold tracking-[0.35em] text-white',
+    fontStyle: 'font-mono font-bold tracking-[0.35em] text-[#09090B]',
     category: 'Auteur Cinema'
   },
   { 
@@ -76,7 +76,7 @@ export const STUDIOS_LIST = [
     name: 'Peacock', 
     code: 386, 
     type: 'provider', 
-    fontStyle: 'font-mono font-medium tracking-wider text-white',
+    fontStyle: 'font-mono font-medium tracking-wider text-[#09090B]',
     category: 'NBC Universal'
   },
   { 
@@ -84,7 +84,7 @@ export const STUDIOS_LIST = [
     name: 'Crunchyroll', 
     code: 283, 
     type: 'provider', 
-    fontStyle: 'font-bold tracking-tight text-white',
+    fontStyle: 'font-bold tracking-tight text-[#09090B]',
     category: 'Anime Archive'
   },
   { 
@@ -92,7 +92,7 @@ export const STUDIOS_LIST = [
     name: 'Tubi', 
     code: 2493, 
     type: 'provider', 
-    fontStyle: 'font-black tracking-widest text-white uppercase',
+    fontStyle: 'font-black tracking-widest text-[#09090B] uppercase',
     category: 'Cult Catalog'
   }
 ];

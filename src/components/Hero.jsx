@@ -4,9 +4,11 @@ import { getImageUrl, fetchMediaVideos } from '../services/tmdb';
 import { storageService } from '../services/storageService';
 import { Play, Info, Star, VolumeX, Volume2, Bookmark, ChevronRight, ChevronLeft } from 'lucide-react';
 import QuickViewModal from './QuickViewModal';
+import { useAuth } from '../context/AuthContext';
 
 export default function Hero({ content, items = [] }) {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [trailerKey, setTrailerKey] = useState(null);
   const [isMuted, setIsMuted] = useState(true);
@@ -36,7 +38,7 @@ export default function Hero({ content, items = [] }) {
           setTrailerKey(trailer.key);
           const timer = setTimeout(() => {
             if (isMounted) setShowVideo(true);
-          }, 1800);
+          }, 800);
           return () => clearTimeout(timer);
         }
       } catch (err) {
@@ -70,7 +72,7 @@ export default function Hero({ content, items = [] }) {
 
   if (!activeContent) {
     return (
-      <div className="w-full h-[70vh] bg-[#FAFAFA] shimmer-skeleton-light flex items-center justify-center text-[#52525B] font-mono text-xs">
+      <div className="w-full h-[72vh] sm:h-[82vh] bg-black shimmer-skeleton flex items-center justify-center text-zinc-400 font-mono text-xs">
         LOADING_SELECTION...
       </div>
     );
@@ -80,7 +82,7 @@ export default function Hero({ content, items = [] }) {
   const releaseYear = activeContent.release_date?.substring(0, 4) || activeContent.first_air_date?.substring(0, 4) || '2026';
 
   const handleToggleBookmark = () => {
-    storageService.togglePlaylistItem({ ...activeContent, media_type: itemType });
+    storageService.togglePlaylistItem({ ...activeContent, media_type: itemType }, user?.id);
     setIsSaved(!isSaved);
   };
 
@@ -93,9 +95,9 @@ export default function Hero({ content, items = [] }) {
   };
 
   return (
-    <div className="relative h-[72vh] sm:h-[80vh] w-full overflow-hidden flex items-end select-none bg-[#FAFAFA]">
+    <div className="relative h-[72vh] sm:h-[82vh] w-full overflow-hidden flex items-end select-none bg-black">
       
-      {/* Background Photography Backdrop */}
+      {/* High-Resolution Photography Backdrop */}
       {backdropUrl && (
         <img 
           src={backdropUrl} 
@@ -103,17 +105,17 @@ export default function Hero({ content, items = [] }) {
           fetchPriority="high"
           decoding="async"
           className={`absolute inset-0 w-full h-full object-cover object-center transition-all duration-1000 ${
-            showVideo && trailerKey ? 'opacity-0 scale-105' : 'opacity-40 scale-100'
+            showVideo && trailerKey ? 'opacity-0 scale-105' : 'opacity-90 scale-100'
           }`}
         />
       )}
 
-      {/* Autoplaying Ambient Trailer */}
+      {/* Autoplaying Ambient Trailer (100% Crystal Clear Video Display) */}
       {trailerKey && (
         <div className={`absolute inset-0 w-full h-full pointer-events-none overflow-hidden flex items-center justify-center transition-opacity duration-1000 ${
-          showVideo ? 'opacity-70' : 'opacity-0'
+          showVideo ? 'opacity-100' : 'opacity-0'
         }`}>
-          <div className="absolute w-[320%] h-[320%] md:w-[170%] md:h-[170%]">
+          <div className="absolute w-[320%] h-[320%] md:w-[150%] md:h-[150%]">
             <iframe
               src={`https://www.youtube-nocookie.com/embed/${trailerKey}?autoplay=1&mute=${isMuted ? 1 : 0}&controls=0&loop=1&playlist=${trailerKey}&rel=0&iv_load_policy=3&disablekb=1&modestbranding=1`}
               title="Hero Trailer"
@@ -124,16 +126,19 @@ export default function Hero({ content, items = [] }) {
         </div>
       )}
       
-      {/* Triad 4 Clean Gradient Overlays */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#FAFAFA] via-[#FAFAFA]/75 to-transparent pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#FAFAFA]/95 via-[#FAFAFA]/70 to-transparent pointer-events-none" />
+      {/* Cinema Vignette: Dark Gradient on Left for High Readability, Crystal Clear on Video */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/30 pointer-events-none" />
+      <div className="absolute inset-y-0 left-0 w-full md:w-3/5 bg-gradient-to-r from-black/90 via-black/40 to-transparent pointer-events-none" />
+      
+      {/* Bottom Soft Merge to #FAFAFA Canvas */}
+      <div className="absolute bottom-0 inset-x-0 h-12 bg-gradient-to-t from-[#FAFAFA] to-transparent pointer-events-none" />
 
-      {/* Outlined Sound Toggle Button */}
+      {/* Sound Toggle Button */}
       {showVideo && trailerKey && (
         <div className="absolute bottom-16 right-6 md:right-12 z-30 animate-fade-in">
           <button
             onClick={() => setIsMuted(!isMuted)}
-            className="w-9 h-9 rounded-full bg-white/80 hover:bg-white text-[#09090B] border border-black/10 backdrop-blur-md flex items-center justify-center transition cursor-pointer shadow-md"
+            className="w-10 h-10 rounded-full bg-black/70 hover:bg-black text-white border border-white/20 backdrop-blur-md flex items-center justify-center transition cursor-pointer shadow-xl hover:scale-105"
             title={isMuted ? "Unmute Preview" : "Mute Preview"}
           >
             {isMuted ? <VolumeX className="w-4 h-4 stroke-[1.5]" /> : <Volume2 className="w-4 h-4 stroke-[1.5]" />}
@@ -145,31 +150,31 @@ export default function Hero({ content, items = [] }) {
       <div className="relative z-20 max-w-[1440px] w-full mx-auto px-6 md:px-12 pb-14 space-y-4">
         
         {/* Minimalist Metadata Line */}
-        <div className="flex flex-wrap items-center gap-3 text-xs font-mono text-[#52525B]">
-          <span className="px-2.5 py-0.5 rounded-full border border-black/10 bg-white/70 backdrop-blur-md text-[#09090B] font-semibold text-[10px] tracking-wider uppercase">
+        <div className="flex flex-wrap items-center gap-3 text-xs font-mono text-zinc-300">
+          <span className="px-2.5 py-0.5 rounded-full border border-white/20 bg-black/60 backdrop-blur-md text-white font-bold text-[10px] tracking-wider uppercase shadow-sm">
             {itemType}
           </span>
-          <span className="text-[#09090B] font-medium">{releaseYear}</span>
+          <span className="text-white font-semibold">{releaseYear}</span>
           <span>·</span>
           {activeContent.vote_average > 0 && (
             <>
-              <span className="flex items-center gap-1 text-[#09090B]">
+              <span className="flex items-center gap-1 text-white font-bold">
                 <Star className="w-3 h-3 text-[#2563EB] fill-[#2563EB] stroke-[1.5]" />
-                <span className="font-bold">{activeContent.vote_average.toFixed(1)}</span>
+                <span>{activeContent.vote_average.toFixed(1)}</span>
               </span>
               <span>·</span>
             </>
           )}
-          <span className="text-[#52525B] text-[11px]">4K ULTRA HD</span>
+          <span className="text-zinc-300 text-[11px] font-semibold">4K ULTRA HD</span>
         </div>
 
         {/* Clean Typography Title */}
-        <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-[#09090B] font-['Outfit'] max-w-3xl leading-[1.05]">
+        <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white font-['Outfit'] max-w-3xl leading-[1.05] drop-shadow-lg">
           {activeContent.title || activeContent.name}
         </h1>
 
         {/* Overview Synopsis */}
-        <p className="text-[#52525B] text-xs sm:text-sm line-clamp-2 max-w-2xl font-normal leading-relaxed">
+        <p className="text-zinc-200 text-xs sm:text-sm line-clamp-2 max-w-2xl font-normal leading-relaxed drop-shadow-md">
           {activeContent.overview || "Stream this title now in high definition."}
         </p>
 
@@ -179,7 +184,7 @@ export default function Hero({ content, items = [] }) {
             {/* Primary Watch Button (Cobalt Blue #2563EB) */}
             <button
               onClick={handlePlayNow}
-              className="px-6 py-2.5 rounded-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-xs tracking-wider uppercase flex items-center gap-2 transition-all cursor-pointer shadow-md hover:shadow-lg"
+              className="px-7 py-2.5 rounded-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-xs tracking-wider uppercase flex items-center gap-2 transition-all cursor-pointer shadow-xl hover:scale-105"
             >
               <Play className="w-3.5 h-3.5 stroke-[2] fill-white text-white" />
               <span>Watch Now</span>
@@ -188,19 +193,19 @@ export default function Hero({ content, items = [] }) {
             {/* Quick Preview Button */}
             <button
               onClick={() => setQuickViewOpen(true)}
-              className="px-4 py-2.5 rounded-full bg-white/80 hover:bg-white text-[#09090B] font-medium text-xs tracking-wider uppercase border border-black/10 backdrop-blur-md flex items-center gap-2 transition cursor-pointer shadow-sm hover:shadow"
+              className="px-4 py-2.5 rounded-full bg-black/60 hover:bg-black text-white font-medium text-xs tracking-wider uppercase border border-white/20 backdrop-blur-md flex items-center gap-2 transition cursor-pointer shadow-md hover:scale-105"
             >
-              <Info className="w-3.5 h-3.5 stroke-[1.5] text-[#52525B]" />
+              <Info className="w-3.5 h-3.5 stroke-[1.5] text-zinc-300" />
               <span>Preview</span>
             </button>
 
             {/* Bookmark Toggle */}
             <button
               onClick={handleToggleBookmark}
-              className={`p-2.5 rounded-full border transition cursor-pointer backdrop-blur-md shadow-sm ${
+              className={`p-2.5 rounded-full border transition cursor-pointer backdrop-blur-md shadow-md hover:scale-105 ${
                 isSaved 
                   ? 'bg-[#2563EB] border-[#2563EB] text-white' 
-                  : 'bg-white/80 border-black/10 text-[#52525B] hover:text-[#09090B] hover:bg-white'
+                  : 'bg-black/60 border-white/20 text-zinc-300 hover:text-white hover:bg-black'
               }`}
               title={isSaved ? "Saved in My List" : "Save to My List"}
             >
@@ -208,12 +213,12 @@ export default function Hero({ content, items = [] }) {
             </button>
           </div>
 
-          {/* Minimalist Carousel Slide Indicators */}
+          {/* Carousel Slide Indicators */}
           {slides.length > 1 && (
             <div className="hidden sm:flex items-center gap-2">
               <button 
                 onClick={prevSlide} 
-                className="w-7 h-7 rounded-full bg-white/80 hover:bg-white border border-black/10 text-[#52525B] hover:text-[#09090B] flex items-center justify-center transition cursor-pointer shadow-sm"
+                className="w-8 h-8 rounded-full bg-black/60 hover:bg-black border border-white/20 text-white flex items-center justify-center transition cursor-pointer shadow-md hover:scale-105"
                 aria-label="Previous slide"
               >
                 <ChevronLeft className="w-3.5 h-3.5 stroke-[1.5]" />
@@ -227,7 +232,7 @@ export default function Hero({ content, items = [] }) {
                     className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
                       currentIndex === idx 
                         ? 'w-6 bg-[#2563EB]' 
-                        : 'w-1.5 bg-black/20 hover:bg-black/40'
+                        : 'w-1.5 bg-white/40 hover:bg-white/70'
                     }`}
                   />
                 ))}
@@ -235,7 +240,7 @@ export default function Hero({ content, items = [] }) {
 
               <button 
                 onClick={nextSlide} 
-                className="w-7 h-7 rounded-full bg-white/80 hover:bg-white border border-black/10 text-[#52525B] hover:text-[#09090B] flex items-center justify-center transition cursor-pointer shadow-sm"
+                className="w-8 h-8 rounded-full bg-black/60 hover:bg-black border border-white/20 text-white flex items-center justify-center transition cursor-pointer shadow-md hover:scale-105"
                 aria-label="Next slide"
               >
                 <ChevronRight className="w-3.5 h-3.5 stroke-[1.5]" />
