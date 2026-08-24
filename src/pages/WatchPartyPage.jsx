@@ -104,11 +104,15 @@ export default function WatchPartyPage() {
         onToggleChat={() => setChatOpen(!chatOpen)}
       />
 
-      {/* Main Body: Video Player + Chat Drawer */}
-      <div className="flex-1 flex overflow-hidden relative">
+      {/* Main Body: Responsive Video Player + Chat Drawer */}
+      <div className="flex-1 flex flex-col md:flex-row overflow-hidden relative min-h-0">
         
-        {/* Left: Synchronized Video Embed Frame */}
-        <div className="flex-1 bg-black relative flex items-center justify-center overflow-hidden">
+        {/* Synchronized Video Embed Frame */}
+        <div className={`bg-black relative flex items-center justify-center overflow-hidden transition-all duration-300 ${
+          chatOpen 
+            ? 'h-[32vh] xs:h-[36vh] sm:h-[40vh] md:h-full md:flex-1 flex-shrink-0' 
+            : 'h-full flex-1'
+        }`}>
           <iframe 
             src={embedUrl}
             key={`${selectedPlayerId}-${appliedTime}`}
@@ -119,20 +123,22 @@ export default function WatchPartyPage() {
           />
         </div>
 
-        {/* Right: Minimalist Monochrome Live Room Sidebar */}
+        {/* Minimalist Monochrome Live Room Chat Drawer */}
         {chatOpen && (
-          <PartyChatDrawer
-            username={username}
-            peersList={peersList}
-            connectionStatus={connectionStatus}
-            hostTime={hostTime}
-            currentPlaybackSecs={currentPlaybackSecs}
-            onBroadcastSync={broadcastSync}
-            onSyncToHost={syncToHost}
-            onTriggerReaction={triggerReaction}
-            messages={messages}
-            onSendMessage={sendMessage}
-          />
+          <div className="flex-1 md:flex-none md:h-full min-h-0 overflow-hidden flex flex-col">
+            <PartyChatDrawer
+              username={username}
+              peersList={peersList}
+              connectionStatus={connectionStatus}
+              hostTime={hostTime}
+              currentPlaybackSecs={currentPlaybackSecs}
+              onBroadcastSync={broadcastSync}
+              onSyncToHost={syncToHost}
+              onTriggerReaction={triggerReaction}
+              messages={messages}
+              onSendMessage={sendMessage}
+            />
+          </div>
         )}
 
       </div>
