@@ -9,18 +9,19 @@ export default function WatchPage() {
   const navigate = useNavigate();
 
   const startParam = searchParams.get('startAt') || searchParams.get('t');
-  const currentSeason = season || 1;
-  const currentEpisode = episode || 1;
+  const currentSeason = season ? parseInt(season) : 1;
+  const currentEpisode = episode ? parseInt(episode) : 1;
 
   const [mediaTitle, setMediaTitle] = useState('');
   const [selectedPlayerId, setSelectedPlayerId] = useState(CONFIG.players[0].id);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [hudVisible, setHudVisible] = useState(true);
   
   const menuRef = useRef(null);
+  const hudTimeoutRef = useRef(null);
 
   const activePlayer = CONFIG.players.find(p => p.id === selectedPlayerId) || CONFIG.players[0];
   
-  // Parse explicit seek / skip timestamp from URL params
   const currentSeconds = startParam 
     ? (startParam.endsWith('m') ? parseInt(startParam) * 60 : parseInt(startParam)) 
     : 0;
@@ -29,7 +30,23 @@ export default function WatchPage() {
     ? activePlayer.getMovieUrl(id, currentSeconds)
     : activePlayer.getTvUrl(id, currentSeason, currentEpisode, currentSeconds);
 
-  // Close mobile dropdown when clicking outside
+  // Auto hide HUD after 4s
+  useEffect(() => {
+    const handleMouseMove = () => {
+      setHudVisible(true);
+      if (hudTimeoutRef.current) clearTimeout(hudTimeoutRef.current);
+      hudTimeoutRef.current = setTimeout(() => {
+        if (!mobileMenuOpen) setHudVisible(false);
+      }, 4000);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      if (hudTimeoutRef.current) clearTimeout(hudTimeoutRef.current);
+    };
+  }, [mobileMenuOpen]);
+
   useEffect(() => {
     function handleClickOutside(event) {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -44,12 +61,12 @@ export default function WatchPage() {
     };
   }, []);
 
-  // 1. Listen for real-time postMessages from the player iframe (e.g. precise timestamp tracking)
+  // Listen for real-time postMessages
   useEffect(() => {
     function handlePlayerMessage(event) {
       if (event.data && (event.data.type === 'MEDIA_PROGRESS' || event.data.currentTime !== undefined)) {
         const preciseCurrentSecs = Math.floor(event.data.currentTime);
-        const preciseTotalDuration = Math.floor(event.data.duration || 7200);
+        const preciseTotalDuration = Math.floor(event.data.duration || (type === 'movie' ? 7200 : 2700));
 
         try {
           const existingHistory = JSON.parse(localStorage.getItem('warayflix_watch_history') || '[]');
@@ -62,16 +79,15 @@ export default function WatchPage() {
             localStorage.setItem('warayflix_watch_history', JSON.stringify(existingHistory));
           }
         } catch (e) {
-          console.error('Failed to update live player progress frame:', e);
+          console.error('Failed to update live player progress:', e);
         }
       }
     }
 
     window.addEventListener('message', handlePlayerMessage);
     return () => window.removeEventListener('message', handlePlayerMessage);
-  }, [id]);
+  }, [id, type]);
 
-  // 2. Fetch media details and set initial watch state on mount / skip change
   useEffect(() => {
     let isMounted = true;
 
@@ -120,13 +136,13 @@ export default function WatchPage() {
   }, [type, id, currentSeason, currentEpisode, currentSeconds]);
 
   return (
-    <div className="fixed inset-0 z-50 bg-black flex flex-col font-sans overflow-hidden">
+    <div className="fixed inset-0 z-50 bg-black flex flex-col font-sans overflow-hidden select-none">
       
-      {/* Fullscreen Video Player */}
+      {/* Fullscreen Video Embed Layer */}
       <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
         <iframe 
           src={embedUrl}
-          key={selectedPlayerId}
+          key={`${selectedPlayerId}-${currentSeason}-${currentEpisode}`}
           title={`${activePlayer.name} Video Player`}
           className="w-full h-full border-0 pointer-events-auto"
           allowFullScreen
@@ -134,44 +150,49 @@ export default function WatchPage() {
         />
       </div>
 
-      {/* Top Overlay Bar Container */}
-      <div className="absolute top-4 sm:top-6 left-4 sm:left-6 right-4 sm:right-6 z-30 flex items-center justify-between gap-2 sm:gap-4 pointer-events-none">
+      {/* Top Floating HUD Overlay */}
+      <div className={`absolute top-4 sm:top-6 left-4 sm:left-6 right-4 sm:right-6 z-30 flex items-center justify-between gap-3 pointer-events-none transition-all duration-300 ${
+        hudVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
+      }`}>
         
-        {/* Left: Back Button & Title */}
-        <div className="flex items-center gap-2 sm:gap-4 pointer-events-auto max-w-[55%] sm:max-w-[60%]">
+        {/* Left: Back Button & Title Badge */}
+        <div className="flex items-center gap-2.5 pointer-events-auto max-w-[60%]">
           <button 
             onClick={() => navigate(-1)}
-            className="flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-full bg-[#1D2128]/90 hover:bg-[#1D2128] text-xs font-sans font-medium tracking-wide text-zinc-300 hover:text-white border border-white/10 backdrop-blur-md transition-all cursor-pointer shadow-xl flex-shrink-0"
+            className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0E1017]/90 hover:bg-[#161922] text-xs font-mono text-zinc-300 hover:text-white border border-white/10 backdrop-blur-xl transition cursor-pointer shadow-lg flex-shrink-0"
           >
-            <ArrowLeft className="w-3.5 h-3.5" />
+            <ArrowLeft className="w-3.5 h-3.5 stroke-[1.5]" />
             <span className="hidden xs:inline">BACK</span>
           </button>
+          
           {mediaTitle && (
-            <span className="truncate text-[11px] sm:text-xs font-sans font-semibold tracking-wide text-zinc-300 bg-[#1D2128]/80 px-3 sm:px-4 py-2 rounded-full backdrop-blur-md border border-white/10 shadow-xl">
-              {mediaTitle} {type === 'tv' && `— S${currentSeason}E${currentEpisode}`}
-            </span>
+            <div className="truncate text-xs font-medium text-zinc-200 bg-[#0E1017]/90 px-3.5 py-1.5 rounded-full backdrop-blur-xl border border-white/10 shadow-lg flex items-center gap-2">
+              <span className="truncate">{mediaTitle}</span>
+              {type === 'tv' && (
+                <span className="text-zinc-400 font-mono text-[10px] flex-shrink-0">
+                  S{currentSeason}:E{currentEpisode}
+                </span>
+              )}
+            </div>
           )}
         </div>
 
-        {/* Right: Responsive Server Switcher */}
+        {/* Right: Server Switcher */}
         <div className="pointer-events-auto relative" ref={menuRef}>
           
-          {/* MOBILE TOGGLE BUTTON (< md screens) */}
+          {/* Mobile Server Toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden flex items-center gap-2 bg-[#1D2128]/95 px-3.5 py-2 rounded-full backdrop-blur-md border border-white/10 text-white shadow-xl cursor-pointer text-xs font-semibold"
+            className="md:hidden flex items-center gap-2 bg-[#0E1017]/95 px-3 py-1.5 rounded-full backdrop-blur-xl border border-white/10 text-zinc-200 shadow-lg cursor-pointer text-xs"
           >
-            <Server className="w-3.5 h-3.5 text-white" />
+            <Server className="w-3.5 h-3.5 stroke-[1.5] text-zinc-400" />
             <span>{activePlayer.name}</span>
-            <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${mobileMenuOpen ? 'rotate-180' : ''}`} />
+            <ChevronDown className={`w-3.5 h-3.5 stroke-[1.5] transition-transform ${mobileMenuOpen ? 'rotate-180' : ''}`} />
           </button>
 
-          {/* MOBILE DROPDOWN MENU */}
+          {/* Mobile Server Dropdown */}
           {mobileMenuOpen && (
-            <div className="md:hidden absolute right-0 mt-2 w-40 bg-[#1D2128] border border-white/10 rounded-2xl shadow-2xl p-1.5 backdrop-blur-2xl z-50 flex flex-col gap-1">
-              <div className="px-3 py-1 text-[10px] font-mono text-zinc-400 border-b border-white/5 mb-0.5">
-                SELECT SERVER
-              </div>
+            <div className="md:hidden absolute right-0 mt-2 w-40 bg-[#0E1017] border border-white/10 rounded-xl shadow-2xl p-1 backdrop-blur-2xl z-50 flex flex-col gap-0.5">
               {CONFIG.players.map((player) => {
                 const isSelected = player.id === selectedPlayerId;
                 return (
@@ -181,10 +202,10 @@ export default function WatchPage() {
                       setSelectedPlayerId(player.id);
                       setMobileMenuOpen(false);
                     }}
-                    className={`w-full text-left px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                    className={`w-full text-left px-3 py-1.5 rounded-lg text-xs transition cursor-pointer ${
                       isSelected 
-                        ? 'bg-white text-black shadow-md' 
-                        : 'text-zinc-300 hover:text-white hover:bg-white/5'
+                        ? 'bg-white text-black font-semibold' 
+                        : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
                     }`}
                   >
                     {player.name}
@@ -194,10 +215,10 @@ export default function WatchPage() {
             </div>
           )}
 
-          {/* DESKTOP PILL BAR (>= md screens) */}
-          <div className="hidden md:flex items-center gap-2 bg-[#1D2128]/90 p-1.5 rounded-full backdrop-blur-md border border-white/10 shadow-xl">
-            <div className="flex items-center gap-1.5 px-3 text-zinc-400 text-xs font-sans font-medium tracking-wide">
-              <Server className="w-3.5 h-3.5 text-white" />
+          {/* Desktop Server Pill Bar */}
+          <div className="hidden md:flex items-center gap-1.5 bg-[#0E1017]/90 p-1 rounded-full backdrop-blur-xl border border-white/10 shadow-lg">
+            <div className="flex items-center gap-1.5 px-2.5 text-zinc-500 text-xs font-mono">
+              <Server className="w-3 h-3 stroke-[1.5] text-zinc-400" />
               <span>Server:</span>
             </div>
             <div className="flex items-center gap-1">
@@ -207,10 +228,10 @@ export default function WatchPage() {
                   <button
                     key={player.id}
                     onClick={() => setSelectedPlayerId(player.id)}
-                    className={`px-4 py-1.5 rounded-full text-xs font-sans font-semibold tracking-wide transition-all cursor-pointer ${
+                    className={`px-3 py-1 rounded-full text-xs font-medium transition cursor-pointer ${
                       isSelected 
-                        ? 'bg-white text-black shadow-[0_0_12px_rgba(255,255,255,0.3)]' 
-                        : 'text-zinc-400 hover:text-white hover:bg-white/5'
+                        ? 'bg-white text-black font-semibold' 
+                        : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
                     }`}
                   >
                     {player.name}

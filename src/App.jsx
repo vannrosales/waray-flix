@@ -14,9 +14,9 @@ import AnimePage from './pages/AnimePage';
 
 function Layout() {
   return (
-    <div className="min-h-screen bg-[#09090b] text-[#F3F4F4] font-sans selection:bg-[#F3F4F4] selection:text-[#2C2C2C]">
+    <div className="min-h-screen bg-[#090A0F] text-[#EDEDED] font-sans selection:bg-white selection:text-black flex flex-col justify-between">
       <Navbar />
-      <main>
+      <main className="flex-grow">
         <Outlet />
       </main>
       <Footer />
@@ -27,9 +27,9 @@ function Layout() {
 export default function App() {
   return (
     <BrowserRouter>
-    <ScrollToTop />
+      <ScrollToTop />
       <Routes>
-        {/* Pages containing regular Navbar and Footer layout */}
+        {/* Main Application Layout with Floating Header & Footer */}
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
           <Route path="/movies" element={<Movies />} />
@@ -38,9 +38,10 @@ export default function App() {
           <Route path="/search" element={<SearchPage />} />
           <Route path="/network/:networkName/:id" element={<NetworkHubPage />} />
           <Route path="/category/anime" element={<AnimePage />} />
+          <Route path="/anime" element={<AnimePage />} />
         </Route>
 
-        {/* Fullscreen clean layout for the dedicated iframe Watch Player */}
+        {/* Dedicated Immersive Fullscreen Watch Player */}
         <Route path="/watch/:type/:id" element={<WatchPage />} />
         <Route path="/watch/:type/:id/:season/:episode" element={<WatchPage />} />
       </Routes>

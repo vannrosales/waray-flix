@@ -29,7 +29,6 @@ export default function Home() {
 
   const [heroContent, setHeroContent] = useState(null);
   const [selectedNetwork, setSelectedNetwork] = useState(null);
-  
   const [continueWatchingList, setContinueWatchingList] = useState([]);
   
   useEffect(() => {
@@ -52,10 +51,9 @@ export default function Home() {
   };
 
   useEffect(() => {
-    async function load() {
+    async function loadAllContent() {
       try {
         if (!selectedNetwork) {
-          // Fetch all rows concurrently for maximum performance
           const [
             movies, 
             shows, 
@@ -76,35 +74,44 @@ export default function Home() {
             fetchTop10ShowsToday()
           ]);
 
-          setTrendingMovies(movies);
-          setPopularShows(shows);
-          setNowPlayingMovies(nowPlaying);
-          setUpcomingMovies(upcoming);
-          setTopRatedMovies(topRated);
-          setAiringTodayShows(airingToday);
-          setTop10Movies(top10Mov);
-          setTop10Shows(top10Shw);
+          setTrendingMovies(movies || []);
+          setPopularShows(shows || []);
+          setNowPlayingMovies(nowPlaying || []);
+          setUpcomingMovies(upcoming || []);
+          setTopRatedMovies(topRated || []);
+          setAiringTodayShows(airingToday || []);
+          setTop10Movies(top10Mov || []);
+          setTop10Shows(top10Shw || []);
 
-          if (movies.length > 0) setHeroContent(movies[0]);
+          if (movies && movies.length > 0) {
+            setHeroContent(movies[0]);
+          }
         } else {
           const results = selectedNetwork.type === 'provider'
             ? await fetchMediaByProvider(selectedNetwork.code, 'movie')
             : await fetchMediaByCompany(selectedNetwork.code);
           
-          setTrendingMovies(results);
-          setPopularShows(results);
-          if (results.length > 0) setHeroContent(results[0]);
+          const list = results || [];
+          setTrendingMovies(list);
+          setPopularShows(list);
+          if (list.length > 0) setHeroContent(list[0]);
         }
       } catch (err) {
-        console.error(err);
+        console.error("Home loading error:", err);
       }
     }
-    load();
+
+    loadAllContent();
   }, [selectedNetwork]);
 
   return (
-    <div className="min-h-screen bg-[#0B0D10] text-[#F3F4F4]">
-      <Hero content={heroContent} />
+    <div className="min-h-screen bg-[#090A0F] text-[#EDEDED] pb-16">
+      
+      {/* Featured Dynamic Carousel Hero */}
+      <Hero 
+        content={heroContent} 
+        items={trendingMovies.slice(0, 5)} 
+      />
       
       {/* Network / Studio Selector Pill Hub */}
       <NetworkSelector 
@@ -112,7 +119,9 @@ export default function Home() {
         onSelect={(net) => setSelectedNetwork(net)} 
       />
 
-      <div className="space-y-4 pb-12">
+      {/* Main Content Rows */}
+      <div className="space-y-2">
+        {/* Continue Watching Row */}
         {continueWatchingList.length > 0 && !selectedNetwork && (
           <ContinueWatchingRow 
             items={continueWatchingList} 
@@ -120,18 +129,68 @@ export default function Home() {
           />
         )}
 
-        {/* My Saved List Row */}
+        {/* My Saved Watchlist */}
         {!selectedNetwork && <MyListRow />}
 
-        <MediaRow title="Top 10 Movies Today" items={top10Movies} type="movie" />
-        <MediaRow title="Top 10 Series Today" items={top10Shows} type="tv" />
-        <MediaRow title="Trending Movies Today" items={trendingMovies} type="movie" />
-        <MediaRow title="Popular TV Shows" items={popularShows} type="tv" />
-        <MediaRow title="Now Playing in Theaters" items={nowPlayingMovies} type="movie" />
-        <MediaRow title="Upcoming Releases" items={upcomingMovies} type="movie" />
-        <MediaRow title="Top Rated Masterpieces" items={topRatedMovies} type="movie" />
-        <MediaRow title="Airing Today Shows" items={airingTodayShows} type="tv" />
+        {/* Top 10 Today Rows */}
+        <MediaRow 
+          title="Top 10 Movies Today" 
+          subtitle="The most streamed feature films today"
+          items={top10Movies} 
+          type="movie" 
+        />
+
+        <MediaRow 
+          title="Top 10 Series Today" 
+          subtitle="Top trending television shows & seasons"
+          items={top10Shows} 
+          type="tv" 
+        />
+
+        {/* Catalog Categories */}
+        <MediaRow 
+          title="Trending Movies" 
+          subtitle="Global audience picks this week"
+          items={trendingMovies} 
+          type="movie" 
+        />
+
+        <MediaRow 
+          title="Popular Series" 
+          subtitle="Critically acclaimed television shows"
+          items={popularShows} 
+          type="tv" 
+        />
+
+        <MediaRow 
+          title="In Theaters" 
+          subtitle="Current theatrical releases"
+          items={nowPlayingMovies} 
+          type="movie" 
+        />
+
+        <MediaRow 
+          title="Upcoming Releases" 
+          subtitle="Anticipated films coming soon"
+          items={upcomingMovies} 
+          type="movie" 
+        />
+
+        <MediaRow 
+          title="Top Rated Classics" 
+          subtitle="All-time highest rated films"
+          items={topRatedMovies} 
+          type="movie" 
+        />
+
+        <MediaRow 
+          title="Airing Today" 
+          subtitle="New episodes broadcasting today"
+          items={airingTodayShows} 
+          type="tv" 
+        />
       </div>
+
     </div>
   );
 }

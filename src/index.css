@@ -1,19 +1,79 @@
 @import "tailwindcss";
 
 @layer base {
+  :root {
+    --bg-main: #090A0F;
+    --bg-surface: #11131A;
+    --bg-elevated: #181B24;
+    --border-subtle: rgba(255, 255, 255, 0.06);
+    --border-hover: rgba(255, 255, 255, 0.15);
+  }
+
   body {
-    background-color: #0B0D10;
-    color: #F3F4F4;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: #090A0F;
+    color: #EDEDED;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    overflow-x: hidden;
+    letter-spacing: -0.01em;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Outfit', sans-serif;
     letter-spacing: -0.03em;
+    font-weight: 700;
+  }
+
+  .font-mono {
+    font-family: 'JetBrains Mono', monospace;
   }
 }
 
-/* Custom Hide Scrollbar for Carousels */
+/* Minimalist Frosted Glass & Card Panels */
+.glass-nav {
+  background: rgba(9, 10, 15, 0.82);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.glass-modal {
+  background: rgba(14, 16, 23, 0.94);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.minimal-card {
+  background: #11131A;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.minimal-card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: #151821;
+}
+
+/* Minimalist Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #090A0F;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #232733;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #363B4D;
+}
+
+/* Hide scrollbar for carousels */
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
@@ -22,25 +82,39 @@
   scrollbar-width: none;
 }
 
-::selection {
-  background-color: #8B1E2D;
-  color: #ffffff;
+/* Performance Optimization: content-visibility for offscreen rows */
+.content-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 320px;
 }
 
+/* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from { opacity: 0; transform: scale(0.99); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-slide-up {
-  animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Minimalist Skeleton */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer-skeleton {
+  background: linear-gradient(90deg, #11131A 25%, #191D27 50%, #11131A 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s infinite;
 }

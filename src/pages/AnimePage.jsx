@@ -1,37 +1,60 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CONFIG } from '../config/siteConfig';
-import { IMAGE_BASE_URL } from '../services/tmdb';
+import { getImageUrl } from '../services/tmdb';
 import Hero from '../components/Hero';
-import { Star, Play, Film, ChevronDown } from 'lucide-react';
+import QuickViewModal from '../components/QuickViewModal';
+import { Star, Sparkles, ChevronDown, SlidersHorizontal, Film } from 'lucide-react';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 
 const BASE_URL = 'https://api.themoviedb.org/3';
 const API_KEY = CONFIG.tmdbApiKey;
 
+const ANIME_GENRES = [
+  { id: 'all', name: 'All' },
+  { id: 10759, name: 'Action & Shonen' },
+  { id: 10765, name: 'Fantasy & Isekai' },
+  { id: 35, name: 'Comedy' },
+  { id: 18, name: 'Drama' },
+  { id: 9648, name: 'Mystery' },
+];
+
 export default function AnimePage() {
+  useDocumentTitle('Anime — WarayFlix');
   const navigate = useNavigate();
   const [animeList, setAnimeList] = useState([]);
   const [heroContent, setHeroContent] = useState(null);
+  const [activeGenre, setActiveGenre] = useState('all');
+  const [sortBy, setSortBy] = useState('popularity.desc');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
-
-  useDocumentTitle('WarayFlix — Anime');
+  const [quickMedia, setQuickMedia] = useState(null);
 
   useEffect(() => {
-    async function fetchInitialAnime() {
+    async function fetchAnime() {
       try {
         setLoading(true);
-        const res = await fetch(`${BASE_URL}/discover/tv?api_key=${API_KEY}&with_genres=16&sort_by=popularity.desc&page=1`);
+        const genreQuery = activeGenre === 'all' ? '&with_genres=16' : `&with_genres=16,${activeGenre}`;
+        const res = await fetch(`${BASE_URL}/discover/tv?api_key=${API_KEY}&with_keywords=210024|287501|284000${genreQuery}&sort_by=${sortBy}&page=1`);
         const data = await res.json();
         const results = data.results || [];
         
         setTotalPages(data.total_pages || 1);
         if (results.length > 0) {
           setHeroContent(results[0]);
-          setAnimeList(results.slice(1));
+          setAnimeList(results);
+        } else {
+          const fallbackRes = await fetch(`${BASE_URL}/discover/tv?api_key=${API_KEY}&with_genres=16${activeGenre !== 'all' ? `,${activeGenre}` : ''}&with_original_language=ja&sort_by=${sortBy}&page=1`);
+          const fallbackData = await fallbackRes.json();
+          const fallbackResults = fallbackData.results || [];
+          if (fallbackResults.length > 0) {
+            setHeroContent(fallbackResults[0]);
+            setAnimeList(fallbackResults);
+          } else {
+            setAnimeList([]);
+          }
         }
       } catch (err) {
         console.error("Error fetching anime:", err);
@@ -39,15 +62,16 @@ export default function AnimePage() {
         setLoading(false);
       }
     }
-    fetchInitialAnime();
-  }, []);
+    fetchAnime();
+  }, [activeGenre, sortBy]);
 
   const loadMoreAnime = async () => {
     if (page >= totalPages) return;
     try {
       setLoadingMore(true);
       const nextPage = page + 1;
-      const res = await fetch(`${BASE_URL}/discover/tv?api_key=${API_KEY}&with_genres=16&sort_by=popularity.desc&page=${nextPage}`);
+      const genreQuery = activeGenre === 'all' ? '&with_genres=16' : `&with_genres=16,${activeGenre}`;
+      const res = await fetch(`${BASE_URL}/discover/tv?api_key=${API_KEY}&with_original_language=ja${genreQuery}&sort_by=${sortBy}&page=${nextPage}`);
       const data = await res.json();
       
       setAnimeList((prev) => [...prev, ...(data.results || [])]);
@@ -59,100 +83,142 @@ export default function AnimePage() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#0B0D10] flex items-center justify-center text-zinc-600 font-mono text-xs">
-        INITIALIZING_ANIME_NODE_
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-[#0B0D10] text-white selection:bg-white selection:text-black">
+    <div className="min-h-screen bg-[#090A0F] text-[#EDEDED] pb-24">
       
-      {/* Cinematic Hero Section */}
-      {heroContent && <Hero content={heroContent} />}
+      {/* Hero Showcase */}
+      {heroContent && <Hero content={heroContent} items={animeList.slice(0, 5)} />}
 
       {/* Main Grid Section */}
-      <div className="max-w-[1400px] mx-auto px-6 md:px-16 py-16 space-y-12">
+      <div className="max-w-[1440px] mx-auto px-6 md:px-12 py-10 space-y-6">
         
-        <div className="flex items-center justify-between border-b border-white/5 pb-4">
-          <div className="flex items-center gap-2 text-xs font-mono text-zinc-400 uppercase tracking-widest">
-            <Film className="w-4 h-4 text-white" />
-            <span>Curated Animation Stream</span>
+        {/* Filter Controls Bar */}
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-[#11131A] border border-white/[0.06] space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
+              <Sparkles className="w-3.5 h-3.5 stroke-[1.5]" />
+              <span>Anime Archive</span>
+            </div>
+
+            {/* Sort Selector */}
+            <div className="flex items-center gap-2 text-xs font-mono">
+              <SlidersHorizontal className="w-3 h-3 stroke-[1.5] text-zinc-500" />
+              <span className="text-zinc-500 hidden sm:inline">Sort:</span>
+              <select
+                value={sortBy}
+                onChange={(e) => { setSortBy(e.target.value); setPage(1); }}
+                className="bg-[#090A0F] border border-white/10 text-zinc-300 text-xs py-1 px-2.5 rounded-lg focus:outline-none transition cursor-pointer"
+              >
+                <option value="popularity.desc" className="bg-[#090A0F]">Most Popular</option>
+                <option value="vote_average.desc&vote_count.gte=100" className="bg-[#090A0F]">Top Rated</option>
+                <option value="first_air_date.desc" className="bg-[#090A0F]">Newest Airing</option>
+              </select>
+            </div>
           </div>
-          <span className="text-xs font-mono text-zinc-600">GENRE // 16</span>
+
+          {/* Genre Pills */}
+          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none pb-1">
+            {ANIME_GENRES.map((g) => {
+              const isSelected = activeGenre === g.id;
+              return (
+                <button
+                  key={g.id}
+                  onClick={() => { setActiveGenre(g.id); setPage(1); }}
+                  className={`px-3 py-1 rounded-full text-xs font-medium transition-all flex-shrink-0 cursor-pointer ${
+                    isSelected 
+                      ? 'bg-white text-black font-semibold' 
+                      : 'bg-white/[0.04] text-zinc-400 hover:text-white hover:bg-white/[0.08]'
+                  }`}
+                >
+                  {g.name}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Anime Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-          {animeList.map((item) => {
-            const poster = item.poster_path ? `${IMAGE_BASE_URL}${item.poster_path}` : null;
-            const year = item.first_air_date?.substring(0, 4) || '2026';
-            
-            return (
-              <div
-                key={item.id}
-                onClick={() => navigate(`/details/tv/${item.id}`)}
-                className="group relative bg-[#1D2128]/20 hover:bg-[#1D2128]/60 rounded-2xl p-3 border border-white/5 cursor-pointer transition-all duration-300 space-y-3"
-              >
-                {/* Poster Container */}
-                <div className="aspect-[2/3] w-full rounded-xl bg-[#0B0D10] overflow-hidden relative">
-                  {poster ? (
-                    <img 
-                      src={poster} 
-                      alt={item.name} 
-                      className="w-full h-full object-cover group-hover:scale-105 transition duration-500" 
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-zinc-700 text-xs font-mono">
-                      NO_POSTER
-                    </div>
-                  )}
+        {loading ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {[...Array(15)].map((_, i) => (
+              <div key={i} className="aspect-[2/3] rounded-xl shimmer-skeleton" />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5 sm:gap-4">
+            {animeList.map((item) => {
+              const poster = getImageUrl(item.poster_path, 'posterSmall') || getImageUrl(item.backdrop_path, 'backdropSmall');
+              const year = item.first_air_date?.substring(0, 4) || '2026';
+              
+              return (
+                <div
+                  key={item.id}
+                  onClick={() => navigate(`/details/tv/${item.id}`)}
+                  className="cursor-pointer group/item flex flex-col gap-2 flex-shrink-0 transition-all duration-200"
+                >
+                  <div className="relative aspect-[2/3] w-full rounded-xl overflow-hidden bg-[#11131A] border border-white/[0.06] group-hover/item:border-white/20 transition-all duration-200 group-hover/item:scale-[1.02] shadow-sm">
+                    {poster ? (
+                      <img 
+                        src={poster} 
+                        alt={item.name} 
+                        loading="lazy"
+                        className="absolute inset-0 w-full h-full object-cover transition duration-300 group-hover/item:brightness-105" 
+                      />
+                    ) : (
+                      <div className="absolute inset-0 flex flex-col items-center justify-center p-3 text-center text-zinc-600 bg-[#0E1017]">
+                        <Film className="w-6 h-6 mb-1 opacity-30 stroke-[1.5]" />
+                        <span className="text-[9px] font-mono">{item.name}</span>
+                      </div>
+                    )}
 
-                  {/* Hover Overlay Play Icon */}
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <div className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg transform scale-90 group-hover:scale-100 transition">
-                      <Play className="w-4 h-4 fill-current ml-0.5" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Metadata */}
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between text-[10px] font-mono text-zinc-500">
-                    <span>{year}</span>
                     {item.vote_average > 0 && (
-                      <span className="flex items-center gap-1 text-amber-400 font-bold">
-                        <Star className="w-3 h-3 fill-current" /> {item.vote_average.toFixed(1)}
-                      </span>
+                      <div className="absolute top-2 right-2 bg-black/80 backdrop-blur-md px-2 py-0.5 rounded-md flex items-center gap-1 border border-white/10 z-20">
+                        <Star className="w-2.5 h-2.5 text-zinc-400 stroke-[1.5]" />
+                        <span className="text-[10px] font-mono text-zinc-300">{item.vote_average.toFixed(1)}</span>
+                      </div>
                     )}
                   </div>
-                  <h3 className="text-xs font-medium text-zinc-200 group-hover:text-white transition-colors truncate">
-                    {item.name}
-                  </h3>
-                </div>
-              </div>
-            );
-          })}
-        </div>
 
-        {/* Load More Action Button */}
+                  <div className="space-y-0.5 px-0.5">
+                    <h3 className="text-xs font-semibold text-zinc-200 line-clamp-1 group-hover/item:text-white transition">
+                      {item.name}
+                    </h3>
+                    <div className="flex items-center gap-2 text-[10px] text-zinc-500 font-mono">
+                      <span>{year}</span>
+                      <span>·</span>
+                      <span className="uppercase">Anime</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Load More Button */}
         {page < totalPages && (
-          <div className="flex justify-center pt-8">
+          <div className="flex justify-center pt-6">
             <button
               onClick={loadMoreAnime}
               disabled={loadingMore}
-              className="px-8 py-3 rounded-full bg-[#1D2128]/60 hover:bg-[#1D2128] border border-white/10 hover:border-white/20 text-zinc-300 hover:text-white text-xs font-mono tracking-widest uppercase transition-all duration-300 flex items-center gap-2 cursor-pointer disabled:opacity-50"
+              className="px-6 py-2.5 rounded-full bg-[#11131A] hover:bg-[#161922] border border-white/10 text-zinc-300 hover:text-white text-xs font-mono tracking-wider uppercase transition flex items-center gap-2 cursor-pointer disabled:opacity-50"
             >
-              <span>{loadingMore ? 'LOADING_MORE...' : 'LOAD MORE ANIME'}</span>
-              {!loadingMore && <ChevronDown className="w-3.5 h-3.5" />}
+              <span>{loadingMore ? 'LOADING...' : 'LOAD MORE'}</span>
+              {!loadingMore && <ChevronDown className="w-3.5 h-3.5 stroke-[1.5]" />}
             </button>
           </div>
         )}
 
       </div>
 
+      {quickMedia && (
+        <QuickViewModal
+          media={quickMedia}
+          type="tv"
+          isOpen={Boolean(quickMedia)}
+          onClose={() => setQuickMedia(null)}
+        />
+      )}
     </div>
   );
 }
