@@ -16,6 +16,7 @@ import MediaRow from '../components/MediaRow';
 import NetworkSelector from '../components/NetworkSelector';
 import ContinueWatchingRow from '../components/ContinueWatchingRow';
 import MyListRow from '../components/MyListRow';
+import RecommendedRow from '../components/RecommendedRow';
 
 export default function Home() {
   const [trendingMovies, setTrendingMovies] = useState([]);
@@ -131,6 +132,9 @@ export default function Home() {
 
         {/* My Saved Watchlist */}
         {!selectedNetwork && <MyListRow />}
+
+        {/* Personalized AI Taste Match Recommendations */}
+        {!selectedNetwork && <RecommendedRow />}
 
         {/* Top 10 Today Rows */}
         <MediaRow 
