@@ -41,7 +41,7 @@ export default function DetailPage() {
         const trailer = (videos || []).find(v => v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser'));
         if (trailer) {
           setTrailerKey(trailer.key);
-          setTimeout(() => setShowVideo(true), 1200);
+          setTimeout(() => setShowVideo(true), 800);
         } else {
           setTrailerKey(null);
           setShowVideo(false);
@@ -121,31 +121,31 @@ export default function DetailPage() {
       <div className="fixed top-20 sm:top-24 left-6 z-40">
         <button 
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 hover:bg-white text-xs font-mono text-[#09090B] border border-black/10 backdrop-blur-xl transition cursor-pointer shadow-md"
+          className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/70 hover:bg-black text-xs font-mono text-white border border-white/20 backdrop-blur-xl transition cursor-pointer shadow-lg hover:scale-105"
         >
           <ArrowLeft className="w-3.5 h-3.5 stroke-[1.5]" />
           <span>BACK</span>
         </button>
       </div>
 
-      {/* Hero Visual Area with Trailer / Backdrop */}
-      <div className="relative h-[50vh] sm:h-[60vh] lg:h-[70vh] w-full overflow-hidden flex items-end bg-[#FAFAFA]">
+      {/* Hero Visual Area with Trailer / Backdrop (100% Video Clarity) */}
+      <div className="relative h-[52vh] sm:h-[62vh] lg:h-[72vh] w-full overflow-hidden flex items-end bg-black">
         {backdrop && (
           <img 
             src={backdrop} 
             alt="" 
             fetchPriority="high"
             className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-1000 ${
-              showVideo && trailerKey ? 'opacity-0' : 'opacity-40'
+              showVideo && trailerKey ? 'opacity-0' : 'opacity-90'
             }`}
           />
         )}
 
         {trailerKey && (
           <div className={`absolute inset-0 w-full h-full pointer-events-none overflow-hidden flex items-center justify-center transition-opacity duration-1000 ${
-            showVideo ? 'opacity-70' : 'opacity-0'
+            showVideo ? 'opacity-100' : 'opacity-0'
           }`}>
-            <div className="absolute w-[300%] h-[300%] md:w-[170%] md:h-[170%]">
+            <div className="absolute w-[300%] h-[300%] md:w-[150%] md:h-[150%]">
               <iframe
                 src={`https://www.youtube-nocookie.com/embed/${trailerKey}?autoplay=1&mute=${isMuted ? 1 : 0}&controls=0&loop=1&playlist=${trailerKey}&rel=0&iv_load_policy=3&disablekb=1&modestbranding=1`}
                 title="Detail Trailer"
@@ -156,25 +156,27 @@ export default function DetailPage() {
           </div>
         )}
 
-        <div className="absolute inset-0 bg-gradient-to-t from-[#FAFAFA] via-[#FAFAFA]/75 to-transparent pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#FAFAFA]/95 via-[#FAFAFA]/70 to-transparent pointer-events-none" />
+        {/* Cinema Vignette Overlays (Clear center video, smooth bottom merge) */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/30 pointer-events-none" />
+        <div className="absolute inset-y-0 left-0 w-full md:w-1/2 bg-gradient-to-r from-black/80 via-black/30 to-transparent pointer-events-none" />
+        <div className="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-[#FAFAFA] to-transparent pointer-events-none" />
 
         {/* Sound toggle button */}
         {showVideo && trailerKey && (
-          <div className="absolute bottom-8 right-8 z-30">
+          <div className="absolute bottom-10 right-8 z-30">
             <button
               onClick={() => setIsMuted(!isMuted)}
-              className="w-9 h-9 rounded-full bg-white/90 hover:bg-white text-[#09090B] border border-black/10 backdrop-blur-xl flex items-center justify-center transition cursor-pointer shadow-md"
+              className="w-10 h-10 rounded-full bg-black/70 hover:bg-black text-white border border-white/20 backdrop-blur-xl flex items-center justify-center transition cursor-pointer shadow-xl hover:scale-105"
               title={isMuted ? "Unmute Trailer" : "Mute Trailer"}
             >
-              {isMuted ? <VolumeX className="w-3.5 h-3.5 stroke-[1.5]" /> : <Volume2 className="w-3.5 h-3.5 stroke-[1.5]" />}
+              {isMuted ? <VolumeX className="w-4 h-4 stroke-[1.5]" /> : <Volume2 className="w-4 h-4 stroke-[1.5]" />}
             </button>
           </div>
         )}
       </div>
 
       {/* Main Content Info Container */}
-      <div className="max-w-[1440px] mx-auto px-6 md:px-12 -mt-20 sm:-mt-32 relative z-30 space-y-12">
+      <div className="max-w-[1440px] mx-auto px-6 md:px-12 -mt-20 sm:-mt-28 relative z-30 space-y-12">
         
         {/* Top Info Deck with Floating Poster */}
         <div className="flex flex-col md:flex-row gap-8 items-start">
@@ -212,7 +214,7 @@ export default function DetailPage() {
                     <Clock className="w-3 h-3 stroke-[1.5]" /> {runtime}m
                   </span>
                 )}
-                <span className="text-[#52525B] text-[11px] font-medium">4K ULTRA HD</span>
+                <span className="text-[#52525B] text-[11px] font-semibold">4K ULTRA HD</span>
               </div>
 
               <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-[#09090B] font-['Outfit'] leading-[1.05]">
@@ -223,7 +225,7 @@ export default function DetailPage() {
               {media.genres && media.genres.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 pt-1">
                   {media.genres.map((g) => (
-                    <span key={g.id} className="px-3 py-0.5 rounded-full bg-black/[0.04] border border-black/[0.08] text-[11px] text-[#52525B] font-mono">
+                    <span key={g.id} className="px-3 py-0.5 rounded-full bg-black/[0.04] border border-black/[0.08] text-[11px] text-[#52525B] font-mono font-medium">
                       {g.name}
                     </span>
                   ))}
@@ -251,7 +253,7 @@ export default function DetailPage() {
             <div className="flex flex-wrap items-center gap-3 pt-1">
               <button 
                 onClick={handlePlayClick}
-                className="px-7 py-2.5 rounded-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition cursor-pointer shadow-md hover:shadow-lg"
+                className="px-7 py-2.5 rounded-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition cursor-pointer shadow-md hover:shadow-lg hover:scale-105"
               >
                 <Play className="w-3.5 h-3.5 stroke-[2] fill-white text-white" />
                 <span>{watchProgress && totalSeconds > 0 ? 'Resume Watching' : 'Start Watching'}</span>
