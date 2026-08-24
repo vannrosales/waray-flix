@@ -24,7 +24,6 @@ export default function SurpriseModal({ isOpen, onClose }) {
   const handleRoll = async (mood = selectedMood, type = mediaType) => {
     setIsRolling(true);
     try {
-      // Simulate quick suspense roll
       const data = await fetchRandomMediaByGenre(mood.genres, type);
       setTimeout(() => {
         setPickedMedia(data);
@@ -62,26 +61,26 @@ export default function SurpriseModal({ isOpen, onClose }) {
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-md animate-fade-in select-none"
       onClick={onClose}
     >
       <div 
-        className="relative w-full max-w-xl bg-[#0E1017] border border-white/[0.08] rounded-2xl overflow-hidden shadow-2xl animate-slide-up"
+        className="relative w-full max-w-xl bg-white border border-black/10 rounded-3xl overflow-hidden shadow-2xl animate-slide-up"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Outlined Close */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-40 p-2 rounded-full bg-black/60 hover:bg-black text-zinc-400 hover:text-white border border-white/10 backdrop-blur-md transition cursor-pointer"
+          className="absolute top-4 right-4 z-40 p-2 rounded-full bg-black/[0.04] hover:bg-black/[0.08] text-[#52525B] hover:text-[#09090B] border border-black/10 transition cursor-pointer"
           aria-label="Close"
         >
           <X className="w-4 h-4 stroke-[1.5]" />
         </button>
 
         {/* Modal Header */}
-        <div className="p-5 sm:p-6 border-b border-white/[0.06] bg-[#11131A] space-y-3">
-          <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
-            <Dices className="w-4 h-4 stroke-[1.5]" />
+        <div className="p-5 sm:p-6 border-b border-black/[0.08] bg-zinc-50 space-y-3">
+          <div className="flex items-center gap-2 text-xs font-mono text-[#52525B] font-semibold">
+            <Dices className="w-4 h-4 stroke-[2] text-[#2563EB]" />
             <span>Cinema Roulette & Mood Matcher</span>
           </div>
 
@@ -95,8 +94,8 @@ export default function SurpriseModal({ isOpen, onClose }) {
                   onClick={() => handleSelectMood(mood)}
                   className={`px-3 py-1 rounded-full text-xs font-medium transition cursor-pointer ${
                     isSelected 
-                      ? 'bg-white text-black font-semibold' 
-                      : 'bg-white/[0.04] text-zinc-400 hover:text-white hover:bg-white/[0.08]'
+                      ? 'bg-[#09090B] text-white font-bold shadow-sm' 
+                      : 'bg-white text-[#52525B] hover:text-[#09090B] border border-black/10 hover:bg-zinc-100'
                   }`}
                 >
                   {mood.label}
@@ -106,8 +105,8 @@ export default function SurpriseModal({ isOpen, onClose }) {
           </div>
 
           {/* Movie / TV Toggle */}
-          <div className="flex items-center gap-2 pt-1 text-[11px] font-mono text-zinc-400">
-            <span>Format:</span>
+          <div className="flex items-center gap-2 pt-1 text-[11px] font-mono text-[#52525B]">
+            <span className="font-semibold">Format:</span>
             {['movie', 'tv'].map((t) => (
               <button
                 key={t}
@@ -115,10 +114,10 @@ export default function SurpriseModal({ isOpen, onClose }) {
                   setMediaType(t);
                   handleRoll(selectedMood, t);
                 }}
-                className={`px-2.5 py-0.5 rounded border transition uppercase text-[10px] cursor-pointer ${
+                className={`px-2.5 py-0.5 rounded-full border transition uppercase text-[10px] cursor-pointer ${
                   mediaType === t 
-                    ? 'border-white/30 text-white bg-white/10' 
-                    : 'border-transparent text-zinc-500 hover:text-zinc-300'
+                    ? 'border-[#2563EB] text-[#2563EB] bg-[#2563EB]/10 font-bold' 
+                    : 'border-black/10 text-[#52525B] hover:text-[#09090B]'
                 }`}
               >
                 {t === 'movie' ? 'Film' : 'Series'}
@@ -131,63 +130,63 @@ export default function SurpriseModal({ isOpen, onClose }) {
         <div className="p-5 sm:p-6">
           {isRolling ? (
             <div className="py-16 flex flex-col items-center justify-center text-center space-y-3">
-              <RefreshCw className="w-6 h-6 stroke-[1.5] text-zinc-400 animate-spin" />
-              <p className="text-xs font-mono text-zinc-400">ROLLING THE ARCHIVES...</p>
+              <RefreshCw className="w-6 h-6 stroke-[1.5] text-[#2563EB] animate-spin" />
+              <p className="text-xs font-mono text-[#52525B]">ROLLING THE ARCHIVES...</p>
             </div>
           ) : pickedMedia ? (
             <div className="space-y-5">
               
               {/* Media Card Showcase */}
               <div className="flex gap-4 items-start">
-                <div className="w-28 sm:w-32 aspect-[2/3] rounded-xl overflow-hidden bg-[#161922] border border-white/10 flex-shrink-0 relative">
+                <div className="w-28 sm:w-32 aspect-[2/3] rounded-2xl overflow-hidden bg-zinc-100 border border-black/10 flex-shrink-0 relative shadow-sm">
                   {poster ? (
                     <img src={poster} alt="" className="w-full h-full object-cover" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-zinc-600">
+                    <div className="w-full h-full flex items-center justify-center text-zinc-400">
                       <Film className="w-6 h-6 opacity-30 stroke-[1.5]" />
                     </div>
                   )}
                 </div>
 
                 <div className="flex-1 min-w-0 space-y-2">
-                  <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
-                    <span className="text-zinc-200">{releaseYear}</span>
+                  <div className="flex items-center gap-2 text-xs font-mono text-[#52525B]">
+                    <span className="text-[#09090B] font-medium">{releaseYear}</span>
                     <span>·</span>
-                    <span className="uppercase text-[10px]">{pickedMedia.media_type || mediaType}</span>
+                    <span className="uppercase text-[10px] font-bold text-[#2563EB]">{pickedMedia.media_type || mediaType}</span>
                     {pickedMedia.vote_average > 0 && (
                       <>
                         <span>·</span>
-                        <span className="flex items-center gap-1 text-zinc-200">
-                          <Star className="w-3 h-3 text-zinc-400 stroke-[1.5]" /> {pickedMedia.vote_average.toFixed(1)}
+                        <span className="flex items-center gap-1 text-[#09090B] font-bold">
+                          <Star className="w-3 h-3 text-[#2563EB] fill-[#2563EB] stroke-[1.5]" /> {pickedMedia.vote_average.toFixed(1)}
                         </span>
                       </>
                     )}
                   </div>
 
-                  <h3 className="text-lg sm:text-xl font-bold text-white font-['Outfit'] leading-tight">
+                  <h3 className="text-lg sm:text-xl font-bold text-[#09090B] font-['Outfit'] leading-tight">
                     {pickedMedia.title || pickedMedia.name}
                   </h3>
 
-                  <p className="text-xs text-zinc-400 line-clamp-3 font-light leading-relaxed">
+                  <p className="text-xs text-[#52525B] line-clamp-3 font-normal leading-relaxed">
                     {pickedMedia.overview || "No synopsis available for this selection."}
                   </p>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-white/[0.06]">
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-black/[0.08]">
                 <div className="flex items-center gap-2.5">
                   <button
                     onClick={handlePlayNow}
-                    className="px-5 py-2 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-xs uppercase tracking-wider flex items-center gap-2 transition cursor-pointer"
+                    className="px-5 py-2 rounded-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-xs uppercase tracking-wider flex items-center gap-2 transition cursor-pointer shadow-md"
                   >
-                    <Play className="w-3.5 h-3.5 stroke-[2] text-black" />
+                    <Play className="w-3.5 h-3.5 stroke-[2] fill-white text-white" />
                     <span>Watch Now</span>
                   </button>
 
                   <button
                     onClick={() => handleRoll()}
-                    className="px-4 py-2 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-zinc-300 hover:text-white text-xs font-medium flex items-center gap-2 transition cursor-pointer"
+                    className="px-4 py-2 rounded-full bg-black/[0.04] hover:bg-black/[0.08] border border-black/10 text-[#09090B] text-xs font-medium flex items-center gap-2 transition cursor-pointer"
                   >
                     <RefreshCw className="w-3.5 h-3.5 stroke-[1.5]" />
                     <span>Roll Again</span>
@@ -196,7 +195,7 @@ export default function SurpriseModal({ isOpen, onClose }) {
 
                 <button
                   onClick={handleFullDetails}
-                  className="text-xs text-zinc-400 hover:text-white flex items-center gap-1 font-mono group py-1 cursor-pointer transition"
+                  className="text-xs text-[#52525B] hover:text-[#2563EB] flex items-center gap-1 font-mono group py-1 cursor-pointer transition font-medium"
                 >
                   <span>Details</span>
                   <ArrowRight className="w-3.5 h-3.5 stroke-[1.5] group-hover:translate-x-1 transition-transform" />
@@ -206,20 +205,20 @@ export default function SurpriseModal({ isOpen, onClose }) {
             </div>
           ) : (
             <div className="py-12 flex flex-col items-center justify-center text-center space-y-4">
-              <div className="w-12 h-12 rounded-full bg-white/[0.04] border border-white/10 flex items-center justify-center">
-                <Dices className="w-6 h-6 stroke-[1.5] text-zinc-300" />
+              <div className="w-12 h-12 rounded-full bg-black/[0.04] border border-black/10 flex items-center justify-center">
+                <Dices className="w-6 h-6 stroke-[1.5] text-[#2563EB]" />
               </div>
               <div className="space-y-1">
-                <h4 className="text-sm font-semibold text-white">Can't decide what to watch?</h4>
-                <p className="text-xs text-zinc-400 font-light max-w-sm">
+                <h4 className="text-sm font-semibold text-[#09090B]">Can't decide what to watch?</h4>
+                <p className="text-xs text-[#52525B] font-normal max-w-sm">
                   Select a mood or tap Roll to let the cinema matrix pick a top-rated title for you.
                 </p>
               </div>
               <button
                 onClick={() => handleRoll()}
-                className="px-6 py-2.5 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-xs uppercase tracking-wider flex items-center gap-2 transition cursor-pointer"
+                className="px-6 py-2.5 rounded-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-xs uppercase tracking-wider flex items-center gap-2 transition cursor-pointer shadow-md"
               >
-                <Dices className="w-4 h-4 stroke-[1.5] text-black" />
+                <Dices className="w-4 h-4 stroke-[1.5]" />
                 <span>Roll Film</span>
               </button>
             </div>

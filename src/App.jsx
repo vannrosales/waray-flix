@@ -22,7 +22,7 @@ import FloatingMiniPlayer from './components/FloatingMiniPlayer';
 
 function Layout() {
   return (
-    <div className="min-h-screen bg-[#090A0F] text-[#EDEDED] font-sans selection:bg-white selection:text-black flex flex-col justify-between">
+    <div className="min-h-screen bg-[#FAFAFA] text-[#09090B] font-sans selection:bg-[#2563EB] selection:text-white flex flex-col justify-between">
       <Navbar />
       <main className="flex-grow">
         <Outlet />

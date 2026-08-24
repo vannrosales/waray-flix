@@ -6,10 +6,12 @@ import useDocumentTitle from '../hooks/useDocumentTitle';
 import { usePlaylist } from '../hooks/usePlaylist';
 import MediaRow from '../components/MediaRow';
 import ShareModal from '../components/ShareModal';
+import { useAuth } from '../context/AuthContext';
 
 export default function DetailPage() {
   const { type, id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [media, setMedia] = useState(null);
   const [selectedSeason, setSelectedSeason] = useState(1);
   const [seasonData, setSeasonData] = useState(null);
@@ -63,20 +65,19 @@ export default function DetailPage() {
   }, [id, type]);
 
   useEffect(() => {
-    if (type === 'tv' && id) {
-      async function loadSeason() {
-        try {
-          const data = await fetchSeasonDetails(id, selectedSeason);
-          setSeasonData(data);
-        } catch (err) {
-          console.error("Season load error:", err);
-          setSeasonData(null);
-        }
+    async function loadSeason() {
+      if (type !== 'tv' || !selectedSeason) return;
+      try {
+        const sData = await fetchSeasonDetails(id, selectedSeason);
+        setSeasonData(sData);
+      } catch (err) {
+        console.error("Season load error:", err);
       }
-      loadSeason();
     }
+
+    loadSeason();
   }, [id, type, selectedSeason]);
-  
+
   const backdrop = getImageUrl(media?.backdrop_path, 'backdrop') || getImageUrl(media?.poster_path, 'poster');
   const poster = getImageUrl(media?.poster_path, 'poster');
   const releaseYear = media?.release_date?.substring(0, 4) || media?.first_air_date?.substring(0, 4) || '2026';
@@ -102,7 +103,7 @@ export default function DetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#090A0F] flex items-center justify-center text-zinc-600 font-mono text-xs">
+      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center text-[#52525B] font-mono text-xs">
         LOADING_STREAM_DETAILS...
       </div>
     );
@@ -114,13 +115,13 @@ export default function DetailPage() {
   const recommendations = media?.recommendations?.results || media?.similar?.results || [];
 
   return (
-    <div className="min-h-screen bg-[#090A0F] text-[#EDEDED] pb-24">
+    <div className="min-h-screen bg-[#FAFAFA] text-[#09090B] pb-24 select-none">
       
       {/* Return Back Button */}
       <div className="fixed top-20 sm:top-24 left-6 z-40">
         <button 
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/60 hover:bg-black text-xs font-mono text-zinc-400 hover:text-white border border-white/10 backdrop-blur-xl transition cursor-pointer"
+          className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 hover:bg-white text-xs font-mono text-[#09090B] border border-black/10 backdrop-blur-xl transition cursor-pointer shadow-md"
         >
           <ArrowLeft className="w-3.5 h-3.5 stroke-[1.5]" />
           <span>BACK</span>
@@ -128,14 +129,14 @@ export default function DetailPage() {
       </div>
 
       {/* Hero Visual Area with Trailer / Backdrop */}
-      <div className="relative h-[50vh] sm:h-[60vh] lg:h-[70vh] w-full overflow-hidden flex items-end">
+      <div className="relative h-[50vh] sm:h-[60vh] lg:h-[70vh] w-full overflow-hidden flex items-end bg-[#FAFAFA]">
         {backdrop && (
           <img 
             src={backdrop} 
             alt="" 
             fetchPriority="high"
             className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-1000 ${
-              showVideo && trailerKey ? 'opacity-0' : 'opacity-35'
+              showVideo && trailerKey ? 'opacity-0' : 'opacity-40'
             }`}
           />
         )}
@@ -155,15 +156,15 @@ export default function DetailPage() {
           </div>
         )}
 
-        <div className="absolute inset-0 bg-gradient-to-t from-[#090A0F] via-[#090A0F]/50 to-transparent pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#090A0F]/90 via-[#090A0F]/30 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#FAFAFA] via-[#FAFAFA]/75 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#FAFAFA]/95 via-[#FAFAFA]/70 to-transparent pointer-events-none" />
 
         {/* Sound toggle button */}
         {showVideo && trailerKey && (
           <div className="absolute bottom-8 right-8 z-30">
             <button
               onClick={() => setIsMuted(!isMuted)}
-              className="w-9 h-9 rounded-full bg-black/60 hover:bg-black text-zinc-300 hover:text-white border border-white/10 backdrop-blur-xl flex items-center justify-center transition cursor-pointer"
+              className="w-9 h-9 rounded-full bg-white/90 hover:bg-white text-[#09090B] border border-black/10 backdrop-blur-xl flex items-center justify-center transition cursor-pointer shadow-md"
               title={isMuted ? "Unmute Trailer" : "Mute Trailer"}
             >
               {isMuted ? <VolumeX className="w-3.5 h-3.5 stroke-[1.5]" /> : <Volume2 className="w-3.5 h-3.5 stroke-[1.5]" />}
@@ -179,11 +180,11 @@ export default function DetailPage() {
         <div className="flex flex-col md:flex-row gap-8 items-start">
           
           {/* Floating Poster Card */}
-          <div className="w-44 sm:w-56 md:w-60 flex-shrink-0 aspect-[2/3] rounded-2xl overflow-hidden bg-[#11131A] border border-white/10 shadow-2xl relative hidden sm:block">
+          <div className="w-44 sm:w-56 md:w-60 flex-shrink-0 aspect-[2/3] rounded-3xl overflow-hidden bg-white border border-black/10 shadow-2xl relative hidden sm:block">
             {poster ? (
               <img src={poster} alt="" className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-zinc-600">
+              <div className="w-full h-full flex items-center justify-center text-zinc-400">
                 <Film className="w-8 h-8 opacity-30 stroke-[1.5]" />
               </div>
             )}
@@ -192,29 +193,29 @@ export default function DetailPage() {
           {/* Metadata & Actions */}
           <div className="flex-1 space-y-5">
             <div className="space-y-2">
-              <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-400 font-mono">
-                <span className="px-2 py-0.5 rounded border border-white/10 text-white uppercase text-[10px]">
+              <div className="flex flex-wrap items-center gap-3 text-xs text-[#52525B] font-mono">
+                <span className="px-2.5 py-0.5 rounded-full bg-[#09090B] text-white font-bold uppercase text-[10px]">
                   {type}
                 </span>
-                <span className="text-zinc-200">{releaseYear}</span>
+                <span className="text-[#09090B] font-semibold">{releaseYear}</span>
                 <span>·</span>
                 {media.vote_average > 0 && (
                   <>
-                    <span className="flex items-center gap-1 text-zinc-200">
-                      <Star className="w-3 h-3 text-zinc-400 stroke-[1.5]" /> {media.vote_average.toFixed(1)}
+                    <span className="flex items-center gap-1 text-[#09090B] font-bold">
+                      <Star className="w-3 h-3 text-[#2563EB] fill-[#2563EB] stroke-[1.5]" /> {media.vote_average.toFixed(1)}
                     </span>
                     <span>·</span>
                   </>
                 )}
                 {runtime && (
-                  <span className="flex items-center gap-1 text-zinc-400">
+                  <span className="flex items-center gap-1 text-[#52525B]">
                     <Clock className="w-3 h-3 stroke-[1.5]" /> {runtime}m
                   </span>
                 )}
-                <span className="text-zinc-500 text-[11px]">4K ULTRA HD</span>
+                <span className="text-[#52525B] text-[11px] font-medium">4K ULTRA HD</span>
               </div>
 
-              <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-white font-['Outfit'] leading-[1.05]">
+              <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-[#09090B] font-['Outfit'] leading-[1.05]">
                 {media.title || media.name}
               </h1>
 
@@ -222,7 +223,7 @@ export default function DetailPage() {
               {media.genres && media.genres.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 pt-1">
                   {media.genres.map((g) => (
-                    <span key={g.id} className="px-2.5 py-0.5 rounded border border-white/[0.08] text-[11px] text-zinc-400 font-mono">
+                    <span key={g.id} className="px-3 py-0.5 rounded-full bg-black/[0.04] border border-black/[0.08] text-[11px] text-[#52525B] font-mono">
                       {g.name}
                     </span>
                   ))}
@@ -232,14 +233,14 @@ export default function DetailPage() {
 
             {/* Saved Progress Bar if applicable */}
             {watchProgress && totalSeconds > 0 && (
-              <div className="space-y-1.5 max-w-md p-3 rounded-xl bg-white/[0.03] border border-white/[0.08]">
-                <div className="flex items-center justify-between text-[10px] font-mono text-zinc-400">
-                  <span>RESUME PROGRESS</span>
-                  <span className="text-zinc-200">{progressPercent}%</span>
+              <div className="space-y-1.5 max-w-md p-3 rounded-2xl bg-white border border-black/[0.08] shadow-sm">
+                <div className="flex items-center justify-between text-[10px] font-mono text-[#52525B]">
+                  <span className="font-semibold">RESUME PROGRESS</span>
+                  <span className="text-[#2563EB] font-bold">{progressPercent}%</span>
                 </div>
-                <div className="w-full bg-zinc-800/80 h-1 rounded-full overflow-hidden">
+                <div className="w-full bg-zinc-100 h-1.5 rounded-full overflow-hidden">
                   <div 
-                    className="bg-white h-full rounded-full transition-all duration-300"
+                    className="bg-[#2563EB] h-full rounded-full transition-all duration-300"
                     style={{ width: `${progressPercent}%` }}
                   />
                 </div>
@@ -250,18 +251,18 @@ export default function DetailPage() {
             <div className="flex flex-wrap items-center gap-3 pt-1">
               <button 
                 onClick={handlePlayClick}
-                className="px-7 py-2.5 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition cursor-pointer"
+                className="px-7 py-2.5 rounded-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition cursor-pointer shadow-md hover:shadow-lg"
               >
-                <Play className="w-3.5 h-3.5 stroke-[2] text-black" />
+                <Play className="w-3.5 h-3.5 stroke-[2] fill-white text-white" />
                 <span>{watchProgress && totalSeconds > 0 ? 'Resume Watching' : 'Start Watching'}</span>
               </button>
 
               <button 
-                onClick={() => toggle({ ...media, media_type: type })}
-                className={`px-5 py-2.5 rounded-full border text-xs font-medium uppercase tracking-wider flex items-center gap-2 transition cursor-pointer backdrop-blur-md ${
+                onClick={() => toggle({ ...media, media_type: type }, user?.id)}
+                className={`px-5 py-2.5 rounded-full border text-xs font-medium uppercase tracking-wider flex items-center gap-2 transition cursor-pointer backdrop-blur-md shadow-sm ${
                   isAdded 
-                    ? 'bg-white/10 border-white/30 text-white' 
-                    : 'bg-white/[0.04] border-white/10 text-zinc-400 hover:border-white/30 hover:text-white'
+                    ? 'bg-[#2563EB]/10 border-[#2563EB]/30 text-[#2563EB] font-bold' 
+                    : 'bg-white border-black/10 text-[#52525B] hover:text-[#09090B]'
                 }`}
               >
                 <Bookmark className="w-3.5 h-3.5 stroke-[1.5]" />
@@ -270,7 +271,7 @@ export default function DetailPage() {
 
               <button 
                 onClick={() => navigate(`/party/${type}/${id}`)}
-                className="px-4 py-2.5 rounded-full border border-white/10 bg-white/[0.04] text-zinc-400 hover:text-white hover:border-white/30 text-xs font-medium uppercase tracking-wider flex items-center gap-2 transition cursor-pointer backdrop-blur-md"
+                className="px-4 py-2.5 rounded-full border border-black/10 bg-white text-[#52525B] hover:text-[#09090B] text-xs font-medium uppercase tracking-wider flex items-center gap-2 transition cursor-pointer backdrop-blur-md shadow-sm"
                 title="Start a P2P Watch Party Room"
               >
                 <Users2 className="w-3.5 h-3.5 stroke-[1.5]" />
@@ -279,7 +280,7 @@ export default function DetailPage() {
 
               <button 
                 onClick={() => setShareOpen(true)}
-                className="px-4 py-2.5 rounded-full border border-white/10 bg-white/[0.04] text-zinc-400 hover:text-white hover:border-white/30 text-xs font-medium uppercase tracking-wider flex items-center gap-2 transition cursor-pointer backdrop-blur-md"
+                className="px-4 py-2.5 rounded-full border border-black/10 bg-white text-[#52525B] hover:text-[#09090B] text-xs font-medium uppercase tracking-wider flex items-center gap-2 transition cursor-pointer backdrop-blur-md shadow-sm"
                 title="Send to Phone via QR Code"
               >
                 <QrCode className="w-3.5 h-3.5 stroke-[1.5]" />
@@ -291,29 +292,29 @@ export default function DetailPage() {
             {media.belongs_to_collection && (
               <div 
                 onClick={() => navigate(`/collection/${media.belongs_to_collection.id}`)}
-                className="flex items-center justify-between p-3.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.08] hover:border-white/20 transition cursor-pointer group"
+                className="flex items-center justify-between p-4 rounded-2xl bg-white hover:bg-zinc-50 border border-black/[0.08] hover:border-[#2563EB]/40 transition cursor-pointer group shadow-sm hover:shadow-md"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/10 flex items-center justify-center">
-                    <Layers className="w-4 h-4 text-zinc-300 stroke-[1.5]" />
+                  <div className="w-8 h-8 rounded-xl bg-black/[0.04] border border-black/10 flex items-center justify-center">
+                    <Layers className="w-4 h-4 text-[#2563EB] stroke-[1.5]" />
                   </div>
                   <div>
-                    <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider block">Part of the Franchise</span>
-                    <h4 className="text-xs sm:text-sm font-bold text-white group-hover:text-zinc-200 transition">
+                    <span className="text-[10px] font-mono text-[#52525B] uppercase tracking-wider block font-semibold">Part of the Franchise</span>
+                    <h4 className="text-xs sm:text-sm font-bold text-[#09090B] group-hover:text-[#2563EB] transition">
                       {media.belongs_to_collection.name}
                     </h4>
                   </div>
                 </div>
-                <span className="text-xs font-mono text-zinc-400 group-hover:text-white flex items-center gap-1">
+                <span className="text-xs font-mono text-[#52525B] group-hover:text-[#2563EB] flex items-center gap-1 font-medium">
                   View Franchise <ArrowRight className="w-3.5 h-3.5 stroke-[1.5] group-hover:translate-x-1 transition-transform" />
                 </span>
               </div>
             )}
 
             {/* Synopsis */}
-            <div className="space-y-1.5 pt-3 border-t border-white/[0.06]">
-              <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">SYNOPSIS</span>
-              <p className="text-zinc-300 text-sm leading-relaxed font-light max-w-3xl">
+            <div className="space-y-1.5 pt-3 border-t border-black/[0.08]">
+              <span className="text-[10px] font-mono text-[#52525B] uppercase tracking-widest font-semibold">SYNOPSIS</span>
+              <p className="text-[#52525B] text-sm leading-relaxed font-normal max-w-3xl">
                 {media.overview || "No synopsis available for this selection."}
               </p>
             </div>
@@ -323,9 +324,9 @@ export default function DetailPage() {
 
         {/* Cast Section */}
         {castList.length > 0 && (
-          <div className="space-y-3 pt-4 border-t border-white/[0.06]">
-            <div className="flex items-center gap-2 text-xs font-mono text-zinc-400 uppercase tracking-wider">
-              <Users className="w-3.5 h-3.5 stroke-[1.5]" />
+          <div className="space-y-3 pt-4 border-t border-black/[0.08]">
+            <div className="flex items-center gap-2 text-xs font-mono text-[#52525B] uppercase tracking-wider font-semibold">
+              <Users className="w-3.5 h-3.5 stroke-[1.5] text-[#2563EB]" />
               <span>Cast & Crew</span>
             </div>
             
@@ -338,7 +339,7 @@ export default function DetailPage() {
                     onClick={() => navigate(`/person/${actor.id}`)}
                     className="w-20 sm:w-24 flex-shrink-0 space-y-1.5 text-center group cursor-pointer"
                   >
-                    <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full overflow-hidden bg-[#11131A] border border-white/10 group-hover:border-white/30 transition shadow-sm relative flex items-center justify-center">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full overflow-hidden bg-zinc-100 border border-black/10 group-hover:border-[#2563EB]/40 transition shadow-sm relative flex items-center justify-center">
                       {profileImg ? (
                         <img 
                           src={profileImg} 
@@ -348,16 +349,16 @@ export default function DetailPage() {
                           className="w-full h-full object-cover group-hover:scale-105 transition" 
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-zinc-600 font-mono text-[9px]">
+                        <div className="w-full h-full flex items-center justify-center text-zinc-400 font-mono text-[9px]">
                           CAST
                         </div>
                       )}
                     </div>
                     <div>
-                      <h4 className="text-[11px] font-medium text-zinc-200 group-hover:text-white truncate transition-colors">
+                      <h4 className="text-[11px] font-semibold text-[#09090B] group-hover:text-[#2563EB] truncate transition-colors">
                         {actor.name}
                       </h4>
-                      <p className="text-[9px] text-zinc-500 font-mono truncate">
+                      <p className="text-[9px] text-[#52525B] font-mono truncate">
                         {actor.character}
                       </p>
                     </div>
@@ -370,11 +371,11 @@ export default function DetailPage() {
 
         {/* TV Series Seasons & Episodes Browser */}
         {type === 'tv' && media.seasons && media.seasons.length > 0 && (
-          <div className="border-t border-white/[0.06] pt-8 space-y-6">
+          <div className="border-t border-black/[0.08] pt-8 space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-2">
-                <Layers className="w-4 h-4 text-zinc-400 stroke-[1.5]" />
-                <h3 className="text-lg font-bold text-white font-['Outfit']">Episodes</h3>
+                <Layers className="w-4 h-4 text-[#2563EB] stroke-[1.5]" />
+                <h3 className="text-lg font-bold text-[#09090B] font-['Outfit']">Episodes</h3>
               </div>
 
               {/* Season Select */}
@@ -382,10 +383,10 @@ export default function DetailPage() {
                 <select
                   value={selectedSeason}
                   onChange={(e) => setSelectedSeason(Number(e.target.value))}
-                  className="appearance-none bg-[#11131A] hover:bg-[#161922] border border-white/10 text-zinc-300 text-xs font-mono py-2 pl-3.5 pr-8 rounded-xl focus:outline-none transition cursor-pointer"
+                  className="appearance-none bg-white hover:bg-zinc-50 border border-black/10 text-[#09090B] text-xs font-mono py-2 pl-3.5 pr-8 rounded-full focus:outline-none focus:border-[#2563EB] transition cursor-pointer shadow-sm"
                 >
                   {media.seasons.map((season) => (
-                    <option key={season.id} value={season.season_number} className="bg-[#090A0F] text-zinc-300">
+                    <option key={season.id} value={season.season_number} className="bg-white text-[#09090B]">
                       {season.name} {season.episode_count ? `(${season.episode_count} Ep)` : ''}
                     </option>
                   ))}
@@ -402,28 +403,28 @@ export default function DetailPage() {
                     <div 
                       key={ep.id}
                       onClick={() => navigate(`/watch/tv/${media.id}/${selectedSeason}/${ep.episode_number}`)}
-                      className="group flex gap-3 p-2.5 rounded-xl bg-white/[0.02] hover:bg-white/[0.06] border border-white/[0.04] hover:border-white/10 cursor-pointer transition-all duration-200"
+                      className="group flex gap-3 p-3 rounded-2xl bg-white hover:bg-zinc-50 border border-black/[0.06] hover:border-[#2563EB]/40 cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md"
                     >
-                      <div className="w-28 sm:w-36 aspect-video rounded-lg bg-black overflow-hidden flex-shrink-0 relative">
+                      <div className="w-28 sm:w-36 aspect-video rounded-xl bg-zinc-100 overflow-hidden flex-shrink-0 relative border border-black/10">
                         {epStill ? (
                           <img src={epStill} alt="" className="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-zinc-700 text-[9px] font-mono">NO IMAGE</div>
+                          <div className="w-full h-full flex items-center justify-center text-zinc-400 text-[9px] font-mono">NO IMAGE</div>
                         )}
                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                          <Play className="w-5 h-5 text-white stroke-[2]" />
+                          <Play className="w-5 h-5 text-white stroke-[2] fill-white" />
                         </div>
                       </div>
 
                       <div className="flex-1 min-w-0 space-y-1">
-                        <div className="flex items-center justify-between text-[10px] font-mono text-zinc-500">
-                          <span>EP {ep.episode_number}</span>
+                        <div className="flex items-center justify-between text-[10px] font-mono text-[#52525B]">
+                          <span className="font-bold text-[#2563EB]">EP {ep.episode_number}</span>
                           {ep.runtime && <span>{ep.runtime}m</span>}
                         </div>
-                        <h4 className="text-xs font-medium text-zinc-200 group-hover:text-white truncate">
+                        <h4 className="text-xs font-semibold text-[#09090B] group-hover:text-[#2563EB] truncate">
                           {ep.name}
                         </h4>
-                        <p className="text-[11px] text-zinc-500 line-clamp-1 font-light">
+                        <p className="text-[11px] text-[#52525B] line-clamp-1 font-normal">
                           {ep.overview || "Stream this episode now."}
                         </p>
                       </div>
@@ -431,7 +432,7 @@ export default function DetailPage() {
                   );
                 })
               ) : (
-                <div className="col-span-2 text-xs text-zinc-600 font-mono py-8 text-center">
+                <div className="col-span-2 text-xs text-[#52525B] font-mono py-8 text-center">
                   Loading season episodes...
                 </div>
               )}
@@ -441,7 +442,7 @@ export default function DetailPage() {
 
         {/* Similar & Recommendations Row */}
         {recommendations.length > 0 && (
-          <div className="border-t border-white/[0.06] pt-8">
+          <div className="border-t border-black/[0.08] pt-8">
             <MediaRow 
               title="Similar Titles" 
               items={recommendations} 

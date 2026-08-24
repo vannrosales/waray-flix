@@ -75,21 +75,21 @@ export default function Navbar() {
     <>
       <header className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
         scrolled 
-          ? 'py-3.5 bg-[#090A0F]/90 backdrop-blur-xl border-b border-white/[0.06]' 
-          : 'py-5 bg-gradient-to-b from-[#090A0F]/90 via-[#090A0F]/40 to-transparent'
+          ? 'py-3.5 bg-[#FAFAFA]/90 backdrop-blur-xl border-b border-black/[0.08] shadow-sm' 
+          : 'py-5 bg-gradient-to-b from-[#FAFAFA]/95 via-[#FAFAFA]/80 to-transparent'
       }`}>
         <div className="max-w-[1440px] mx-auto px-6 md:px-12 flex items-center justify-between">
           
-          {/* Minimalist Monochrome Logo */}
+          {/* Triad 4 Logo */}
           <Link to="/" className="flex items-center gap-3 group select-none">
-            <div className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/10 flex items-center justify-center group-hover:border-white/25 transition-colors">
-              <Clapperboard className="w-4 h-4 text-zinc-300 stroke-[1.5] group-hover:text-white transition-colors" />
+            <div className="w-8 h-8 rounded-lg bg-[#09090B] text-white flex items-center justify-center shadow-sm group-hover:bg-[#2563EB] transition-colors">
+              <Clapperboard className="w-4 h-4 stroke-[2]" />
             </div>
             <div className="flex items-center tracking-tight">
-              <span className="text-sm font-bold tracking-widest text-white font-['Outfit']">
+              <span className="text-sm font-bold tracking-widest text-[#09090B] font-['Outfit']">
                 WARAY
               </span>
-              <span className="text-sm font-light tracking-widest text-zinc-400 font-['Outfit'] ml-1">
+              <span className="text-sm font-bold tracking-widest text-[#2563EB] font-['Outfit'] ml-1">
                 FLIX
               </span>
             </div>
@@ -105,13 +105,13 @@ export default function Navbar() {
                   to={link.path}
                   className={`text-xs font-medium tracking-wide transition-colors relative py-1 ${
                     isActive 
-                      ? 'text-white font-semibold' 
-                      : 'text-zinc-400 hover:text-white'
+                      ? 'text-[#09090B] font-bold' 
+                      : 'text-[#52525B] hover:text-[#09090B]'
                   }`}
                 >
                   <span>{link.name}</span>
                   {isActive && (
-                    <span className="absolute -bottom-1 left-0 right-0 h-[1.5px] bg-white rounded-full" />
+                    <span className="absolute -bottom-1 left-0 right-0 h-[2px] bg-[#2563EB] rounded-full" />
                   )}
                 </Link>
               );
@@ -126,18 +126,18 @@ export default function Navbar() {
             {/* Surprise Me Roulette Button */}
             <button
               onClick={() => setSurpriseOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-xs text-zinc-300 hover:text-white transition cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/[0.04] hover:bg-black/[0.08] border border-black/[0.08] text-xs text-[#09090B] transition cursor-pointer"
               title="Surprise Me / Cinema Roulette (Key: D)"
               aria-label="Surprise Me"
             >
-              <Dices className="w-3.5 h-3.5 stroke-[1.5] text-zinc-400" />
+              <Dices className="w-3.5 h-3.5 stroke-[1.5] text-[#52525B]" />
               <span className="hidden lg:inline text-[11px] font-mono">Surprise</span>
             </button>
 
             {/* Keyboard Shortcuts Button */}
             <button
               onClick={() => setShortcutsOpen(true)}
-              className="hidden sm:flex items-center justify-center w-8 h-8 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-xs text-zinc-400 hover:text-white font-mono transition cursor-pointer"
+              className="hidden sm:flex items-center justify-center w-8 h-8 rounded-full bg-black/[0.04] hover:bg-black/[0.08] border border-black/[0.08] text-xs text-[#52525B] hover:text-[#09090B] font-mono transition cursor-pointer"
               title="Keyboard Shortcuts (Key: ?)"
               aria-label="Keyboard Shortcuts"
             >
@@ -147,12 +147,12 @@ export default function Navbar() {
             {/* Outlined Minimalist Search Trigger */}
             <button
               onClick={() => setSearchOpen(true)}
-              className="flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-xs text-zinc-400 hover:text-white transition-all cursor-pointer group"
+              className="flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-black/[0.04] hover:bg-black/[0.08] border border-black/[0.08] text-xs text-[#52525B] hover:text-[#09090B] transition-all cursor-pointer group"
               aria-label="Open search"
             >
-              <Search className="w-3.5 h-3.5 text-zinc-400 stroke-[1.5] group-hover:text-white transition-colors" />
-              <span className="hidden sm:inline text-xs font-sans text-zinc-300">Search</span>
-              <kbd className="hidden sm:inline-block px-1.5 py-0.5 rounded bg-white/[0.06] border border-white/[0.08] text-[9px] font-mono text-zinc-400">
+              <Search className="w-3.5 h-3.5 text-[#52525B] stroke-[1.5] group-hover:text-[#09090B] transition-colors" />
+              <span className="hidden sm:inline text-xs font-sans text-[#09090B]">Search</span>
+              <kbd className="hidden sm:inline-block px-1.5 py-0.5 rounded bg-black/[0.06] border border-black/[0.08] text-[9px] font-mono text-[#52525B]">
                 ⌘K
               </kbd>
             </button>
@@ -162,31 +162,31 @@ export default function Navbar() {
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                  className="flex items-center gap-2 pl-2 pr-3 py-1 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs text-white transition cursor-pointer"
+                  className="flex items-center gap-2 pl-2 pr-3 py-1 rounded-full bg-black/[0.04] hover:bg-black/[0.08] border border-black/[0.08] text-xs text-[#09090B] transition cursor-pointer"
                 >
-                  <div className="w-6 h-6 rounded-full bg-white text-black font-semibold text-[10px] flex items-center justify-center font-mono">
+                  <div className="w-6 h-6 rounded-full bg-[#09090B] text-white font-semibold text-[10px] flex items-center justify-center font-mono">
                     {username.charAt(0).toUpperCase()}
                   </div>
                   <span className="hidden sm:inline font-mono text-[11px] truncate max-w-[80px]">
                     {username}
                   </span>
-                  <ChevronDown className="w-3 h-3 text-zinc-400 stroke-[1.5]" />
+                  <ChevronDown className="w-3 h-3 text-[#52525B] stroke-[1.5]" />
                 </button>
 
                 {/* Profile Dropdown Menu */}
                 {profileDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-[#0E1017] border border-white/10 rounded-2xl shadow-2xl p-1.5 z-50 animate-slide-up space-y-1">
-                    <div className="px-3 py-2 border-b border-white/[0.06]">
-                      <span className="text-[10px] font-mono text-zinc-500 uppercase block">Signed in as</span>
-                      <p className="text-xs font-medium text-white truncate">{user.email || username}</p>
+                  <div className="absolute right-0 mt-2 w-48 bg-white border border-black/10 rounded-2xl shadow-2xl p-1.5 z-50 animate-slide-up space-y-1">
+                    <div className="px-3 py-2 border-b border-black/[0.06]">
+                      <span className="text-[10px] font-mono text-[#52525B] uppercase block">Signed in as</span>
+                      <p className="text-xs font-medium text-[#09090B] truncate">{user.email || username}</p>
                     </div>
 
                     <Link
                       to="/watchlist"
                       onClick={() => setProfileDropdownOpen(false)}
-                      className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-zinc-300 hover:text-white hover:bg-white/[0.04] transition"
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-[#09090B] hover:bg-black/[0.04] transition"
                     >
-                      <Bookmark className="w-3.5 h-3.5 stroke-[1.5] text-zinc-400" />
+                      <Bookmark className="w-3.5 h-3.5 stroke-[1.5] text-[#2563EB]" />
                       <span>My Watchlist</span>
                     </Link>
 
@@ -195,9 +195,9 @@ export default function Navbar() {
                         signOut();
                         setProfileDropdownOpen(false);
                       }}
-                      className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-zinc-400 hover:text-white hover:bg-white/[0.04] transition cursor-pointer text-left"
+                      className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-red-600 hover:bg-red-50 transition cursor-pointer text-left"
                     >
-                      <LogOut className="w-3.5 h-3.5 stroke-[1.5] text-zinc-400" />
+                      <LogOut className="w-3.5 h-3.5 stroke-[1.5]" />
                       <span>Sign Out</span>
                     </button>
                   </div>
@@ -206,7 +206,7 @@ export default function Navbar() {
             ) : (
               <button
                 onClick={openAuthModal}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white text-black font-semibold text-xs transition cursor-pointer hover:bg-zinc-200 shadow-sm"
+                className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#09090B] text-white hover:bg-black font-semibold text-xs transition cursor-pointer shadow-sm hover:shadow"
               >
                 <User className="w-3.5 h-3.5 stroke-[2]" />
                 <span>Sign In</span>
@@ -216,7 +216,7 @@ export default function Navbar() {
             {/* Mobile Menu Toggle */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-lg bg-white/[0.04] border border-white/[0.08] text-zinc-300 hover:text-white transition cursor-pointer"
+              className="md:hidden p-2 rounded-lg bg-black/[0.04] border border-black/[0.08] text-[#09090B] hover:bg-black/[0.08] transition cursor-pointer"
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X className="w-4 h-4 stroke-[1.5]" /> : <Menu className="w-4 h-4 stroke-[1.5]" />}
@@ -227,7 +227,7 @@ export default function Navbar() {
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-[#090A0F]/95 border-b border-white/[0.08] px-6 py-5 mt-2 space-y-4 animate-fade-in backdrop-blur-2xl">
+          <div className="md:hidden bg-[#FAFAFA]/98 border-b border-black/[0.08] px-6 py-5 mt-2 space-y-4 animate-fade-in backdrop-blur-2xl shadow-xl">
             <div className="flex flex-col space-y-2">
               {navLinks.map((link) => {
                 const Icon = link.icon;
@@ -239,8 +239,8 @@ export default function Navbar() {
                     onClick={() => setMobileMenuOpen(false)}
                     className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition ${
                       isActive 
-                        ? 'bg-white/10 text-white font-semibold' 
-                        : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+                        ? 'bg-[#2563EB] text-white font-semibold shadow-sm' 
+                        : 'text-[#52525B] hover:text-[#09090B] hover:bg-black/[0.04]'
                     }`}
                   >
                     <Icon className="w-4 h-4 stroke-[1.5]" />

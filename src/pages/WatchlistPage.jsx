@@ -71,18 +71,18 @@ export default function WatchlistPage() {
   const tvCount = watchlist.filter(i => i.media_type === 'tv' || Boolean(i.first_air_date)).length;
 
   return (
-    <div className="min-h-screen bg-[#090A0F] text-[#EDEDED] pt-24 sm:pt-28 pb-20 px-6 md:px-12 max-w-[1440px] mx-auto space-y-12 select-none">
+    <div className="min-h-screen bg-[#FAFAFA] text-[#09090B] pt-24 sm:pt-28 pb-20 px-6 md:px-12 max-w-[1440px] mx-auto space-y-12 select-none">
       
       {/* Header Banner */}
-      <div className="border-b border-white/[0.06] pb-8 space-y-2">
-        <div className="flex items-center gap-2 text-xs font-mono text-zinc-500 uppercase tracking-widest">
-          <Bookmark className="w-3.5 h-3.5 stroke-[1.5] text-zinc-400" />
+      <div className="border-b border-black/[0.08] pb-8 space-y-2">
+        <div className="flex items-center gap-2 text-xs font-mono text-[#52525B] uppercase tracking-widest">
+          <Bookmark className="w-3.5 h-3.5 stroke-[2] text-[#2563EB]" />
           <span>PERSONAL CINEMA LIBRARY</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white font-['Outfit'] tracking-tight">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#09090B] font-['Outfit'] tracking-tight">
           Watchlist & History
         </h1>
-        <p className="text-xs sm:text-sm text-zinc-400 font-light max-w-xl">
+        <p className="text-xs sm:text-sm text-[#52525B] font-normal max-w-xl">
           Your saved titles and resume points, synchronized across your devices.
         </p>
       </div>
@@ -92,14 +92,14 @@ export default function WatchlistPage() {
         <section className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-zinc-400 stroke-[1.5]" />
-              <h2 className="text-base sm:text-lg font-bold text-white font-['Outfit']">
+              <Clock className="w-4 h-4 text-[#2563EB] stroke-[2]" />
+              <h2 className="text-base sm:text-lg font-bold text-[#09090B] font-['Outfit']">
                 Continue Watching ({history.length})
               </h2>
             </div>
             <button
               onClick={handleClearHistory}
-              className="text-[11px] font-mono text-zinc-500 hover:text-zinc-300 transition cursor-pointer"
+              className="text-[11px] font-mono text-[#52525B] hover:text-red-600 transition cursor-pointer"
             >
               Clear History
             </button>
@@ -119,15 +119,15 @@ export default function WatchlistPage() {
               return (
                 <div 
                   key={item.id}
-                  className="group relative rounded-2xl bg-[#0E1017] border border-white/[0.06] hover:border-white/20 p-3.5 space-y-3 transition duration-200"
+                  className="group relative rounded-2xl bg-white border border-black/[0.06] hover:border-[#2563EB]/40 p-3.5 space-y-3 transition duration-200 shadow-sm hover:shadow-md"
                 >
                   <div className="flex gap-3.5">
                     {/* Thumbnail */}
-                    <div className="relative w-18 sm:w-20 aspect-[2/3] rounded-xl overflow-hidden bg-black flex-shrink-0 border border-white/10">
+                    <div className="relative w-18 sm:w-20 aspect-[2/3] rounded-xl overflow-hidden bg-zinc-100 flex-shrink-0 border border-black/10">
                       {poster ? (
                         <img src={poster} alt="" className="w-full h-full object-cover" />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-zinc-600">
+                        <div className="w-full h-full flex items-center justify-center text-zinc-400">
                           <Film className="w-5 h-5 stroke-[1.5]" />
                         </div>
                       )}
@@ -136,10 +136,10 @@ export default function WatchlistPage() {
                     {/* Info */}
                     <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
                       <div className="space-y-1">
-                        <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider block">
+                        <span className="text-[10px] font-mono text-[#52525B] uppercase tracking-wider block font-semibold">
                           {item.type === 'tv' ? `S${item.season || 1} E${item.episode || 1}` : 'MOVIE'}
                         </span>
-                        <h3 className="text-sm font-semibold text-white truncate font-['Outfit'] leading-tight">
+                        <h3 className="text-sm font-semibold text-[#09090B] truncate font-['Outfit'] leading-tight">
                           {item.title || item.name || 'Untitled Stream'}
                         </h3>
                       </div>
@@ -148,13 +148,13 @@ export default function WatchlistPage() {
                       <div className="space-y-2">
                         {progressPercent > 0 && (
                           <div className="space-y-1">
-                            <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
+                            <div className="w-full h-1.5 bg-zinc-100 rounded-full overflow-hidden">
                               <div 
-                                className="h-full bg-white transition-all duration-300"
+                                className="h-full bg-[#2563EB] transition-all duration-300"
                                 style={{ width: `${progressPercent}%` }}
                               />
                             </div>
-                            <span className="text-[9px] font-mono text-zinc-400 block">
+                            <span className="text-[9px] font-mono text-[#52525B] block font-medium">
                               {progressPercent}% completed
                             </span>
                           </div>
@@ -163,15 +163,15 @@ export default function WatchlistPage() {
                         <div className="flex items-center gap-2">
                           <Link
                             to={watchUrl}
-                            className="flex-1 py-1.5 px-3 rounded-lg bg-white text-black text-[11px] font-semibold font-mono uppercase tracking-wider flex items-center justify-center gap-1.5 transition hover:bg-zinc-200 shadow-sm"
+                            className="flex-1 py-1.5 px-3 rounded-xl bg-[#2563EB] text-white text-[11px] font-semibold font-mono uppercase tracking-wider flex items-center justify-center gap-1.5 transition hover:bg-[#1D4ED8] shadow-sm"
                           >
-                            <Play className="w-3 h-3 stroke-[2] fill-black" />
+                            <Play className="w-3 h-3 stroke-[2] fill-white" />
                             <span>Resume</span>
                           </Link>
 
                           <button
                             onClick={() => handleRemoveFromHistory(item.id)}
-                            className="p-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-zinc-500 hover:text-zinc-300 border border-white/10 transition cursor-pointer"
+                            className="p-1.5 rounded-xl bg-black/[0.04] hover:bg-red-50 text-[#52525B] hover:text-red-600 border border-black/[0.08] transition cursor-pointer"
                             title="Remove from history"
                           >
                             <X className="w-3.5 h-3.5 stroke-[1.5]" />
@@ -189,7 +189,7 @@ export default function WatchlistPage() {
 
       {/* Section 2: Saved Watchlist */}
       <section className="space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/[0.06] pb-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-black/[0.08] pb-4">
           
           {/* Tabs */}
           <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
@@ -197,8 +197,8 @@ export default function WatchlistPage() {
               onClick={() => setActiveTab('all')}
               className={`px-4 py-2 rounded-full text-xs font-mono transition cursor-pointer ${
                 activeTab === 'all'
-                  ? 'bg-white text-black font-semibold shadow-sm'
-                  : 'bg-white/[0.04] hover:bg-white/[0.08] text-zinc-400 hover:text-white border border-white/[0.08]'
+                  ? 'bg-[#09090B] text-white font-semibold shadow-sm'
+                  : 'bg-black/[0.04] hover:bg-black/[0.08] text-[#52525B] hover:text-[#09090B] border border-black/[0.08]'
               }`}
             >
               All ({watchlist.length})
@@ -208,8 +208,8 @@ export default function WatchlistPage() {
               onClick={() => setActiveTab('movie')}
               className={`px-4 py-2 rounded-full text-xs font-mono transition cursor-pointer ${
                 activeTab === 'movie'
-                  ? 'bg-white text-black font-semibold shadow-sm'
-                  : 'bg-white/[0.04] hover:bg-white/[0.08] text-zinc-400 hover:text-white border border-white/[0.08]'
+                  ? 'bg-[#09090B] text-white font-semibold shadow-sm'
+                  : 'bg-black/[0.04] hover:bg-black/[0.08] text-[#52525B] hover:text-[#09090B] border border-black/[0.08]'
               }`}
             >
               Movies ({movieCount})
@@ -219,8 +219,8 @@ export default function WatchlistPage() {
               onClick={() => setActiveTab('tv')}
               className={`px-4 py-2 rounded-full text-xs font-mono transition cursor-pointer ${
                 activeTab === 'tv'
-                  ? 'bg-white text-black font-semibold shadow-sm'
-                  : 'bg-white/[0.04] hover:bg-white/[0.08] text-zinc-400 hover:text-white border border-white/[0.08]'
+                  ? 'bg-[#09090B] text-white font-semibold shadow-sm'
+                  : 'bg-black/[0.04] hover:bg-black/[0.08] text-[#52525B] hover:text-[#09090B] border border-black/[0.08]'
               }`}
             >
               Series ({tvCount})
@@ -230,13 +230,13 @@ export default function WatchlistPage() {
           {/* Library Search */}
           {watchlist.length > 0 && (
             <div className="relative w-full md:w-64">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500 stroke-[1.5]" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#52525B] stroke-[1.5]" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Filter saved titles..."
-                className="w-full bg-[#0E1017] border border-white/[0.08] rounded-full pl-9 pr-4 py-1.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-white/30 font-sans"
+                className="w-full bg-white border border-black/[0.08] rounded-full pl-9 pr-4 py-1.5 text-xs text-[#09090B] placeholder-[#52525B] focus:outline-none focus:border-[#2563EB] font-sans shadow-sm"
               />
             </div>
           )}
@@ -256,7 +256,7 @@ export default function WatchlistPage() {
                   className="group relative flex flex-col space-y-2 select-none"
                 >
                   {/* Poster Card */}
-                  <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden bg-[#0E1017] border border-white/[0.06] group-hover:border-white/30 transition-all duration-300 shadow-lg">
+                  <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden bg-white border border-black/[0.06] group-hover:border-[#2563EB]/40 transition-all duration-300 shadow-sm hover:shadow-md">
                     {poster ? (
                       <img
                         src={poster}
@@ -265,7 +265,7 @@ export default function WatchlistPage() {
                         loading="lazy"
                       />
                     ) : (
-                      <div className="w-full h-full flex flex-col items-center justify-center text-zinc-600 gap-2">
+                      <div className="w-full h-full flex flex-col items-center justify-center text-zinc-400 gap-2 bg-zinc-100">
                         <Film className="w-8 h-8 opacity-30 stroke-[1.5]" />
                         <span className="text-[9px] font-mono">NO POSTER</span>
                       </div>
@@ -278,7 +278,7 @@ export default function WatchlistPage() {
                       <div className="flex justify-end">
                         <button
                           onClick={() => handleRemoveFromWatchlist(item)}
-                          className="p-1.5 rounded-full bg-black/70 hover:bg-black text-zinc-400 hover:text-white border border-white/15 transition cursor-pointer backdrop-blur-md"
+                          className="p-1.5 rounded-full bg-black/80 hover:bg-black text-white transition cursor-pointer backdrop-blur-md shadow-sm"
                           title="Remove from Watchlist"
                         >
                           <Trash2 className="w-3.5 h-3.5 stroke-[1.5]" />
@@ -288,16 +288,16 @@ export default function WatchlistPage() {
                       {/* Play CTA */}
                       <Link
                         to={`/details/${itemType}/${item.id}`}
-                        className="w-full py-2 rounded-xl bg-white text-black font-semibold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-lg hover:bg-zinc-200 transition"
+                        className="w-full py-2 rounded-xl bg-[#2563EB] text-white font-semibold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-lg hover:bg-[#1D4ED8] transition"
                       >
-                        <Play className="w-3.5 h-3.5 stroke-[2] fill-black" />
+                        <Play className="w-3.5 h-3.5 stroke-[2] fill-white text-white" />
                         <span>Watch</span>
                       </Link>
                     </div>
 
                     {/* Media Type Chip */}
                     <div className="absolute top-2.5 left-2.5">
-                      <span className="px-2 py-0.5 rounded border border-white/15 bg-black/70 backdrop-blur-md text-white text-[9px] font-mono uppercase tracking-wider">
+                      <span className="px-2 py-0.5 rounded bg-[#09090B] text-white text-[9px] font-mono uppercase tracking-wider font-semibold">
                         {itemType}
                       </span>
                     </div>
@@ -305,16 +305,16 @@ export default function WatchlistPage() {
 
                   {/* Title & Metadata */}
                   <div className="space-y-0.5">
-                    <h3 className="text-xs sm:text-sm font-medium text-white truncate font-['Outfit'] group-hover:text-zinc-200 transition">
+                    <h3 className="text-xs sm:text-sm font-medium text-[#09090B] truncate font-['Outfit'] group-hover:text-[#2563EB] transition">
                       {item.title || item.name}
                     </h3>
-                    <div className="flex items-center gap-2 text-[10px] font-mono text-zinc-400">
+                    <div className="flex items-center gap-2 text-[10px] font-mono text-[#52525B]">
                       {releaseYear && <span>{releaseYear}</span>}
                       {item.vote_average > 0 && (
                         <>
                           <span>·</span>
-                          <span className="flex items-center gap-0.5 text-zinc-300">
-                            <Star className="w-2.5 h-2.5 text-zinc-400 stroke-[1.5]" />
+                          <span className="flex items-center gap-0.5 text-[#09090B] font-bold">
+                            <Star className="w-2.5 h-2.5 text-[#2563EB] fill-[#2563EB] stroke-[1.5]" />
                             {item.vote_average.toFixed(1)}
                           </span>
                         </>
@@ -327,15 +327,15 @@ export default function WatchlistPage() {
           </div>
         ) : (
           /* Empty State */
-          <div className="py-20 flex flex-col items-center justify-center text-center space-y-4 border border-white/[0.04] rounded-3xl bg-[#0E1017]/40 p-8">
-            <div className="w-14 h-14 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-center">
-              <Bookmark className="w-6 h-6 text-zinc-500 stroke-[1.5]" />
+          <div className="py-20 flex flex-col items-center justify-center text-center space-y-4 border border-black/[0.06] rounded-3xl bg-white p-8 shadow-sm">
+            <div className="w-14 h-14 rounded-2xl bg-black/[0.04] border border-black/[0.08] flex items-center justify-center">
+              <Bookmark className="w-6 h-6 text-[#2563EB] stroke-[2]" />
             </div>
             <div className="space-y-1">
-              <h3 className="text-lg font-bold text-white font-['Outfit']">
+              <h3 className="text-lg font-bold text-[#09090B] font-['Outfit']">
                 {searchQuery ? 'No matching titles found' : 'Your Watchlist is Empty'}
               </h3>
-              <p className="text-xs text-zinc-400 font-light max-w-sm">
+              <p className="text-xs text-[#52525B] font-normal max-w-sm">
                 {searchQuery 
                   ? `No titles match "${searchQuery}". Try searching for another movie or show.`
                   : 'Save movies and series you want to watch later and they will appear here.'}
@@ -344,7 +344,7 @@ export default function WatchlistPage() {
             {!searchQuery && (
               <Link
                 to="/movies"
-                className="px-6 py-2.5 rounded-full bg-white text-black font-semibold text-xs uppercase tracking-wider flex items-center gap-2 hover:bg-zinc-200 transition shadow-md"
+                className="px-6 py-2.5 rounded-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-xs uppercase tracking-wider flex items-center gap-2 transition shadow-md"
               >
                 <Compass className="w-3.5 h-3.5 stroke-[2]" />
                 <span>Explore Movies</span>

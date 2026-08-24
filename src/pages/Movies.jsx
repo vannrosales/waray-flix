@@ -59,64 +59,64 @@ export default function Movies() {
           setMovies([]);
         }
       } catch (err) {
-        console.error("Error fetching movies:", err);
+        console.error("Movie catalog error:", err);
       } finally {
         setLoading(false);
       }
     }
+
     loadMovies();
   }, [activeGenre, sortBy]);
 
   const loadMoreMovies = async () => {
-    if (page >= totalPages) return;
+    if (page >= totalPages || loadingMore) return;
     try {
       setLoadingMore(true);
       const nextPage = page + 1;
       const genreQuery = activeGenre === 'all' ? '' : `&with_genres=${activeGenre}`;
       const res = await fetch(`${BASE_URL}/discover/movie?api_key=${API_KEY}&sort_by=${sortBy}${genreQuery}&page=${nextPage}`);
       const data = await res.json();
-
-      setMovies((prev) => [...prev, ...(data.results || [])]);
+      
+      setMovies(prev => [...prev, ...(data.results || [])]);
       setPage(nextPage);
     } catch (err) {
-      console.error("Error loading more movies:", err);
+      console.error("Load more movies error:", err);
     } finally {
       setLoadingMore(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#090A0F] text-[#EDEDED] font-sans pb-24">
+    <div className="min-h-screen bg-[#FAFAFA] text-[#09090B] pb-24 select-none">
       
-      {/* Dynamic Hero Showcase */}
-      {heroContent && <Hero content={heroContent} items={movies.slice(0, 5)} />}
+      {/* Featured Header Hero */}
+      {heroContent && <Hero content={heroContent} />}
 
-      {/* Main Grid & Filters Section */}
-      <div className="max-w-[1440px] mx-auto px-6 md:px-12 py-10 space-y-6">
+      {/* Catalog Main Container */}
+      <div className="max-w-[1440px] mx-auto px-6 md:px-12 mt-8 space-y-6">
         
-        {/* Filter Controls Bar */}
-        <div className="p-3.5 sm:p-4 rounded-2xl bg-[#11131A] border border-white/[0.06] space-y-3">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
-              <Film className="w-3.5 h-3.5 stroke-[1.5]" />
-              <span>Movies Catalog</span>
-            </div>
+        {/* Filter & Sort Bar */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-black/[0.08] pb-4">
+          
+          <div className="flex items-center gap-3">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#09090B] font-['Outfit']">
+              Feature Films
+            </h1>
 
-            {/* Sort Selector */}
-            <div className="flex items-center gap-2 text-xs font-mono">
-              <SlidersHorizontal className="w-3 h-3 stroke-[1.5] text-zinc-500" />
-              <span className="text-zinc-500 hidden sm:inline">Sort:</span>
+            {/* Sort Dropdown */}
+            <div className="relative">
               <select
                 value={sortBy}
                 onChange={(e) => { setSortBy(e.target.value); setPage(1); }}
-                className="bg-[#090A0F] border border-white/10 text-zinc-300 text-xs py-1 px-2.5 rounded-lg focus:outline-none transition cursor-pointer"
+                className="appearance-none bg-white hover:bg-zinc-50 border border-black/10 text-[#09090B] text-xs font-mono py-1.5 pl-3 pr-8 rounded-full focus:outline-none focus:border-[#2563EB] transition cursor-pointer shadow-sm"
               >
                 {SORT_OPTIONS.map((opt) => (
-                  <option key={opt.id} value={opt.id} className="bg-[#090A0F] text-zinc-300">
+                  <option key={opt.id} value={opt.id} className="bg-white text-[#09090B]">
                     {opt.label}
                   </option>
                 ))}
               </select>
+              <SlidersHorizontal className="w-3 h-3 text-[#52525B] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
           </div>
 
@@ -130,8 +130,8 @@ export default function Movies() {
                   onClick={() => { setActiveGenre(g.id); setPage(1); }}
                   className={`px-3 py-1 rounded-full text-xs font-medium transition-all flex-shrink-0 cursor-pointer ${
                     isSelected 
-                      ? 'bg-white text-black font-semibold' 
-                      : 'bg-white/[0.04] text-zinc-400 hover:text-white hover:bg-white/[0.08]'
+                      ? 'bg-[#09090B] text-white font-bold shadow-sm' 
+                      : 'bg-black/[0.04] text-[#52525B] hover:text-[#09090B] hover:bg-black/[0.08]'
                   }`}
                 >
                   {g.name}
@@ -145,7 +145,7 @@ export default function Movies() {
         {loading ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {[...Array(15)].map((_, i) => (
-              <div key={i} className="aspect-[2/3] rounded-xl shimmer-skeleton" />
+              <div key={i} className="aspect-[2/3] rounded-2xl shimmer-skeleton-light" />
             ))}
           </div>
         ) : (
@@ -161,7 +161,7 @@ export default function Movies() {
                   className="cursor-pointer group/item flex flex-col gap-2 flex-shrink-0 transition-all duration-200"
                 >
                   {/* Poster Card */}
-                  <div className="relative aspect-[2/3] w-full rounded-xl overflow-hidden bg-[#11131A] border border-white/[0.06] group-hover/item:border-white/20 transition-all duration-200 group-hover/item:scale-[1.02] shadow-sm">
+                  <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden bg-white border border-black/[0.06] group-hover/item:border-[#2563EB]/40 transition-all duration-200 group-hover/item:scale-[1.02] shadow-sm hover:shadow-md">
                     {poster ? (
                       <img 
                         src={poster} 
@@ -170,30 +170,30 @@ export default function Movies() {
                         className="absolute inset-0 w-full h-full object-cover transition duration-300 group-hover/item:brightness-105"
                       />
                     ) : (
-                      <div className="absolute inset-0 flex flex-col items-center justify-center p-3 text-center text-zinc-600 bg-[#0E1017]">
+                      <div className="absolute inset-0 flex flex-col items-center justify-center p-3 text-center text-zinc-400 bg-zinc-100">
                         <Film className="w-6 h-6 mb-1 opacity-30 stroke-[1.5]" />
-                        <span className="text-[9px] font-mono">{item.title}</span>
+                        <span className="text-[9px] font-mono text-[#52525B]">{item.title}</span>
                       </div>
                     )}
                     
                     {/* Rating Badge */}
                     {item.vote_average > 0 && (
-                      <div className="absolute top-2 right-2 bg-black/80 backdrop-blur-md px-2 py-0.5 rounded-md flex items-center gap-1 border border-white/10 z-20">
-                        <Star className="w-2.5 h-2.5 text-zinc-400 stroke-[1.5]" />
-                        <span className="text-[10px] font-mono text-zinc-300">{item.vote_average.toFixed(1)}</span>
+                      <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-md px-2 py-0.5 rounded-md flex items-center gap-1 border border-black/10 z-20 shadow-sm">
+                        <Star className="w-2.5 h-2.5 text-[#2563EB] fill-[#2563EB] stroke-[1.5]" />
+                        <span className="text-[10px] font-mono font-bold text-[#09090B]">{item.vote_average.toFixed(1)}</span>
                       </div>
                     )}
                   </div>
 
                   {/* Title & Metadata */}
                   <div className="space-y-0.5 px-0.5">
-                    <h3 className="text-xs font-semibold text-zinc-200 line-clamp-1 group-hover/item:text-white transition">
+                    <h3 className="text-xs font-semibold text-[#09090B] line-clamp-1 group-hover/item:text-[#2563EB] transition">
                       {item.title}
                     </h3>
-                    <div className="flex items-center gap-2 text-[10px] text-zinc-500 font-mono">
+                    <div className="flex items-center gap-2 text-[10px] text-[#52525B] font-mono">
                       <span>{year}</span>
                       <span>·</span>
-                      <span className="uppercase">Movie</span>
+                      <span className="uppercase font-medium">Movie</span>
                     </div>
                   </div>
 
@@ -209,7 +209,7 @@ export default function Movies() {
             <button
               onClick={loadMoreMovies}
               disabled={loadingMore}
-              className="px-6 py-2.5 rounded-full bg-[#11131A] hover:bg-[#161922] border border-white/10 text-zinc-300 hover:text-white text-xs font-mono tracking-wider uppercase transition flex items-center gap-2 cursor-pointer disabled:opacity-50"
+              className="px-6 py-2.5 rounded-full bg-[#09090B] hover:bg-black text-white text-xs font-mono tracking-wider uppercase transition flex items-center gap-2 cursor-pointer disabled:opacity-50 shadow-md"
             >
               <span>{loadingMore ? 'LOADING...' : 'LOAD MORE'}</span>
               {!loadingMore && <ChevronDown className="w-3.5 h-3.5 stroke-[1.5]" />}

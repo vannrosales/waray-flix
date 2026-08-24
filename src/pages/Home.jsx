@@ -106,7 +106,7 @@ export default function Home() {
   }, [selectedNetwork]);
 
   return (
-    <div className="min-h-screen bg-[#090A0F] text-[#EDEDED] pb-16">
+    <div className="min-h-screen bg-[#FAFAFA] text-[#09090B] pb-16 select-none">
       
       {/* Featured Dynamic Carousel Hero */}
       <Hero 
