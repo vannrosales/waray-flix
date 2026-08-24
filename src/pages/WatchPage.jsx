@@ -4,11 +4,14 @@ import { CONFIG } from '../config/siteConfig';
 import { ArrowLeft, Server, ChevronDown, SkipForward, Layers, X, Play, QrCode, Users2, PictureInPicture2 } from 'lucide-react';
 import ShareModal from '../components/ShareModal';
 import { usePlayer } from '../context/PlayerContext';
+import { useAuth } from '../context/AuthContext';
+import { storageService } from '../services/storageService';
 
 export default function WatchPage() {
   const { type, id, season, episode } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const startParam = searchParams.get('startAt') || searchParams.get('t');
   const currentSeason = season ? parseInt(season) : 1;
@@ -201,16 +204,15 @@ export default function WatchPage() {
           release_date: data.release_date,
           first_air_date: data.first_air_date,
           media_type: type,
-          season: type === 'tv' ? currentSeason : undefined,
-          episode: type === 'tv' ? currentEpisode : undefined,
+          season: type === 'tv' ? currentSeason : 1,
+          episode: type === 'tv' ? currentEpisode : 1,
           lastWatchedSeconds: currentSeconds, 
+          totalSeconds: estimatedDuration,
           durationSeconds: estimatedDuration,
           updatedAt: Date.now()
         };
 
-        const existingHistory = JSON.parse(localStorage.getItem('warayflix_watch_history') || '[]');
-        const filtered = existingHistory.filter(item => item.id.toString() !== id.toString());
-        localStorage.setItem('warayflix_watch_history', JSON.stringify([historyItem, ...filtered]));
+        await storageService.saveHistoryProgress(user?.id, historyItem);
       } catch (err) {
         console.error('Failed to update watch history:', err);
       }
@@ -221,7 +223,7 @@ export default function WatchPage() {
     return () => {
       isMounted = false;
     };
-  }, [type, id, currentSeason, currentEpisode, currentSeconds]);
+  }, [type, id, currentSeason, currentEpisode, currentSeconds, user?.id]);
 
   return (
     <div className="fixed inset-0 z-50 bg-black flex flex-col font-sans overflow-hidden select-none">

@@ -66,6 +66,7 @@ export default function Navbar() {
     { name: 'Discover', path: '/', icon: Compass },
     { name: 'Movies', path: '/movies', icon: Film },
     { name: 'Series', path: '/tv', icon: Tv },
+    { name: 'Watchlist', path: '/watchlist', icon: Bookmark },
     { name: 'Trailers', path: '/trailers', icon: PlaySquare },
     { name: 'Anime', path: '/category/anime', icon: Sparkles },
   ];
@@ -181,7 +182,7 @@ export default function Navbar() {
                     </div>
 
                     <Link
-                      to="/"
+                      to="/watchlist"
                       onClick={() => setProfileDropdownOpen(false)}
                       className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-zinc-300 hover:text-white hover:bg-white/[0.04] transition"
                     >

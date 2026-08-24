@@ -15,6 +15,7 @@ import PersonPage from './pages/PersonPage';
 import TrailersPage from './pages/TrailersPage';
 import CollectionPage from './pages/CollectionPage';
 import WatchPartyPage from './pages/WatchPartyPage';
+import WatchlistPage from './pages/WatchlistPage';
 import { AuthProvider } from './context/AuthContext';
 import { PlayerProvider } from './context/PlayerContext';
 import FloatingMiniPlayer from './components/FloatingMiniPlayer';
@@ -43,6 +44,7 @@ export default function App() {
               <Route path="/" element={<Home />} />
               <Route path="/movies" element={<Movies />} />
               <Route path="/tv" element={<TVShows />} />
+              <Route path="/watchlist" element={<WatchlistPage />} />
               <Route path="/trailers" element={<TrailersPage />} />
               <Route path="/details/:type/:id" element={<DetailPage />} />
               <Route path="/person/:id" element={<PersonPage />} />
