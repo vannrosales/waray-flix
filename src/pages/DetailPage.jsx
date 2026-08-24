@@ -129,7 +129,7 @@ export default function DetailPage() {
       </div>
 
       {/* Hero Visual Area with Trailer / Backdrop (100% Video Clarity) */}
-      <div className="relative h-[52vh] sm:h-[62vh] lg:h-[72vh] w-full overflow-hidden flex items-end bg-black">
+      <div className="relative h-[45vh] sm:h-[55vh] lg:h-[65vh] w-full overflow-hidden flex items-end bg-black">
         {backdrop && (
           <img 
             src={backdrop} 
@@ -156,14 +156,13 @@ export default function DetailPage() {
           </div>
         )}
 
-        {/* Cinema Vignette Overlays (Clear center video, smooth bottom merge) */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/30 pointer-events-none" />
-        <div className="absolute inset-y-0 left-0 w-full md:w-1/2 bg-gradient-to-r from-black/80 via-black/30 to-transparent pointer-events-none" />
-        <div className="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-[#FAFAFA] to-transparent pointer-events-none" />
+        {/* Cinema Vignette Overlays with Clean Smooth Bottom Transition to #FAFAFA */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 pointer-events-none" />
+        <div className="absolute bottom-0 inset-x-0 h-28 bg-gradient-to-t from-[#FAFAFA] via-[#FAFAFA]/70 to-transparent pointer-events-none" />
 
         {/* Sound toggle button */}
         {showVideo && trailerKey && (
-          <div className="absolute bottom-10 right-8 z-30">
+          <div className="absolute bottom-12 right-8 z-30">
             <button
               onClick={() => setIsMuted(!isMuted)}
               className="w-10 h-10 rounded-full bg-black/70 hover:bg-black text-white border border-white/20 backdrop-blur-xl flex items-center justify-center transition cursor-pointer shadow-xl hover:scale-105"
@@ -175,11 +174,11 @@ export default function DetailPage() {
         )}
       </div>
 
-      {/* Main Content Info Container */}
-      <div className="max-w-[1440px] mx-auto px-6 md:px-12 -mt-20 sm:-mt-28 relative z-30 space-y-12">
+      {/* Main Content Info Container (Clean, Razor-Sharp Layout on #FAFAFA Canvas) */}
+      <div className="max-w-[1440px] mx-auto px-6 md:px-12 relative z-30 space-y-12">
         
         {/* Top Info Deck with Floating Poster */}
-        <div className="flex flex-col md:flex-row gap-8 items-start">
+        <div className="flex flex-col md:flex-row gap-8 items-start -mt-20 sm:-mt-28">
           
           {/* Floating Poster Card */}
           <div className="w-44 sm:w-56 md:w-60 flex-shrink-0 aspect-[2/3] rounded-3xl overflow-hidden bg-white border border-black/10 shadow-2xl relative hidden sm:block">
@@ -192,32 +191,33 @@ export default function DetailPage() {
             )}
           </div>
 
-          {/* Metadata & Actions */}
-          <div className="flex-1 space-y-5">
+          {/* Metadata & Actions (Sitting cleanly on the light background) */}
+          <div className="flex-1 space-y-5 pt-4 sm:pt-8">
             <div className="space-y-2">
               <div className="flex flex-wrap items-center gap-3 text-xs text-[#52525B] font-mono">
-                <span className="px-2.5 py-0.5 rounded-full bg-[#09090B] text-white font-bold uppercase text-[10px]">
+                <span className="px-2.5 py-0.5 rounded-full bg-[#09090B] text-white font-bold uppercase text-[10px] shadow-sm">
                   {type}
                 </span>
-                <span className="text-[#09090B] font-semibold">{releaseYear}</span>
+                <span className="text-[#09090B] font-bold text-xs">{releaseYear}</span>
                 <span>·</span>
                 {media.vote_average > 0 && (
                   <>
                     <span className="flex items-center gap-1 text-[#09090B] font-bold">
-                      <Star className="w-3 h-3 text-[#2563EB] fill-[#2563EB] stroke-[1.5]" /> {media.vote_average.toFixed(1)}
+                      <Star className="w-3.5 h-3.5 text-[#2563EB] fill-[#2563EB] stroke-[1.5]" /> {media.vote_average.toFixed(1)}
                     </span>
                     <span>·</span>
                   </>
                 )}
                 {runtime && (
-                  <span className="flex items-center gap-1 text-[#52525B]">
-                    <Clock className="w-3 h-3 stroke-[1.5]" /> {runtime}m
+                  <span className="flex items-center gap-1 text-[#52525B] font-medium">
+                    <Clock className="w-3.5 h-3.5 stroke-[1.5]" /> {runtime}m
                   </span>
                 )}
-                <span className="text-[#52525B] text-[11px] font-semibold">4K ULTRA HD</span>
+                <span className="text-[#52525B] text-[11px] font-bold">4K ULTRA HD</span>
               </div>
 
-              <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-[#09090B] font-['Outfit'] leading-[1.05]">
+              {/* High-Contrast Bold Title */}
+              <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight text-[#09090B] font-['Outfit'] leading-[1.05]">
                 {media.title || media.name}
               </h1>
 
@@ -225,7 +225,7 @@ export default function DetailPage() {
               {media.genres && media.genres.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 pt-1">
                   {media.genres.map((g) => (
-                    <span key={g.id} className="px-3 py-0.5 rounded-full bg-black/[0.04] border border-black/[0.08] text-[11px] text-[#52525B] font-mono font-medium">
+                    <span key={g.id} className="px-3 py-1 rounded-full bg-black/[0.05] border border-black/[0.08] text-[11px] text-[#09090B] font-mono font-semibold">
                       {g.name}
                     </span>
                   ))}
@@ -235,12 +235,12 @@ export default function DetailPage() {
 
             {/* Saved Progress Bar if applicable */}
             {watchProgress && totalSeconds > 0 && (
-              <div className="space-y-1.5 max-w-md p-3 rounded-2xl bg-white border border-black/[0.08] shadow-sm">
+              <div className="space-y-1.5 max-w-md p-3.5 rounded-2xl bg-white border border-black/[0.08] shadow-sm">
                 <div className="flex items-center justify-between text-[10px] font-mono text-[#52525B]">
-                  <span className="font-semibold">RESUME PROGRESS</span>
+                  <span className="font-bold uppercase tracking-wider text-[#09090B]">RESUME PROGRESS</span>
                   <span className="text-[#2563EB] font-bold">{progressPercent}%</span>
                 </div>
-                <div className="w-full bg-zinc-100 h-1.5 rounded-full overflow-hidden">
+                <div className="w-full bg-zinc-100 h-2 rounded-full overflow-hidden">
                   <div 
                     className="bg-[#2563EB] h-full rounded-full transition-all duration-300"
                     style={{ width: `${progressPercent}%` }}
@@ -264,7 +264,7 @@ export default function DetailPage() {
                 className={`px-5 py-2.5 rounded-full border text-xs font-medium uppercase tracking-wider flex items-center gap-2 transition cursor-pointer backdrop-blur-md shadow-sm ${
                   isAdded 
                     ? 'bg-[#2563EB]/10 border-[#2563EB]/30 text-[#2563EB] font-bold' 
-                    : 'bg-white border-black/10 text-[#52525B] hover:text-[#09090B]'
+                    : 'bg-white border-black/10 text-[#09090B] hover:bg-zinc-50'
                 }`}
               >
                 <Bookmark className="w-3.5 h-3.5 stroke-[1.5]" />
@@ -273,7 +273,7 @@ export default function DetailPage() {
 
               <button 
                 onClick={() => navigate(`/party/${type}/${id}`)}
-                className="px-4 py-2.5 rounded-full border border-black/10 bg-white text-[#52525B] hover:text-[#09090B] text-xs font-medium uppercase tracking-wider flex items-center gap-2 transition cursor-pointer backdrop-blur-md shadow-sm"
+                className="px-4 py-2.5 rounded-full border border-black/10 bg-white text-[#09090B] hover:bg-zinc-50 text-xs font-medium uppercase tracking-wider flex items-center gap-2 transition cursor-pointer backdrop-blur-md shadow-sm"
                 title="Start a P2P Watch Party Room"
               >
                 <Users2 className="w-3.5 h-3.5 stroke-[1.5]" />
@@ -282,7 +282,7 @@ export default function DetailPage() {
 
               <button 
                 onClick={() => setShareOpen(true)}
-                className="px-4 py-2.5 rounded-full border border-black/10 bg-white text-[#52525B] hover:text-[#09090B] text-xs font-medium uppercase tracking-wider flex items-center gap-2 transition cursor-pointer backdrop-blur-md shadow-sm"
+                className="px-4 py-2.5 rounded-full border border-black/10 bg-white text-[#09090B] hover:bg-zinc-50 text-xs font-medium uppercase tracking-wider flex items-center gap-2 transition cursor-pointer backdrop-blur-md shadow-sm"
                 title="Send to Phone via QR Code"
               >
                 <QrCode className="w-3.5 h-3.5 stroke-[1.5]" />
@@ -315,7 +315,7 @@ export default function DetailPage() {
 
             {/* Synopsis */}
             <div className="space-y-1.5 pt-3 border-t border-black/[0.08]">
-              <span className="text-[10px] font-mono text-[#52525B] uppercase tracking-widest font-semibold">SYNOPSIS</span>
+              <span className="text-[10px] font-mono text-[#52525B] uppercase tracking-widest font-bold">SYNOPSIS</span>
               <p className="text-[#52525B] text-sm leading-relaxed font-normal max-w-3xl">
                 {media.overview || "No synopsis available for this selection."}
               </p>
