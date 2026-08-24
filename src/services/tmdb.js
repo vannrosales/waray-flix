@@ -218,3 +218,8 @@ export async function fetchTrailersFeed() {
 
   return itemsWithTrailers.filter(Boolean);
 }
+
+// Fetch complete collection / franchise details
+export async function fetchCollectionDetails(collectionId) {
+  return fetchFromTMDB(`/collection/${collectionId}`);
+}

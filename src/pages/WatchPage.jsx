@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { CONFIG } from '../config/siteConfig';
 import { fetchSeasonDetails, fetchMediaDetails, getImageUrl } from '../services/tmdb';
-import { ArrowLeft, Server, ChevronDown, SkipForward, Layers, X, Play, QrCode } from 'lucide-react';
+import { ArrowLeft, Server, ChevronDown, SkipForward, Layers, X, Play, QrCode, Users2 } from 'lucide-react';
 import ShareModal from '../components/ShareModal';
 
 export default function WatchPage() {
@@ -291,6 +291,16 @@ export default function WatchPage() {
               <span className="hidden sm:inline">Episodes</span>
             </button>
           )}
+
+          {/* Watch Party Button */}
+          <button
+            onClick={() => navigate(`/party/${type}/${id}`)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#0E1017]/90 hover:bg-[#161922] text-xs font-mono text-zinc-300 hover:text-white border border-white/10 backdrop-blur-xl transition cursor-pointer shadow-lg"
+            title="Start a P2P Watch Party Room"
+          >
+            <Users2 className="w-3.5 h-3.5 stroke-[1.5]" />
+            <span className="hidden lg:inline">Party</span>
+          </button>
 
           {/* Send to Phone / Share Button */}
           <button

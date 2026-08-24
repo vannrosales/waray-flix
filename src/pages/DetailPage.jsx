@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchMediaDetails, fetchSeasonDetails, fetchMediaVideos, getImageUrl } from '../services/tmdb';
-import { Play, ArrowLeft, Star, Clock, Layers, VolumeX, Volume2, Bookmark, Film, Users, QrCode } from 'lucide-react';
+import { Play, ArrowLeft, Star, Clock, Layers, VolumeX, Volume2, Bookmark, Film, Users, QrCode, ArrowRight, Users2 } from 'lucide-react';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 import { usePlaylist } from '../hooks/usePlaylist';
 import MediaRow from '../components/MediaRow';
@@ -269,6 +269,15 @@ export default function DetailPage() {
               </button>
 
               <button 
+                onClick={() => navigate(`/party/${type}/${id}`)}
+                className="px-4 py-2.5 rounded-full border border-white/10 bg-white/[0.04] text-zinc-400 hover:text-white hover:border-white/30 text-xs font-medium uppercase tracking-wider flex items-center gap-2 transition cursor-pointer backdrop-blur-md"
+                title="Start a P2P Watch Party Room"
+              >
+                <Users2 className="w-3.5 h-3.5 stroke-[1.5]" />
+                <span className="hidden sm:inline">Watch Party</span>
+              </button>
+
+              <button 
                 onClick={() => setShareOpen(true)}
                 className="px-4 py-2.5 rounded-full border border-white/10 bg-white/[0.04] text-zinc-400 hover:text-white hover:border-white/30 text-xs font-medium uppercase tracking-wider flex items-center gap-2 transition cursor-pointer backdrop-blur-md"
                 title="Send to Phone via QR Code"
@@ -277,6 +286,29 @@ export default function DetailPage() {
                 <span className="hidden sm:inline">Send to Phone</span>
               </button>
             </div>
+
+            {/* Franchise / Collection Banner */}
+            {media.belongs_to_collection && (
+              <div 
+                onClick={() => navigate(`/collection/${media.belongs_to_collection.id}`)}
+                className="flex items-center justify-between p-3.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.08] hover:border-white/20 transition cursor-pointer group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/10 flex items-center justify-center">
+                    <Layers className="w-4 h-4 text-zinc-300 stroke-[1.5]" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider block">Part of the Franchise</span>
+                    <h4 className="text-xs sm:text-sm font-bold text-white group-hover:text-zinc-200 transition">
+                      {media.belongs_to_collection.name}
+                    </h4>
+                  </div>
+                </div>
+                <span className="text-xs font-mono text-zinc-400 group-hover:text-white flex items-center gap-1">
+                  View Franchise <ArrowRight className="w-3.5 h-3.5 stroke-[1.5] group-hover:translate-x-1 transition-transform" />
+                </span>
+              </div>
+            )}
 
             {/* Synopsis */}
             <div className="space-y-1.5 pt-3 border-t border-white/[0.06]">
