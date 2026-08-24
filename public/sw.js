@@ -1,4 +1,4 @@
-const CACHE_NAME = 'warayflix-cache-v1';
+const CACHE_NAME = 'warayflix-cache-v2';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -8,11 +8,13 @@ const STATIC_ASSETS = [
   '/icon-512.svg'
 ];
 
-// Install: Cache core static assets
+// Install: Cache core static assets safely
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(STATIC_ASSETS);
+    caches.open(CACHE_NAME).then(async (cache) => {
+      await Promise.allSettled(
+        STATIC_ASSETS.map((url) => cache.add(url).catch((err) => console.warn(`SW cache failed for ${url}:`, err)))
+      );
     }).then(() => self.skipWaiting())
   );
 });
@@ -30,40 +32,76 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch: Network-first for dynamic routes and API calls, Cache-first for local static assets
+// Fetch: Safe handling with guaranteed Response return
 self.addEventListener('fetch', (event) => {
-  const url = new URL(event.request.url);
+  const request = event.request;
+  const url = new URL(request.url);
 
-  // Do not cache API or video embed calls in SW (they are handled by TMDB service in-memory cache)
-  if (url.origin.includes('themoviedb.org') || url.origin.includes('embed') || event.request.method !== 'GET') {
+  // Only handle HTTP/HTTPS GET requests; bypass extension, websocket, API and embed calls
+  if (
+    request.method !== 'GET' ||
+    !url.protocol.startsWith('http') ||
+    url.origin.includes('themoviedb.org') ||
+    url.origin.includes('broker.emqx.io') ||
+    url.origin.includes('embed') ||
+    url.origin.includes('cinesrc') ||
+    url.origin.includes('vidsrc') ||
+    url.origin.includes('videasy') ||
+    url.origin.includes('zoryva') ||
+    url.origin.includes('vidcore')
+  ) {
     return;
   }
 
-  // For HTML navigations, use Network-First with offline fallback to cached index.html
-  if (event.request.mode === 'navigate') {
+  // HTML navigation requests (Network First -> Cache fallback -> Safe Response fallback)
+  if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(event.request).catch(() => {
-        return caches.match('/index.html');
-      })
+      fetch(request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const copy = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put('/index.html', copy));
+          }
+          return networkResponse;
+        })
+        .catch(async () => {
+          const cached = await caches.match('/index.html');
+          if (cached) return cached;
+          const rootCached = await caches.match('/');
+          if (rootCached) return rootCached;
+          return new Response(
+            '<!DOCTYPE html><html><head><title>WarayFlix</title></head><body style="background:#090A0F;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;">Offline mode - Please reconnect to internet.</body></html>',
+            { headers: { 'Content-Type': 'text/html' } }
+          );
+        })
     );
     return;
   }
 
-  // For static assets (CSS, JS, Fonts, Images), use Stale-While-Revalidate
+  // Static Assets (CSS, JS, Fonts, Images)
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      const fetchPromise = fetch(event.request).then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache);
+    caches.match(request).then((cachedResponse) => {
+      if (cachedResponse) {
+        // Fetch in background to revalidate cache
+        fetch(request)
+          .then((networkResponse) => {
+            if (networkResponse && networkResponse.status === 200) {
+              caches.open(CACHE_NAME).then((cache) => cache.put(request, networkResponse));
+            }
+          })
+          .catch(() => {
+            // Ignore network errors during background revalidation
           });
+        return cachedResponse;
+      }
+
+      return fetch(request).then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const copy = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
         }
         return networkResponse;
-      }).catch(() => cachedResponse);
-
-      return cachedResponse || fetchPromise;
+      });
     })
   );
 });
-
