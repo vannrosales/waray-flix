@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Clapperboard, Search, Menu, X, Compass, Film, Tv, Sparkles, Dices, Keyboard, PlaySquare } from 'lucide-react';
+import { Clapperboard, Search, Menu, X, Compass, Film, Tv, Sparkles, Dices, PlaySquare, User, LogOut, Bookmark, ChevronDown } from 'lucide-react';
 import SearchModal from './SearchModal';
 import SurpriseModal from './SurpriseModal';
 import InstallPrompt from './InstallPrompt';
 import ShortcutsModal from './ShortcutsModal';
+import AuthModal from './AuthModal';
+import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -12,7 +14,11 @@ export default function Navbar() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [surpriseOpen, setSurpriseOpen] = useState(false);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  
+  const { user, username, openAuthModal, signOut } = useAuth();
   const location = useLocation();
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -20,6 +26,17 @@ export default function Navbar() {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setProfileDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   // Global hotkeys: Cmd+K / Ctrl+K, '/', '?' (Shift+/), 'D'
@@ -139,6 +156,62 @@ export default function Navbar() {
               </kbd>
             </button>
 
+            {/* Auth Profile Menu / Sign In Button */}
+            {user ? (
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                  className="flex items-center gap-2 pl-2 pr-3 py-1 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs text-white transition cursor-pointer"
+                >
+                  <div className="w-6 h-6 rounded-full bg-white text-black font-semibold text-[10px] flex items-center justify-center font-mono">
+                    {username.charAt(0).toUpperCase()}
+                  </div>
+                  <span className="hidden sm:inline font-mono text-[11px] truncate max-w-[80px]">
+                    {username}
+                  </span>
+                  <ChevronDown className="w-3 h-3 text-zinc-400 stroke-[1.5]" />
+                </button>
+
+                {/* Profile Dropdown Menu */}
+                {profileDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-[#0E1017] border border-white/10 rounded-2xl shadow-2xl p-1.5 z-50 animate-slide-up space-y-1">
+                    <div className="px-3 py-2 border-b border-white/[0.06]">
+                      <span className="text-[10px] font-mono text-zinc-500 uppercase block">Signed in as</span>
+                      <p className="text-xs font-medium text-white truncate">{user.email || username}</p>
+                    </div>
+
+                    <Link
+                      to="/"
+                      onClick={() => setProfileDropdownOpen(false)}
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-zinc-300 hover:text-white hover:bg-white/[0.04] transition"
+                    >
+                      <Bookmark className="w-3.5 h-3.5 stroke-[1.5] text-zinc-400" />
+                      <span>My Watchlist</span>
+                    </Link>
+
+                    <button
+                      onClick={() => {
+                        signOut();
+                        setProfileDropdownOpen(false);
+                      }}
+                      className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-zinc-400 hover:text-white hover:bg-white/[0.04] transition cursor-pointer text-left"
+                    >
+                      <LogOut className="w-3.5 h-3.5 stroke-[1.5] text-zinc-400" />
+                      <span>Sign Out</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button
+                onClick={openAuthModal}
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white text-black font-semibold text-xs transition cursor-pointer hover:bg-zinc-200 shadow-sm"
+              >
+                <User className="w-3.5 h-3.5 stroke-[2]" />
+                <span>Sign In</span>
+              </button>
+            )}
+
             {/* Mobile Menu Toggle */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -151,62 +224,39 @@ export default function Navbar() {
 
         </div>
 
-        {/* Mobile Minimalist Drawer */}
+        {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div className="md:hidden absolute top-full left-0 right-0 bg-[#090A0F]/98 backdrop-blur-2xl border-b border-white/[0.08] p-6 space-y-2 animate-fade-in shadow-2xl">
-            {navLinks.map((link) => {
-              const isActive = location.pathname === link.path;
-              const Icon = link.icon;
-              return (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm transition ${
-                    isActive 
-                      ? 'bg-white/[0.08] text-white font-semibold border border-white/10' 
-                      : 'text-zinc-400 hover:text-white hover:bg-white/[0.03]'
-                  }`}
-                >
-                  <Icon className="w-4 h-4 stroke-[1.5]" />
-                  <span>{link.name}</span>
-                </Link>
-              );
-            })}
-
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                setSurpriseOpen(true);
-              }}
-              className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-zinc-300 hover:text-white hover:bg-white/[0.04] transition"
-            >
-              <Dices className="w-4 h-4 stroke-[1.5]" />
-              <span>Surprise Me (Mood Matcher)</span>
-            </button>
-
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                setShortcutsOpen(true);
-              }}
-              className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-zinc-400 hover:text-white hover:bg-white/[0.04] transition"
-            >
-              <Keyboard className="w-4 h-4 stroke-[1.5]" />
-              <span>Keyboard Shortcuts (?)</span>
-            </button>
+          <div className="md:hidden bg-[#090A0F]/95 border-b border-white/[0.08] px-6 py-5 mt-2 space-y-4 animate-fade-in backdrop-blur-2xl">
+            <div className="flex flex-col space-y-2">
+              {navLinks.map((link) => {
+                const Icon = link.icon;
+                const isActive = location.pathname === link.path;
+                return (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition ${
+                      isActive 
+                        ? 'bg-white/10 text-white font-semibold' 
+                        : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4 stroke-[1.5]" />
+                    <span>{link.name}</span>
+                  </Link>
+                );
+              })}
+            </div>
           </div>
         )}
       </header>
 
-      {/* Global Command Palette Search Modal */}
+      {/* Global Modals */}
       <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
-
-      {/* Surprise Me / Cinema Roulette Modal */}
       <SurpriseModal isOpen={surpriseOpen} onClose={() => setSurpriseOpen(false)} />
-
-      {/* Keyboard Shortcuts Cheatsheet Modal */}
       <ShortcutsModal isOpen={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />
+      <AuthModal />
     </>
   );
 }

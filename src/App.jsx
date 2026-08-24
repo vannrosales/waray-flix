@@ -15,6 +15,7 @@ import PersonPage from './pages/PersonPage';
 import TrailersPage from './pages/TrailersPage';
 import CollectionPage from './pages/CollectionPage';
 import WatchPartyPage from './pages/WatchPartyPage';
+import { AuthProvider } from './context/AuthContext';
 import { PlayerProvider } from './context/PlayerContext';
 import FloatingMiniPlayer from './components/FloatingMiniPlayer';
 
@@ -33,36 +34,38 @@ function Layout() {
 export default function App() {
   return (
     <BrowserRouter>
-      <PlayerProvider>
-        <ScrollToTop />
-        <Routes>
-          {/* Main Application Layout with Floating Header & Footer */}
-          <Route element={<Layout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/movies" element={<Movies />} />
-            <Route path="/tv" element={<TVShows />} />
-            <Route path="/trailers" element={<TrailersPage />} />
-            <Route path="/details/:type/:id" element={<DetailPage />} />
-            <Route path="/person/:id" element={<PersonPage />} />
-            <Route path="/collection/:id" element={<CollectionPage />} />
-            <Route path="/search" element={<SearchPage />} />
-            <Route path="/network/:networkName/:id" element={<NetworkHubPage />} />
-            <Route path="/category/anime" element={<AnimePage />} />
-            <Route path="/anime" element={<AnimePage />} />
-          </Route>
+      <AuthProvider>
+        <PlayerProvider>
+          <ScrollToTop />
+          <Routes>
+            {/* Main Application Layout with Floating Header & Footer */}
+            <Route element={<Layout />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/movies" element={<Movies />} />
+              <Route path="/tv" element={<TVShows />} />
+              <Route path="/trailers" element={<TrailersPage />} />
+              <Route path="/details/:type/:id" element={<DetailPage />} />
+              <Route path="/person/:id" element={<PersonPage />} />
+              <Route path="/collection/:id" element={<CollectionPage />} />
+              <Route path="/search" element={<SearchPage />} />
+              <Route path="/network/:networkName/:id" element={<NetworkHubPage />} />
+              <Route path="/category/anime" element={<AnimePage />} />
+              <Route path="/anime" element={<AnimePage />} />
+            </Route>
 
-          {/* Dedicated Immersive Fullscreen Watch Player */}
-          <Route path="/watch/:type/:id" element={<WatchPage />} />
-          <Route path="/watch/:type/:id/:season/:episode" element={<WatchPage />} />
+            {/* Dedicated Immersive Fullscreen Watch Player */}
+            <Route path="/watch/:type/:id" element={<WatchPage />} />
+            <Route path="/watch/:type/:id/:season/:episode" element={<WatchPage />} />
 
-          {/* P2P Synchronized Watch Party Rooms */}
-          <Route path="/party/:type/:id" element={<WatchPartyPage />} />
-          <Route path="/party/:type/:id/:season/:episode" element={<WatchPartyPage />} />
-        </Routes>
+            {/* P2P Synchronized Watch Party Rooms */}
+            <Route path="/party/:type/:id" element={<WatchPartyPage />} />
+            <Route path="/party/:type/:id/:season/:episode" element={<WatchPartyPage />} />
+          </Routes>
 
-        {/* Global Persistent Floating Picture-in-Picture Mini-Player */}
-        <FloatingMiniPlayer />
-      </PlayerProvider>
+          {/* Global Persistent Floating Picture-in-Picture Mini-Player */}
+          <FloatingMiniPlayer />
+        </PlayerProvider>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

@@ -4,6 +4,7 @@ import { CONFIG } from '../config/siteConfig';
 import { fetchMediaDetails } from '../services/tmdb';
 import { useWatchParty } from '../hooks/useWatchParty';
 import useDocumentTitle from '../hooks/useDocumentTitle';
+import { useAuth } from '../context/AuthContext';
 import PartyHeader from '../components/party/PartyHeader';
 import PartyChatDrawer from '../components/party/PartyChatDrawer';
 import PartyReactionsOverlay from '../components/party/PartyReactionsOverlay';
@@ -13,12 +14,13 @@ export default function WatchPartyPage() {
   const { type, id, season, episode } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { username: authUser } = useAuth();
 
   const currentSeason = season ? parseInt(season) : 1;
   const currentEpisode = episode ? parseInt(episode) : 1;
   
   const [roomId] = useState(() => searchParams.get('room') || `PARTY-${id}-${Math.floor(1000 + Math.random() * 9000)}`);
-  const [username] = useState(() => `Viewer-${Math.floor(100 + Math.random() * 900)}`);
+  const [username] = useState(() => authUser || `Viewer-${Math.floor(100 + Math.random() * 900)}`);
 
   // Ensure address bar always has ?room= parameter for 1-click sharing
   useEffect(() => {
