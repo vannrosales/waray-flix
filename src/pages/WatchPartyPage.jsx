@@ -38,6 +38,7 @@ export default function WatchPartyPage() {
     appliedTime,
     currentPlaybackSecs,
     hostTime,
+    syncKey,
     connectionStatus,
     messages,
     floatingReactions,
@@ -46,6 +47,8 @@ export default function WatchPartyPage() {
     triggerReaction,
     syncToHost,
     broadcastSync,
+    adjustPlaybackTime,
+    setManualPlaybackTime,
     changePlayer
   } = useWatchParty(roomId, username);
 
@@ -115,7 +118,7 @@ export default function WatchPartyPage() {
         }`}>
           <iframe 
             src={embedUrl}
-            key={`${selectedPlayerId}-${appliedTime}`}
+            key={`${selectedPlayerId}-${appliedTime}-${syncKey}`}
             title="Watch Party Player"
             className="w-full h-full border-0 pointer-events-auto"
             allowFullScreen
@@ -134,6 +137,8 @@ export default function WatchPartyPage() {
               currentPlaybackSecs={currentPlaybackSecs}
               onBroadcastSync={broadcastSync}
               onSyncToHost={syncToHost}
+              onAdjustTime={adjustPlaybackTime}
+              onManualTime={setManualPlaybackTime}
               onTriggerReaction={triggerReaction}
               messages={messages}
               onSendMessage={sendMessage}

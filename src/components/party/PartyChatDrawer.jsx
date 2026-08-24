@@ -19,6 +19,7 @@ export default function PartyChatDrawer({
   currentPlaybackSecs,
   onBroadcastSync,
   onSyncToHost,
+  onAdjustTime,
   onTriggerReaction,
   messages,
   onSendMessage
@@ -112,27 +113,68 @@ export default function PartyChatDrawer({
         )}
 
         {/* Sync Controls Card */}
-        <div className="p-2 rounded-xl bg-[#0E1017] border border-white/[0.06] flex items-center justify-between gap-2">
-          <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-mono">
-            <span className="text-zinc-500">Sync:</span>
-            <span className="text-zinc-200 font-medium">{formatTime(hostTime || currentPlaybackSecs)}</span>
+        <div className="p-2.5 rounded-xl bg-[#0E1017] border border-white/[0.06] space-y-2">
+          <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-mono">
+            <span className="text-zinc-500">Sync Position:</span>
+            <span className="text-zinc-200 font-semibold">{formatTime(currentPlaybackSecs || hostTime)}</span>
           </div>
           
           <div className="flex items-center gap-1.5">
             <button
               onClick={onBroadcastSync}
-              className="px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 hover:text-white text-[10px] sm:text-xs font-mono transition cursor-pointer flex items-center justify-center gap-1 border border-white/[0.08]"
+              className="flex-1 py-1.5 rounded-lg bg-white text-black hover:bg-zinc-200 text-[10px] sm:text-xs font-mono font-medium transition cursor-pointer flex items-center justify-center gap-1 shadow-sm"
+              title="Force synchronize all viewers to this exact position"
             >
-              <Zap className="w-3 h-3 stroke-[1.5]" />
+              <Zap className="w-3 h-3 stroke-[2]" />
               <span>Sync All</span>
             </button>
 
             <button
               onClick={onSyncToHost}
-              className="px-2.5 py-1 rounded-lg bg-white text-black hover:bg-zinc-200 text-[10px] sm:text-xs font-mono font-medium transition cursor-pointer flex items-center justify-center gap-1"
+              className="flex-1 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 text-[10px] sm:text-xs font-mono transition cursor-pointer flex items-center justify-center gap-1 border border-white/10"
+              title="Catch up to room timestamp"
             >
               <RotateCw className="w-3 h-3 stroke-[1.5]" />
               <span>Catch Up</span>
+            </button>
+          </div>
+
+          {/* Quick Time Adjusters */}
+          <div className="flex items-center justify-between gap-1 pt-1 border-t border-white/[0.04]">
+            <button
+              onClick={() => onAdjustTime && onAdjustTime(-30)}
+              className="px-2 py-0.5 rounded bg-white/[0.03] hover:bg-white/[0.08] text-[9px] font-mono text-zinc-400 hover:text-white border border-white/[0.06] transition"
+              title="Rewind 30 seconds for all"
+            >
+              -30s
+            </button>
+            <button
+              onClick={() => onAdjustTime && onAdjustTime(-10)}
+              className="px-2 py-0.5 rounded bg-white/[0.03] hover:bg-white/[0.08] text-[9px] font-mono text-zinc-400 hover:text-white border border-white/[0.06] transition"
+              title="Rewind 10 seconds for all"
+            >
+              -10s
+            </button>
+            <button
+              onClick={() => onAdjustTime && onAdjustTime(10)}
+              className="px-2 py-0.5 rounded bg-white/[0.03] hover:bg-white/[0.08] text-[9px] font-mono text-zinc-400 hover:text-white border border-white/[0.06] transition"
+              title="Forward 10 seconds for all"
+            >
+              +10s
+            </button>
+            <button
+              onClick={() => onAdjustTime && onAdjustTime(30)}
+              className="px-2 py-0.5 rounded bg-white/[0.03] hover:bg-white/[0.08] text-[9px] font-mono text-zinc-400 hover:text-white border border-white/[0.06] transition"
+              title="Forward 30 seconds for all"
+            >
+              +30s
+            </button>
+            <button
+              onClick={() => onAdjustTime && onAdjustTime(60)}
+              className="px-2 py-0.5 rounded bg-white/[0.03] hover:bg-white/[0.08] text-[9px] font-mono text-zinc-400 hover:text-white border border-white/[0.06] transition"
+              title="Forward 1 minute for all"
+            >
+              +1m
             </button>
           </div>
         </div>

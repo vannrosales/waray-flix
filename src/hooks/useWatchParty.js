@@ -10,6 +10,7 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
   const [currentPlaybackSecs, setCurrentPlaybackSecs] = useState(0);
   const [hostTime, setHostTime] = useState(0);
   const [appliedTime, setAppliedTime] = useState(0);
+  const [syncKey, setSyncKey] = useState(0);
 
   // Chat & Reactions
   const [messages, setMessages] = useState([
@@ -23,7 +24,8 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
   });
 
   const channelRef = useRef(null);
-  const localTimeRef = useRef(0);
+  const anchorSecondsRef = useRef(0);
+  const sessionStartRef = useRef(Date.now());
   const localPlayerRef = useRef(selectedPlayerId);
   const peerRef = useRef(null);
   const connectionsRef = useRef([]);
@@ -35,6 +37,33 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
   useEffect(() => {
     localPlayerRef.current = selectedPlayerId;
   }, [selectedPlayerId]);
+
+  // Load existing watch history progress if available
+  useEffect(() => {
+    try {
+      const savedHistory = JSON.parse(localStorage.getItem('warayflix_watch_history') || '[]');
+      const item = savedHistory.find(h => h.id && roomId.includes(h.id.toString()));
+      if (item && item.lastWatchedSeconds > 0) {
+        anchorSecondsRef.current = item.lastWatchedSeconds;
+        sessionStartRef.current = Date.now();
+        setAppliedTime(item.lastWatchedSeconds);
+        setCurrentPlaybackSecs(item.lastWatchedSeconds);
+      }
+    } catch {
+      // ignore
+    }
+  }, [roomId]);
+
+  // Running playback clock ticker (ensures currentPlaybackSecs is always ticking & never stuck at 0)
+  useEffect(() => {
+    const ticker = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - sessionStartRef.current) / 1000);
+      const computedTime = Math.max(0, anchorSecondsRef.current + elapsed);
+      setCurrentPlaybackSecs(computedTime);
+    }, 1000);
+
+    return () => clearInterval(ticker);
+  }, []);
 
   // Broadcast helper across WebRTC peers and BroadcastChannel
   const broadcastData = useCallback((data) => {
@@ -89,6 +118,18 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
     ]);
   }, [username]);
 
+  // Apply a new target sync time to local player
+  const applySyncTimeLocally = useCallback((targetTime, targetPlayer) => {
+    const validTime = Math.max(0, Math.floor(targetTime));
+    anchorSecondsRef.current = validTime;
+    sessionStartRef.current = Date.now();
+    setAppliedTime(validTime);
+    setCurrentPlaybackSecs(validTime);
+    setHostTime(validTime);
+    setSyncKey((k) => k + 1);
+    if (targetPlayer) setSelectedPlayerId(targetPlayer);
+  }, []);
+
   // Process incoming data packet
   const handleIncomingData = useCallback((data) => {
     if (!data) return;
@@ -102,13 +143,8 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
       triggerReaction(data.emoji, false);
     } else if (data.type === 'HEARTBEAT' || data.type === 'USER_PRESENT') {
       recordPeerHeartbeat(data.username, data.isHost);
-      if (data.currentTime > 0) {
+      if (typeof data.currentTime === 'number' && data.currentTime > 0) {
         setHostTime(data.currentTime);
-        if (localTimeRef.current === 0) {
-          setAppliedTime(data.currentTime);
-          setCurrentPlaybackSecs(data.currentTime);
-          localTimeRef.current = data.currentTime;
-        }
       }
     } else if (data.type === 'USER_JOINED') {
       recordPeerHeartbeat(data.username, false);
@@ -117,50 +153,48 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
         { id: `sys-${Date.now()}`, sender: 'System', text: `${data.username} connected.`, time: 'Now', isSystem: true }
       ]);
       // Reply with current state snapshot & announce presence
+      const currentElapsed = anchorSecondsRef.current + Math.floor((Date.now() - sessionStartRef.current) / 1000);
       broadcastData({
         type: 'USER_PRESENT',
         username,
-        currentTime: localTimeRef.current,
+        currentTime: currentElapsed,
         player: localPlayerRef.current,
         isHost: true
       });
     } else if (data.type === 'USER_LEFT') {
       removePeer(data.username);
     } else if (data.type === 'TIMESTAMP_BEAT') {
-      setHostTime(data.time);
-      recordPeerHeartbeat(data.from, true);
+      if (typeof data.time === 'number') {
+        setHostTime(data.time);
+        recordPeerHeartbeat(data.from, true);
+      }
     } else if (data.type === 'FORCE_SYNC') {
-      setHostTime(data.time);
-      setAppliedTime(data.time);
-      setCurrentPlaybackSecs(data.time);
-      localTimeRef.current = data.time;
-      if (data.player) setSelectedPlayerId(data.player);
+      applySyncTimeLocally(data.time, data.player);
       setMessages((prev) => [
         ...prev,
         { id: `sys-${Date.now()}`, sender: 'System', text: `Room synchronized to ${formatTime(data.time)}.`, time: 'Now', isSystem: true }
       ]);
     }
-  }, [triggerReaction, username, broadcastData, recordPeerHeartbeat, removePeer]);
+  }, [triggerReaction, username, broadcastData, recordPeerHeartbeat, removePeer, applySyncTimeLocally]);
 
   // Periodic heartbeat & stale peer pruning
   useEffect(() => {
     const heartbeatInterval = setInterval(() => {
-      // 1. Refresh self timestamp
       activePeersRef.current[username] = {
         username,
         lastSeen: Date.now(),
         isHost: true
       };
 
-      // 2. Broadcast heartbeat to peers
+      const currentElapsed = anchorSecondsRef.current + Math.floor((Date.now() - sessionStartRef.current) / 1000);
+
       broadcastData({
         type: 'HEARTBEAT',
         username,
-        currentTime: localTimeRef.current,
+        currentTime: currentElapsed,
         player: localPlayerRef.current
       });
 
-      // 3. Prune inactive peers (> 8 seconds without heartbeat)
       const now = Date.now();
       let changed = false;
       Object.keys(activePeersRef.current).forEach((peerKey) => {
@@ -218,13 +252,12 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
       peerInstance.on('connection', (conn) => {
         connectionsRef.current.push(conn);
         conn.on('data', (data) => handleIncomingData(data));
-        conn.on('close', () => {
-          removePeer(conn.peer);
-        });
+        conn.on('close', () => removePeer(conn.peer));
         conn.on('open', () => {
+          const currentElapsed = anchorSecondsRef.current + Math.floor((Date.now() - sessionStartRef.current) / 1000);
           conn.send({
             type: 'FORCE_SYNC',
-            time: localTimeRef.current,
+            time: currentElapsed,
             player: localPlayerRef.current
           });
         });
@@ -252,9 +285,7 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
               conn.send({ type: 'USER_JOINED', username });
             });
             conn.on('data', (data) => handleIncomingData(data));
-            conn.on('close', () => {
-              setConnectionStatus('offline');
-            });
+            conn.on('close', () => setConnectionStatus('offline'));
           });
 
           peerRef.current = clientPeer;
@@ -282,8 +313,9 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
         const rawTime = event.data.currentTime || (event.data.data && event.data.data.time);
         if (typeof rawTime === 'number' && rawTime > 0) {
           const currentSecs = Math.floor(rawTime);
+          anchorSecondsRef.current = currentSecs;
+          sessionStartRef.current = Date.now();
           setCurrentPlaybackSecs(currentSecs);
-          localTimeRef.current = currentSecs;
 
           broadcastData({
             type: 'TIMESTAMP_BEAT',
@@ -314,39 +346,61 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
 
   const syncToHost = useCallback(() => {
     const targetTime = hostTime > 0 ? hostTime : currentPlaybackSecs;
-    if (targetTime > 0) {
-      setAppliedTime(targetTime);
-      setCurrentPlaybackSecs(targetTime);
-      localTimeRef.current = targetTime;
-    }
-  }, [hostTime, currentPlaybackSecs]);
+    applySyncTimeLocally(targetTime, selectedPlayerId);
+  }, [hostTime, currentPlaybackSecs, selectedPlayerId, applySyncTimeLocally]);
 
   const broadcastSync = useCallback(() => {
-    const targetTime = currentPlaybackSecs > 0 ? currentPlaybackSecs : hostTime;
-    if (targetTime > 0) {
-      broadcastData({
-        type: 'FORCE_SYNC',
-        time: targetTime,
-        player: selectedPlayerId,
-        from: username
-      });
-      setAppliedTime(targetTime);
-      setMessages((prev) => [
-        ...prev,
-        { id: `sys-${Date.now()}`, sender: 'System', text: `Broadcasted sync at ${formatTime(targetTime)}.`, time: 'Now', isSystem: true }
-      ]);
-    }
-  }, [currentPlaybackSecs, hostTime, selectedPlayerId, username, broadcastData]);
+    const currentElapsed = anchorSecondsRef.current + Math.floor((Date.now() - sessionStartRef.current) / 1000);
+    const targetTime = Math.max(0, currentElapsed);
+
+    broadcastData({
+      type: 'FORCE_SYNC',
+      time: targetTime,
+      player: selectedPlayerId,
+      from: username
+    });
+    applySyncTimeLocally(targetTime, selectedPlayerId);
+    setMessages((prev) => [
+      ...prev,
+      { id: `sys-${Date.now()}`, sender: 'System', text: `You synchronized the room to ${formatTime(targetTime)}.`, time: 'Now', isSystem: true }
+    ]);
+  }, [selectedPlayerId, username, broadcastData, applySyncTimeLocally]);
+
+  const adjustPlaybackTime = useCallback((deltaSeconds) => {
+    const currentElapsed = anchorSecondsRef.current + Math.floor((Date.now() - sessionStartRef.current) / 1000);
+    const targetTime = Math.max(0, currentElapsed + deltaSeconds);
+    
+    broadcastData({
+      type: 'FORCE_SYNC',
+      time: targetTime,
+      player: selectedPlayerId,
+      from: username
+    });
+    applySyncTimeLocally(targetTime, selectedPlayerId);
+  }, [selectedPlayerId, username, broadcastData, applySyncTimeLocally]);
+
+  const setManualPlaybackTime = useCallback((targetSeconds) => {
+    const validTime = Math.max(0, targetSeconds);
+    broadcastData({
+      type: 'FORCE_SYNC',
+      time: validTime,
+      player: selectedPlayerId,
+      from: username
+    });
+    applySyncTimeLocally(validTime, selectedPlayerId);
+  }, [selectedPlayerId, username, broadcastData, applySyncTimeLocally]);
 
   const changePlayer = useCallback((playerId) => {
     setSelectedPlayerId(playerId);
+    const currentElapsed = anchorSecondsRef.current + Math.floor((Date.now() - sessionStartRef.current) / 1000);
     broadcastData({
       type: 'FORCE_SYNC',
-      time: currentPlaybackSecs,
+      time: currentElapsed,
       player: playerId,
       from: username
     });
-  }, [currentPlaybackSecs, username, broadcastData]);
+    applySyncTimeLocally(currentElapsed, playerId);
+  }, [username, broadcastData, applySyncTimeLocally]);
 
   const peersList = Object.values(activePeers);
 
@@ -355,6 +409,7 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
     appliedTime,
     currentPlaybackSecs,
     hostTime,
+    syncKey,
     connectionStatus,
     messages,
     floatingReactions,
@@ -364,6 +419,8 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
     triggerReaction,
     syncToHost,
     broadcastSync,
+    adjustPlaybackTime,
+    setManualPlaybackTime,
     changePlayer
   };
 }
