@@ -145,25 +145,27 @@ export const storageService = {
     return storageService.getHistory();
   },
 
-  // Save / Update Watch Progress
+  // Save / Update Watch Progress (with safe merging)
   saveHistoryProgress: async (userId, historyItem) => {
     if (!historyItem || !historyItem.id) return;
     const mediaIdStr = String(historyItem.id);
 
     const localList = storageService.getHistory();
-    const existingIndex = localList.findIndex(item => String(item.id) === mediaIdStr);
+    const existingIndex = localList.findIndex(item => String(item.id) === mediaIdStr || String(item.media_id) === mediaIdStr);
+    const existing = existingIndex >= 0 ? localList[existingIndex] : {};
 
     const record = {
       id: historyItem.id,
       media_id: mediaIdStr,
-      media_type: historyItem.type || 'movie',
-      type: historyItem.type || 'movie',
-      title: historyItem.title || historyItem.name || '',
-      poster_path: historyItem.poster_path || '',
-      lastWatchedSeconds: Math.floor(historyItem.lastWatchedSeconds || 0),
-      totalSeconds: Math.floor(historyItem.totalSeconds || 0),
-      season: Number(historyItem.season) || 1,
-      episode: Number(historyItem.episode) || 1,
+      media_type: historyItem.type || historyItem.media_type || existing.media_type || 'movie',
+      type: historyItem.type || historyItem.media_type || existing.type || 'movie',
+      title: historyItem.title || historyItem.name || existing.title || existing.name || '',
+      poster_path: historyItem.poster_path || existing.poster_path || '',
+      lastWatchedSeconds: Math.floor(historyItem.lastWatchedSeconds !== undefined ? historyItem.lastWatchedSeconds : (existing.lastWatchedSeconds || 0)),
+      totalSeconds: Math.floor(historyItem.totalSeconds || existing.totalSeconds || (historyItem.type === 'tv' ? 2700 : 7200)),
+      durationSeconds: Math.floor(historyItem.durationSeconds || existing.durationSeconds || (historyItem.type === 'tv' ? 2700 : 7200)),
+      season: Number(historyItem.season || existing.season) || 1,
+      episode: Number(historyItem.episode || existing.episode) || 1,
       updated_at: new Date().toISOString()
     };
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { CONFIG } from '../config/siteConfig';
 import { ArrowLeft, Server, ChevronDown, SkipForward, Layers, X, Play, QrCode, Users2, PictureInPicture2 } from 'lucide-react';
@@ -6,6 +6,7 @@ import ShareModal from '../components/ShareModal';
 import { usePlayer } from '../context/PlayerContext';
 import { useAuth } from '../context/AuthContext';
 import { storageService } from '../services/storageService';
+import { fetchMediaDetails, fetchSeasonDetails, getImageUrl } from '../services/tmdb';
 
 export default function WatchPage() {
   const { type, id, season, episode } = useParams();
@@ -13,9 +14,18 @@ export default function WatchPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const startParam = searchParams.get('startAt') || searchParams.get('t');
+  const startParam = searchParams.get('startAt') || searchParams.get('t') || searchParams.get('time');
   const currentSeason = season ? parseInt(season) : 1;
   const currentEpisode = episode ? parseInt(episode) : 1;
+
+  // Retrieve initial seek position once on load
+  const parsedSeconds = useMemo(() => {
+    if (startParam) {
+      return startParam.endsWith('m') ? parseInt(startParam) * 60 : parseInt(startParam);
+    }
+    const saved = storageService.getHistory().find(item => String(item.id || item.media_id) === String(id));
+    return saved?.lastWatchedSeconds || 0;
+  }, [id, startParam]);
 
   const { enterPiP } = usePlayer();
   const [mediaTitle, setMediaTitle] = useState('');
@@ -32,15 +42,103 @@ export default function WatchPage() {
   const menuRef = useRef(null);
   const hudTimeoutRef = useRef(null);
 
-  const activePlayer = CONFIG.players.find(p => p.id === selectedPlayerId) || CONFIG.players[0];
-  
-  const currentSeconds = startParam 
-    ? (startParam.endsWith('m') ? parseInt(startParam) * 60 : parseInt(startParam)) 
-    : 0;
+  // Scrubber Tracking Refs (prevent 60fps React re-renders)
+  const lastScrubSecondsRef = useRef(parsedSeconds);
+  const lastSaveTimestampRef = useRef(0);
+  const mediaTitleRef = useRef('');
 
-  const embedUrl = type === 'movie'
-    ? activePlayer.getMovieUrl(id, currentSeconds)
-    : activePlayer.getTvUrl(id, currentSeason, currentEpisode, currentSeconds);
+  useEffect(() => {
+    mediaTitleRef.current = mediaTitle;
+  }, [mediaTitle]);
+
+  const activePlayer = useMemo(() => {
+    return CONFIG.players.find(p => p.id === selectedPlayerId) || CONFIG.players[0];
+  }, [selectedPlayerId]);
+  
+  // Memoized embed URL - stays completely stable without blinking
+  const embedUrl = useMemo(() => {
+    return type === 'movie'
+      ? activePlayer.getMovieUrl(id, parsedSeconds)
+      : activePlayer.getTvUrl(id, currentSeason, currentEpisode, parsedSeconds);
+  }, [activePlayer, type, id, currentSeason, currentEpisode, parsedSeconds]);
+
+  // Scrubber Message Event Listener (throttled saving without state thrashing)
+  useEffect(() => {
+    function handlePlayerScrubberEvent(event) {
+      if (!event.data) return;
+
+      let payload = event.data;
+      if (typeof payload === 'string') {
+        try {
+          payload = JSON.parse(payload);
+        } catch {
+          return;
+        }
+      }
+
+      const isProgressEvent = 
+        payload && (
+          payload.type === 'MEDIA_PROGRESS' || 
+          payload.type === 'PLAYER_EVENT' ||
+          payload.event === 'timeupdate' ||
+          payload.type === 'timeupdate' ||
+          payload.currentTime !== undefined ||
+          (payload.data && payload.data.currentTime !== undefined)
+        );
+
+      if (isProgressEvent) {
+        const rawTime = payload.currentTime !== undefined 
+          ? payload.currentTime 
+          : (payload.data?.currentTime !== undefined ? payload.data.currentTime : payload.time);
+
+        const rawDuration = payload.duration !== undefined 
+          ? payload.duration 
+          : (payload.data?.duration !== undefined ? payload.data.duration : (type === 'movie' ? 7200 : 2700));
+
+        if (rawTime !== undefined && !isNaN(rawTime) && Number(rawTime) >= 0) {
+          const exactSeekSeconds = Math.floor(Number(rawTime));
+          const exactDuration = Math.floor(Number(rawDuration) || (type === 'movie' ? 7200 : 2700));
+
+          lastScrubSecondsRef.current = exactSeekSeconds;
+
+          // Throttle saves to once every 4 seconds to prevent iframe/UI flickering
+          const now = Date.now();
+          if (now - lastSaveTimestampRef.current > 4000) {
+            lastSaveTimestampRef.current = now;
+            storageService.saveHistoryProgress(user?.id, {
+              id: id,
+              media_id: String(id),
+              title: mediaTitleRef.current,
+              media_type: type,
+              season: type === 'tv' ? currentSeason : 1,
+              episode: type === 'tv' ? currentEpisode : 1,
+              lastWatchedSeconds: exactSeekSeconds,
+              totalSeconds: exactDuration,
+              durationSeconds: exactDuration,
+            });
+          }
+        }
+      }
+    }
+
+    window.addEventListener('message', handlePlayerScrubberEvent);
+
+    return () => {
+      window.removeEventListener('message', handlePlayerScrubberEvent);
+      // Final flush on unmount
+      if (lastScrubSecondsRef.current > 0) {
+        storageService.saveHistoryProgress(user?.id, {
+          id: id,
+          media_id: String(id),
+          title: mediaTitleRef.current,
+          media_type: type,
+          season: type === 'tv' ? currentSeason : 1,
+          episode: type === 'tv' ? currentEpisode : 1,
+          lastWatchedSeconds: lastScrubSecondsRef.current,
+        });
+      }
+    };
+  }, [id, type, currentSeason, currentEpisode, user?.id]);
 
   // Auto hide HUD after 4s of mouse inactivity
   useEffect(() => {
@@ -151,34 +249,7 @@ export default function WatchPage() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [type, nextEpisodeInfo, selectedPlayerId, handleNextEpisode]);
 
-  // Listen for real-time postMessages
-  useEffect(() => {
-    function handlePlayerMessage(event) {
-      if (event.data && (event.data.type === 'MEDIA_PROGRESS' || event.data.currentTime !== undefined)) {
-        const preciseCurrentSecs = Math.floor(event.data.currentTime);
-        const preciseTotalDuration = Math.floor(event.data.duration || (type === 'movie' ? 7200 : 2700));
-
-        try {
-          const existingHistory = JSON.parse(localStorage.getItem('warayflix_watch_history') || '[]');
-          const targetIndex = existingHistory.findIndex(item => item.id.toString() === id.toString());
-
-          if (targetIndex > -1) {
-            existingHistory[targetIndex].lastWatchedSeconds = preciseCurrentSecs;
-            existingHistory[targetIndex].durationSeconds = preciseTotalDuration;
-            existingHistory[targetIndex].updatedAt = Date.now();
-            localStorage.setItem('warayflix_watch_history', JSON.stringify(existingHistory));
-          }
-        } catch (e) {
-          console.error('Failed to update live player progress:', e);
-        }
-      }
-    }
-
-    window.addEventListener('message', handlePlayerMessage);
-    return () => window.removeEventListener('message', handlePlayerMessage);
-  }, [id, type]);
-
-  // Fetch initial details & update watch history
+  // Fetch initial media title metadata
   useEffect(() => {
     let isMounted = true;
 
@@ -191,6 +262,7 @@ export default function WatchPage() {
         if (!isMounted) return;
         const title = data.title || data.name;
         setMediaTitle(title);
+        mediaTitleRef.current = title;
 
         const estimatedDuration = type === 'movie' ? 7200 : 2700;
 
@@ -206,7 +278,7 @@ export default function WatchPage() {
           media_type: type,
           season: type === 'tv' ? currentSeason : 1,
           episode: type === 'tv' ? currentEpisode : 1,
-          lastWatchedSeconds: currentSeconds, 
+          lastWatchedSeconds: parsedSeconds, 
           totalSeconds: estimatedDuration,
           durationSeconds: estimatedDuration,
           updatedAt: Date.now()
@@ -214,7 +286,7 @@ export default function WatchPage() {
 
         await storageService.saveHistoryProgress(user?.id, historyItem);
       } catch (err) {
-        console.error('Failed to update watch history:', err);
+        console.error('Failed to update watch history metadata:', err);
       }
     }
 
@@ -223,16 +295,16 @@ export default function WatchPage() {
     return () => {
       isMounted = false;
     };
-  }, [type, id, currentSeason, currentEpisode, currentSeconds, user?.id]);
+  }, [type, id, currentSeason, currentEpisode, user?.id, parsedSeconds]);
 
   return (
     <div className="fixed inset-0 z-50 bg-black flex flex-col font-sans overflow-hidden select-none">
       
-      {/* Fullscreen Video Embed Layer */}
-      <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
+      {/* Fullscreen Video Embed Layer (Stable, Zero-Glitch) */}
+      <div className="absolute inset-0 w-full h-full z-0 overflow-hidden bg-black">
         <iframe 
           src={embedUrl}
-          key={`${selectedPlayerId}-${currentSeason}-${currentEpisode}`}
+          key={`${selectedPlayerId}-${type}-${id}-${currentSeason}-${currentEpisode}`}
           title={`${activePlayer.name} Video Player`}
           className="w-full h-full border-0 pointer-events-auto"
           allowFullScreen
@@ -287,7 +359,7 @@ export default function WatchPage() {
           {type === 'tv' && (
             <button
               onClick={() => setEpDrawerOpen(!epDrawerOpen)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#0E1017]/90 hover:bg-[#161922] text-xs font-mono text-zinc-300 hover:text-white border border-white/10 backdrop-blur-xl transition cursor-pointer shadow-lg"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#0E1017]/90 hover:bg-[#161922] text-xs font-mono text-zinc-300 hover:text-white border border-white/10 backdrop-blur-xl transition cursor-pointer shadow-lg"
               title="Browse Episodes"
             >
               <Layers className="w-3.5 h-3.5 stroke-[1.5]" />
@@ -305,11 +377,11 @@ export default function WatchPage() {
                 episode: currentEpisode,
                 title: mediaTitle,
                 selectedPlayerId,
-                currentTime: currentSeconds
+                currentTime: lastScrubSecondsRef.current
               });
               navigate(`/details/${type}/${id}`);
             }}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#0E1017]/90 hover:bg-[#161922] text-xs font-mono text-zinc-300 hover:text-white border border-white/10 backdrop-blur-xl transition cursor-pointer shadow-lg"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#0E1017]/90 hover:bg-[#161922] text-xs font-mono text-zinc-300 hover:text-white border border-white/10 backdrop-blur-xl transition cursor-pointer shadow-lg"
             title="Minimize to Floating Mini Player"
           >
             <PictureInPicture2 className="w-3.5 h-3.5 stroke-[1.5]" />
@@ -319,7 +391,7 @@ export default function WatchPage() {
           {/* Watch Party Button */}
           <button
             onClick={() => navigate(`/party/${type}/${id}`)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#0E1017]/90 hover:bg-[#161922] text-xs font-mono text-zinc-300 hover:text-white border border-white/10 backdrop-blur-xl transition cursor-pointer shadow-lg"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#0E1017]/90 hover:bg-[#161922] text-xs font-mono text-zinc-300 hover:text-white border border-white/10 backdrop-blur-xl transition cursor-pointer shadow-lg"
             title="Start a P2P Watch Party Room"
           >
             <Users2 className="w-3.5 h-3.5 stroke-[1.5]" />
@@ -329,7 +401,7 @@ export default function WatchPage() {
           {/* Send to Phone / Share Button */}
           <button
             onClick={() => setShareOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#0E1017]/90 hover:bg-[#161922] text-xs font-mono text-zinc-300 hover:text-white border border-white/10 backdrop-blur-xl transition cursor-pointer shadow-lg"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#0E1017]/90 hover:bg-[#161922] text-xs font-mono text-zinc-300 hover:text-white border border-white/10 backdrop-blur-xl transition cursor-pointer shadow-lg"
             title="Send to Phone via QR Code"
           >
             <QrCode className="w-3.5 h-3.5 stroke-[1.5]" />
@@ -360,159 +432,141 @@ export default function WatchPage() {
                         setSelectedPlayerId(player.id);
                         setMobileMenuOpen(false);
                       }}
-                      className={`w-full text-left px-3 py-1.5 rounded-lg text-xs transition cursor-pointer ${
+                      className={`w-full text-left px-3 py-2 rounded-lg text-xs font-mono transition cursor-pointer flex items-center justify-between ${
                         isSelected 
                           ? 'bg-white text-black font-semibold' 
-                          : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+                          : 'text-zinc-300 hover:bg-white/10 hover:text-white'
                       }`}
                     >
-                      {player.name}
+                      <span>{player.name}</span>
+                      {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-black" />}
                     </button>
                   );
                 })}
               </div>
             )}
 
-            {/* Desktop Server Pill Bar */}
-            <div className="hidden md:flex items-center gap-1.5 bg-[#0E1017]/90 p-1 rounded-full backdrop-blur-xl border border-white/10 shadow-lg">
-              <div className="flex items-center gap-1.5 px-2.5 text-zinc-500 text-xs font-mono">
-                <Server className="w-3 h-3 stroke-[1.5] text-zinc-400" />
-                <span>Server:</span>
-              </div>
-              <div className="flex items-center gap-1">
-                {CONFIG.players.map((player) => {
-                  const isSelected = player.id === selectedPlayerId;
-                  return (
-                    <button
-                      key={player.id}
-                      onClick={() => setSelectedPlayerId(player.id)}
-                      className={`px-3 py-1 rounded-full text-xs font-medium transition cursor-pointer ${
-                        isSelected 
-                          ? 'bg-white text-black font-semibold' 
-                          : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
-                      }`}
-                    >
-                      {player.name}
-                    </button>
-                  );
-                })}
-              </div>
+            {/* Desktop Server Pills */}
+            <div className="hidden md:flex items-center bg-[#0E1017]/90 p-1 rounded-full border border-white/10 backdrop-blur-xl shadow-lg">
+              {CONFIG.players.map((player) => {
+                const isSelected = player.id === selectedPlayerId;
+                return (
+                  <button
+                    key={player.id}
+                    onClick={() => setSelectedPlayerId(player.id)}
+                    className={`px-3 py-1 rounded-full text-xs font-mono transition cursor-pointer ${
+                      isSelected 
+                        ? 'bg-white text-black font-semibold shadow-sm' 
+                        : 'text-zinc-400 hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    {player.name}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
         </div>
-
       </div>
 
-      {/* In-Player TV Episode Quick-Switcher Slide-Over Drawer */}
+      {/* Episode Selection Drawer (TV Only) */}
       {type === 'tv' && epDrawerOpen && (
-        <div 
-          className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-sm animate-fade-in"
-          onClick={() => setEpDrawerOpen(false)}
-        >
-          <div 
-            className="w-full max-w-sm sm:max-w-md h-full bg-[#0E1017] border-l border-white/10 p-5 space-y-4 flex flex-col animate-slide-up shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Drawer Header */}
-            <div className="flex items-center justify-between pb-3 border-b border-white/[0.06]">
-              <div className="space-y-0.5">
-                <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">
-                  EPISODE SELECTOR
-                </span>
-                <h3 className="text-sm font-bold text-white font-['Outfit'] truncate max-w-[240px]">
-                  {mediaTitle}
-                </h3>
-              </div>
-              <button 
-                onClick={() => setEpDrawerOpen(false)}
-                className="p-1.5 text-zinc-400 hover:text-white rounded-lg hover:bg-white/[0.04]"
-              >
-                <X className="w-4 h-4 stroke-[1.5]" />
-              </button>
+        <div className="absolute inset-y-0 right-0 w-full max-w-md bg-[#0E1017]/95 border-l border-white/10 backdrop-blur-2xl z-40 flex flex-col p-6 space-y-4 shadow-2xl animate-in slide-in-from-right duration-200">
+          
+          <div className="flex items-center justify-between border-b border-white/10 pb-4">
+            <div className="space-y-0.5">
+              <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest block font-semibold">
+                BINGE DRAWER
+              </span>
+              <h2 className="text-lg font-bold text-white font-['Outfit'] truncate">
+                {mediaTitle || 'TV Episodes'}
+              </h2>
             </div>
+            <button 
+              onClick={() => setEpDrawerOpen(false)}
+              className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition cursor-pointer"
+            >
+              <X className="w-4 h-4 stroke-[1.5]" />
+            </button>
+          </div>
 
-            {/* Season Picker */}
-            {tvShowDetails?.seasons && tvShowDetails.seasons.length > 1 && (
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-mono text-zinc-500">Season:</span>
-                <select
-                  value={selectedDrawerSeason}
-                  onChange={(e) => setSelectedDrawerSeason(Number(e.target.value))}
-                  className="bg-[#141822] border border-white/10 text-zinc-200 text-xs font-mono py-1.5 px-3 rounded-lg focus:outline-none transition cursor-pointer flex-1"
-                >
-                  {tvShowDetails.seasons.map((s) => (
-                    <option key={s.id} value={s.season_number} className="bg-[#090A0F]">
-                      {s.name} ({s.episode_count} Ep)
+          {/* Season Selector Dropdown */}
+          {tvShowDetails?.seasons && (
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-mono text-zinc-400 uppercase">Select Season</label>
+              <select
+                value={selectedDrawerSeason}
+                onChange={(e) => setSelectedDrawerSeason(Number(e.target.value))}
+                className="w-full bg-[#161922] border border-white/10 text-white text-xs font-mono rounded-xl p-2.5 focus:outline-none focus:border-white/30 cursor-pointer"
+              >
+                {tvShowDetails.seasons
+                  .filter(s => s.season_number > 0)
+                  .map(s => (
+                    <option key={s.id} value={s.season_number}>
+                      Season {s.season_number} ({s.episode_count} Episodes)
                     </option>
                   ))}
-                </select>
-              </div>
-            )}
-
-            {/* Episodes List */}
-            <div className="flex-1 overflow-y-auto space-y-2 pr-1">
-              {currentSeasonData?.episodes && currentSeasonData.episodes.length > 0 ? (
-                currentSeasonData.episodes.map((ep) => {
-                  const isCurrent = ep.episode_number === currentEpisode && selectedDrawerSeason === currentSeason;
-                  const epStill = getImageUrl(ep.still_path, 'thumbnail');
-
-                  return (
-                    <div
-                      key={ep.id}
-                      onClick={() => {
-                        setEpDrawerOpen(false);
-                        navigate(`/watch/tv/${id}/${selectedDrawerSeason}/${ep.episode_number}`);
-                      }}
-                      className={`flex items-center gap-3 p-2.5 rounded-xl border transition cursor-pointer ${
-                        isCurrent 
-                          ? 'bg-white/[0.08] border-white/20 text-white' 
-                          : 'bg-white/[0.02] border-white/[0.04] text-zinc-300 hover:bg-white/[0.06] hover:text-white'
-                      }`}
-                    >
-                      <div className="w-16 h-11 rounded-lg bg-black overflow-hidden flex-shrink-0 relative">
-                        {epStill ? (
-                          <img src={epStill} alt="" className="w-full h-full object-cover" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-[8px] font-mono text-zinc-600">EP {ep.episode_number}</div>
-                        )}
-                        {isCurrent && (
-                          <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                            <Play className="w-3.5 h-3.5 stroke-[2] text-white" />
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between text-[10px] font-mono text-zinc-500 mb-0.5">
-                          <span className={isCurrent ? 'text-white font-semibold' : ''}>
-                            EPISODE {ep.episode_number}
-                          </span>
-                          {ep.runtime && <span>{ep.runtime}m</span>}
-                        </div>
-                        <h4 className="text-xs font-semibold truncate">
-                          {ep.name}
-                        </h4>
-                      </div>
-                    </div>
-                  );
-                })
-              ) : (
-                <div className="py-12 text-center text-xs font-mono text-zinc-500">
-                  Loading episodes...
-                </div>
-              )}
+              </select>
             </div>
+          )}
+
+          {/* Episodes List */}
+          <div className="flex-1 overflow-y-auto space-y-2 pr-1 scrollbar-thin">
+            {currentSeasonData?.episodes?.map((ep) => {
+              const isPlaying = currentSeason === ep.season_number && currentEpisode === ep.episode_number;
+
+              return (
+                <button
+                  key={ep.id}
+                  onClick={() => {
+                    navigate(`/watch/tv/${id}/${ep.season_number}/${ep.episode_number}`);
+                    setEpDrawerOpen(false);
+                  }}
+                  className={`w-full text-left p-3 rounded-xl border transition cursor-pointer flex items-center justify-between gap-3 ${
+                    isPlaying
+                      ? 'bg-white text-black border-transparent shadow-md'
+                      : 'bg-white/[0.03] hover:bg-white/[0.08] text-zinc-300 hover:text-white border-white/[0.06]'
+                  }`}
+                >
+                  <div className="space-y-0.5 min-w-0 flex-1">
+                    <span className="text-[10px] font-mono opacity-60 block">
+                      EPISODE {ep.episode_number}
+                    </span>
+                    <h4 className="text-xs font-semibold truncate leading-tight">
+                      {ep.name || `Episode ${ep.episode_number}`}
+                    </h4>
+                  </div>
+
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    {isPlaying ? (
+                      <span className="px-2 py-0.5 rounded bg-black text-white text-[9px] font-mono font-bold uppercase">
+                        Playing
+                      </span>
+                    ) : (
+                      <Play className="w-3.5 h-3.5 opacity-60 stroke-[1.5]" />
+                    )}
+                  </div>
+                </button>
+              );
+            })}
           </div>
+
         </div>
       )}
 
-      {/* Send to Phone / Share QR Modal */}
-      <ShareModal
-        isOpen={shareOpen}
-        onClose={() => setShareOpen(false)}
-        title={mediaTitle || "Live Stream Player"}
-      />
+      {/* Share / QR Code Modal */}
+      {shareOpen && (
+        <ShareModal 
+          isOpen={shareOpen} 
+          onClose={() => setShareOpen(false)}
+          title={mediaTitle}
+          type={type}
+          id={id}
+          season={currentSeason}
+          episode={currentEpisode}
+        />
+      )}
 
     </div>
   );

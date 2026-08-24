@@ -3,6 +3,16 @@ import { storageService } from './storageService';
 
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 
+async function safeFetchJson(url) {
+  try {
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
 export async function fetchPersonalizedRecommendations() {
   const apiKey = CONFIG.tmdbApiKey;
   const watchlist = storageService.getPlaylist();
@@ -22,55 +32,58 @@ export async function fetchPersonalizedRecommendations() {
 
   // If user has no seed items, fallback to top trending cinema
   if (seedItems.length === 0) {
-    try {
-      const res = await fetch(`${TMDB_BASE_URL}/trending/all/week?api_key=${apiKey}`);
-      if (!res.ok) return { items: [], reason: 'Popular Across WarayFlix' };
-      const data = await res.json();
-      const results = (data.results || [])
-        .filter(item => item.poster_path && item.vote_average > 6.0)
-        .slice(0, 15)
-        .map(item => ({
-          ...item,
-          matchReason: 'Top Trending Cinema'
-        }));
-      return { items: results, reason: 'Curated Trending Cinema' };
-    } catch {
-      return { items: [], reason: 'Trending' };
-    }
+    const data = await safeFetchJson(`${TMDB_BASE_URL}/trending/all/week?api_key=${apiKey}`);
+    if (!data || !data.results) return { items: [], reason: 'Popular Across WarayFlix' };
+
+    const results = (data.results || [])
+      .filter(item => item.poster_path && item.vote_average > 6.0)
+      .slice(0, 15)
+      .map(item => ({
+        ...item,
+        matchReason: 'Top Trending Cinema'
+      }));
+    return { items: results, reason: 'Curated Trending Cinema' };
   }
 
   // Fetch recommendations for seed items in parallel
   const fetchPromises = seedItems.map(async (seed) => {
-    const mediaType = seed.media_type || (seed.first_air_date || seed.season ? 'tv' : 'movie');
+    let mediaType = seed.media_type || (seed.first_air_date || seed.season ? 'tv' : 'movie');
     const seedId = seed.media_id || seed.id;
     const seedTitle = seed.title || seed.name || 'your library';
 
-    try {
-      const recRes = await fetch(`${TMDB_BASE_URL}/${mediaType}/${seedId}/recommendations?api_key=${apiKey}`);
-      if (recRes.ok) {
-        const recData = await recRes.json();
-        if (recData.results && recData.results.length > 0) {
-          return recData.results.map(r => ({
-            ...r,
-            media_type: r.media_type || mediaType,
-            matchReason: seed.reasonType === 'watched' ? `Because you watched "${seedTitle}"` : `Based on "${seedTitle}" in your list`
-          }));
-        }
-      }
+    if (!seedId) return [];
 
-      // Fallback to similar
-      const simRes = await fetch(`${TMDB_BASE_URL}/${mediaType}/${seedId}/similar?api_key=${apiKey}`);
-      if (simRes.ok) {
-        const simData = await simRes.json();
-        return (simData.results || []).map(r => ({
-          ...r,
-          media_type: r.media_type || mediaType,
-          matchReason: `Similar to "${seedTitle}"`
-        }));
+    // Attempt 1: primary mediaType recommendations
+    let recData = await safeFetchJson(`${TMDB_BASE_URL}/${mediaType}/${seedId}/recommendations?api_key=${apiKey}`);
+    
+    // Fallback: If 404/empty, try alternative mediaType (e.g. tv vs movie)
+    if (!recData || !recData.results || recData.results.length === 0) {
+      const altType = mediaType === 'movie' ? 'tv' : 'movie';
+      const altData = await safeFetchJson(`${TMDB_BASE_URL}/${altType}/${seedId}/recommendations?api_key=${apiKey}`);
+      if (altData && altData.results && altData.results.length > 0) {
+        recData = altData;
+        mediaType = altType;
       }
-    } catch {
-      return [];
     }
+
+    if (recData && recData.results && recData.results.length > 0) {
+      return recData.results.map(r => ({
+        ...r,
+        media_type: r.media_type || mediaType,
+        matchReason: seed.reasonType === 'watched' ? `Because you watched "${seedTitle}"` : `Based on "${seedTitle}" in your list`
+      }));
+    }
+
+    // Attempt 2: similar
+    const simData = await safeFetchJson(`${TMDB_BASE_URL}/${mediaType}/${seedId}/similar?api_key=${apiKey}`);
+    if (simData && simData.results && simData.results.length > 0) {
+      return simData.results.map(r => ({
+        ...r,
+        media_type: r.media_type || mediaType,
+        matchReason: `Similar to "${seedTitle}"`
+      }));
+    }
+
     return [];
   });
 
@@ -101,4 +114,3 @@ export async function fetchPersonalizedRecommendations() {
     reason: reasonHeading
   };
 }
-
