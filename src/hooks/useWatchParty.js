@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import mqtt from 'mqtt';
 import { Peer } from 'peerjs';
 import { CONFIG } from '../config/siteConfig';
 
@@ -24,6 +25,8 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
   });
 
   const channelRef = useRef(null);
+  const mqttClientRef = useRef(null);
+  const processedPacketIdsRef = useRef(new Set());
   const anchorSecondsRef = useRef(0);
   const sessionStartRef = useRef(Date.now());
   const localPlayerRef = useRef(selectedPlayerId);
@@ -65,18 +68,32 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
     return () => clearInterval(ticker);
   }, []);
 
-  // Broadcast helper across WebRTC peers and BroadcastChannel
+  // Multi-tier Broadcast helper (BroadcastChannel + MQTT Cloud Relay + WebRTC DataChannels)
   const broadcastData = useCallback((data) => {
+    const packetId = data.packetId || `${Date.now()}-${Math.random()}`;
+    const packet = { ...data, packetId, origin: username };
+    processedPacketIdsRef.current.add(packetId);
+
+    // 1. BroadcastChannel (local tabs/windows)
     if (channelRef.current) {
-      channelRef.current.postMessage(data);
+      channelRef.current.postMessage(packet);
     }
+
+    // 2. Public MQTT Cloud Relay (guaranteed cross-network PC-to-PC delivery)
+    if (mqttClientRef.current && mqttClientRef.current.connected) {
+      const cleanRoom = roomId.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const topic = `warayflix/rooms/${cleanRoom}`;
+      mqttClientRef.current.publish(topic, JSON.stringify(packet));
+    }
+
+    // 3. WebRTC DataChannels (P2P fallback)
     connectionsRef.current.forEach((conn) => {
-      if (conn.open) conn.send(data);
+      if (conn.open) conn.send(packet);
     });
     if (hostConnRef.current && hostConnRef.current.open) {
-      hostConnRef.current.send(data);
+      hostConnRef.current.send(packet);
     }
-  }, []);
+  }, [roomId, username]);
 
   const triggerReaction = useCallback((emoji, broadcast = true) => {
     const reactionId = Date.now() + Math.random();
@@ -132,7 +149,14 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
 
   // Process incoming data packet
   const handleIncomingData = useCallback((data) => {
-    if (!data) return;
+    if (!data || !data.type) return;
+
+    // Ignore self-published packets
+    if (data.origin === username) return;
+
+    // Deduplicate repeated packets
+    if (data.packetId && processedPacketIdsRef.current.has(data.packetId)) return;
+    if (data.packetId) processedPacketIdsRef.current.add(data.packetId);
 
     if (data.type === 'CHAT_MESSAGE') {
       setMessages((prev) => {
@@ -222,18 +246,56 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
     return () => window.removeEventListener('beforeunload', handleUnload);
   }, [username, broadcastData]);
 
-  // Setup WebRTC and BroadcastChannel
+  // Tier 1 & 2: Setup Local BroadcastChannel + Public WSS MQTT Broker (Guaranteed PC-to-PC cross-network connectivity)
   useEffect(() => {
+    // 1. BroadcastChannel
     const channelName = `warayflix_room_${roomId}`;
     const channel = new BroadcastChannel(channelName);
     channelRef.current = channel;
 
     channel.onmessage = (event) => handleIncomingData(event.data);
 
+    // 2. Public Secure WSS MQTT Broker
     const cleanRoom = roomId.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const topic = `warayflix/rooms/${cleanRoom}`;
+    const clientId = `wf_${Math.random().toString(16).substring(2, 10)}`;
+
+    let mqttClient = null;
+    try {
+      mqttClient = mqtt.connect('wss://broker.emqx.io:8084/mqtt', {
+        clientId,
+        clean: true,
+        connectTimeout: 5000,
+        reconnectPeriod: 3000
+      });
+
+      mqttClientRef.current = mqttClient;
+
+      mqttClient.on('connect', () => {
+        setConnectionStatus('connected');
+        mqttClient.subscribe(topic);
+        broadcastData({ type: 'USER_JOINED', username });
+      });
+
+      mqttClient.on('message', (_top, payload) => {
+        try {
+          const parsed = JSON.parse(payload.toString());
+          handleIncomingData(parsed);
+        } catch {
+          // ignore
+        }
+      });
+
+      mqttClient.on('error', (err) => {
+        console.warn("MQTT broker reconnecting:", err);
+      });
+    } catch (err) {
+      console.warn("MQTT initialization fallback:", err);
+    }
+
+    // 3. WebRTC PeerJS Setup
     const hostPeerId = `wf-host-${cleanRoom}`;
     const myPeerId = `wf-peer-${cleanRoom}-${Math.floor(1000 + Math.random() * 9000)}`;
-
     let peerInstance = null;
 
     try {
@@ -297,11 +359,10 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
       console.warn("PeerJS fallback:", err);
     }
 
-    broadcastData({ type: 'USER_JOINED', username });
-
     return () => {
       broadcastData({ type: 'USER_LEFT', username });
       channel.close();
+      if (mqttClient) mqttClient.end();
       if (peerRef.current) peerRef.current.destroy();
     };
   }, [roomId, username, handleIncomingData, broadcastData, removePeer]);
