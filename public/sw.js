@@ -1,7 +1,6 @@
-const CACHE_NAME = 'warayflix-cache-v2';
+const CACHE_NAME = 'warayflix-cache-v3';
 const STATIC_ASSETS = [
   '/',
-  '/index.html',
   '/manifest.json',
   '/favicon.svg',
   '/icon-192.svg',
@@ -19,7 +18,7 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Activate: Clean up older caches
+// Activate: Clean up all older caches immediately
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
@@ -32,7 +31,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch: Safe handling with guaranteed Response return
+// Fetch: Safe handling with guaranteed correct MIME types
 self.addEventListener('fetch', (event) => {
   const request = event.request;
   const url = new URL(request.url);
@@ -53,24 +52,38 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // HTML navigation requests (Network First -> Cache fallback -> Safe Response fallback)
+  // Scripts / Modules: Network First (never serve HTML fallback for JS scripts)
+  if (request.destination === 'script' || url.pathname.endsWith('.js') || url.pathname.endsWith('.jsx')) {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          if (response && response.status === 200 && response.type === 'basic') {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+          }
+          return response;
+        })
+        .catch(() => caches.match(request))
+    );
+    return;
+  }
+
+  // HTML navigation requests (Network First -> Cache fallback)
   if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request)
         .then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             const copy = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put('/index.html', copy));
+            caches.open(CACHE_NAME).then((cache) => cache.put('/', copy));
           }
           return networkResponse;
         })
         .catch(async () => {
-          const cached = await caches.match('/index.html');
+          const cached = await caches.match('/');
           if (cached) return cached;
-          const rootCached = await caches.match('/');
-          if (rootCached) return rootCached;
           return new Response(
-            '<!DOCTYPE html><html><head><title>WarayFlix</title></head><body style="background:#090A0F;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;">Offline mode - Please reconnect to internet.</body></html>',
+            '<!DOCTYPE html><html><head><title>WarayFlix</title></head><body style="background:#FAFAFA;color:#09090B;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;">You are currently offline. Please reconnect to internet.</body></html>',
             { headers: { 'Content-Type': 'text/html' } }
           );
         })
@@ -78,25 +91,12 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Static Assets (CSS, JS, Fonts, Images)
+  // Static Assets (CSS, Fonts, Images)
   event.respondWith(
     caches.match(request).then((cachedResponse) => {
-      if (cachedResponse) {
-        // Fetch in background to revalidate cache
-        fetch(request)
-          .then((networkResponse) => {
-            if (networkResponse && networkResponse.status === 200) {
-              caches.open(CACHE_NAME).then((cache) => cache.put(request, networkResponse));
-            }
-          })
-          .catch(() => {
-            // Ignore network errors during background revalidation
-          });
-        return cachedResponse;
-      }
-
+      if (cachedResponse) return cachedResponse;
       return fetch(request).then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200) {
+        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
           const copy = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
         }
