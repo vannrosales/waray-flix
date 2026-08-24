@@ -1,15 +1,18 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Sparkles, Star, Film, Play, Eye } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Film, Star, Play, Info, Bookmark } from 'lucide-react';
 import { getImageUrl } from '../services/tmdb';
 import { fetchPersonalizedRecommendations } from '../services/recommendationEngine';
+import { storageService } from '../services/storageService';
 import QuickViewModal from './QuickViewModal';
+import { useAuth } from '../context/AuthContext';
 
 export default function RecommendedRow() {
   const rowRef = useRef(null);
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [recommendations, setRecommendations] = useState([]);
-  const [reason, setReason] = useState('Curated for your taste');
+  const [reason, setReason] = useState('Curated for your library & streaming taste');
   const [loading, setLoading] = useState(true);
   const [quickMedia, setQuickMedia] = useState(null);
 
@@ -17,8 +20,8 @@ export default function RecommendedRow() {
     try {
       setLoading(true);
       const data = await fetchPersonalizedRecommendations();
-      setRecommendations(data.items || []);
-      if (data.reason) setReason(data.reason);
+      setRecommendations(data?.items || []);
+      if (data?.reason) setReason(data.reason);
     } catch (err) {
       console.warn('Failed to load recommendations:', err);
     } finally {
@@ -53,23 +56,17 @@ export default function RecommendedRow() {
     <section className="space-y-3 px-6 md:px-12 my-10 max-w-[1440px] mx-auto content-auto select-none">
       
       {/* Row Header */}
-      <div className="flex items-center justify-between">
-        <div className="space-y-0.5">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-[#2563EB] stroke-[2]" />
-            <h2 className="text-lg sm:text-xl font-bold tracking-tight text-[#09090B] font-['Outfit']">
-              Recommended For You
-            </h2>
-            <span className="px-2 py-0.5 rounded-full bg-[#2563EB]/10 border border-[#2563EB]/20 text-[9px] font-mono text-[#2563EB] font-bold uppercase tracking-wider hidden sm:inline-block">
-              AI Taste Match
-            </span>
-          </div>
-          <p className="text-[11px] font-mono text-[#52525B]">
+      <div className="flex items-end justify-between">
+        <div>
+          <h2 className="text-lg sm:text-xl font-bold tracking-tight text-[#09090B] font-['Outfit']">
+            Recommended For You
+          </h2>
+          <p className="text-[11px] text-[#52525B] font-mono tracking-wide mt-0.5">
             {reason}
           </p>
         </div>
 
-        {/* Scroll Controls */}
+        {/* Navigation Controls */}
         <div className="flex items-center gap-1.5">
           <button 
             onClick={() => handleScroll('left')} 
@@ -96,17 +93,17 @@ export default function RecommendedRow() {
         >
           {recommendations.map((item) => {
             const itemType = item.media_type || (item.title ? 'movie' : 'tv');
-            const posterImg = getImageUrl(item.poster_path, 'posterSmall');
+            const posterImg = getImageUrl(item.poster_path, 'posterSmall') || getImageUrl(item.backdrop_path, 'backdropSmall');
             const releaseYear = (item.release_date || item.first_air_date || '').substring(0, 4);
 
             return (
               <div 
                 key={item.id}
                 onClick={() => navigate(`/details/${itemType}/${item.id}`)}
-                className="w-[145px] sm:w-[175px] md:w-[195px] flex-shrink-0 cursor-pointer group/item flex flex-col gap-2 transition-all duration-200"
+                className="w-[145px] sm:w-[175px] md:w-[195px] cursor-pointer group/item flex flex-col gap-2 flex-shrink-0 transition-all duration-200"
               >
                 {/* Poster Card Container */}
-                <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden bg-white border border-black/[0.06] group-hover/item:border-[#2563EB]/40 transition-all duration-200 group-hover/item:scale-[1.02] shadow-sm hover:shadow-md">
+                <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden bg-white border border-black/[0.06] group-hover/item:border-black/30 transition-all duration-200 group-hover/item:scale-[1.02] shadow-sm hover:shadow-md">
                   {posterImg ? (
                     <img 
                       src={posterImg} 
@@ -123,55 +120,71 @@ export default function RecommendedRow() {
 
                   {/* Rating Badge */}
                   {item.vote_average > 0 && (
-                    <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-md px-2 py-0.5 rounded-md flex items-center gap-1 border border-black/10 z-20 shadow-sm">
-                      <Star className="w-2.5 h-2.5 text-[#2563EB] fill-[#2563EB] stroke-[1.5]" />
-                      <span className="text-[10px] font-mono font-bold text-[#09090B]">{item.vote_average.toFixed(1)}</span>
+                    <div className="absolute top-2 right-2 bg-black/80 backdrop-blur-md px-2 py-0.5 rounded-md flex items-center gap-1 border border-white/20 z-20 shadow-sm text-white">
+                      <Star className="w-2.5 h-2.5 text-white stroke-[1.5]" />
+                      <span className="text-[10px] font-mono font-bold text-white">{item.vote_average.toFixed(1)}</span>
                     </div>
                   )}
 
                   {/* Media Type Chip */}
                   <div className="absolute top-2 left-2 z-20">
-                    <span className="px-1.5 py-0.5 rounded bg-[#09090B] text-white text-[9px] font-mono uppercase font-semibold">
+                    <span className="px-1.5 py-0.5 rounded bg-[#09090B] text-white text-[9px] font-mono uppercase font-semibold shadow-sm">
                       {itemType}
                     </span>
                   </div>
 
-                  {/* Play & Quick View Overlay */}
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover/item:opacity-100 transition-opacity flex items-center justify-center gap-2 z-20 p-2">
+                  {/* Hover Action Overlay */}
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-2 z-30 p-2">
+                    {/* Direct Play */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (itemType === 'tv') {
+                          navigate(`/watch/tv/${item.id}/1/1`);
+                        } else {
+                          navigate(`/watch/movie/${item.id}`);
+                        }
+                      }}
+                      className="w-9 h-9 rounded-full bg-[#09090B] hover:bg-black text-white flex items-center justify-center transition cursor-pointer shadow-md"
+                      title="Watch Now"
+                    >
+                      <Play className="w-3.5 h-3.5 stroke-[2] fill-white text-white" />
+                    </button>
+
+                    {/* Quick View Info */}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         setQuickMedia(item);
                       }}
-                      className="p-2 rounded-full bg-white/90 hover:bg-white text-[#09090B] border border-black/10 transition cursor-pointer backdrop-blur-md shadow-sm"
+                      className="w-8 h-8 rounded-full bg-white/90 hover:bg-white text-[#09090B] backdrop-blur-md flex items-center justify-center border border-black/10 transition cursor-pointer shadow-sm"
                       title="Quick Preview"
                     >
-                      <Eye className="w-4 h-4 stroke-[1.5]" />
+                      <Info className="w-3.5 h-3.5 stroke-[1.5]" />
                     </button>
 
-                    <div className="w-9 h-9 rounded-full bg-[#2563EB] text-white flex items-center justify-center shadow-lg transition">
-                      <Play className="w-4 h-4 stroke-[2] fill-white text-white" />
-                    </div>
+                    {/* Save Bookmark */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        storageService.togglePlaylistItem({ ...item, media_type: itemType }, user?.id);
+                      }}
+                      className="w-8 h-8 rounded-full bg-white/90 hover:bg-white text-[#09090B] backdrop-blur-md flex items-center justify-center border border-black/10 transition cursor-pointer shadow-sm"
+                      title="Save to Watchlist"
+                    >
+                      <Bookmark className="w-3.5 h-3.5 stroke-[1.5]" />
+                    </button>
                   </div>
-
-                  {/* Match Reason Banner on Hover */}
-                  {item.matchReason && (
-                    <div className="absolute bottom-0 inset-x-0 bg-white/95 backdrop-blur-md p-1.5 text-center border-t border-black/10 opacity-0 group-hover/item:opacity-100 transition-opacity z-20 shadow-md">
-                      <span className="text-[9px] font-mono font-medium text-[#2563EB] block truncate">
-                        {item.matchReason}
-                      </span>
-                    </div>
-                  )}
                 </div>
 
                 {/* Title & Metadata */}
                 <div className="space-y-0.5 px-0.5">
-                  <h3 className="text-xs font-semibold text-[#09090B] line-clamp-1 group-hover/item:text-[#2563EB] transition">
+                  <h3 className="text-xs font-semibold text-[#09090B] line-clamp-1 group-hover/item:text-black transition">
                     {item.title || item.name}
                   </h3>
                   <div className="flex items-center gap-2 text-[10px] text-[#52525B] font-mono">
-                    {releaseYear && <span>{releaseYear}</span>}
-                    {releaseYear && <span>·</span>}
+                    <span>{releaseYear || '—'}</span>
+                    <span>·</span>
                     <span className="uppercase font-medium">{itemType}</span>
                   </div>
                 </div>
@@ -185,7 +198,7 @@ export default function RecommendedRow() {
       {quickMedia && (
         <QuickViewModal
           media={quickMedia}
-          type={quickMedia.media_type || 'movie'}
+          type={quickMedia.media_type || (quickMedia.first_air_date ? 'tv' : 'movie')}
           isOpen={Boolean(quickMedia)}
           onClose={() => setQuickMedia(null)}
         />

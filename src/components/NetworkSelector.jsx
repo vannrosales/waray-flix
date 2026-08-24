@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { STUDIOS_LIST } from '../constants/studios';
+import StudioLogo from './StudioLogo';
 
 export default function NetworkSelector() {
   const navigate = useNavigate();
@@ -14,8 +15,8 @@ export default function NetworkSelector() {
         </h2>
       </div>
 
-      {/* Grid of Studio Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+      {/* Grid of Studio Logo Brand Tiles */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
         {STUDIOS_LIST.map((studio) => {
           const networkSlug = studio.name.toLowerCase().replace(/[^a-z0-9]/g, '');
 
@@ -23,17 +24,13 @@ export default function NetworkSelector() {
             <button
               key={studio.id}
               onClick={() => navigate(`/network/${networkSlug}/${studio.code}`)}
-              className="h-20 sm:h-22 rounded-2xl border border-black/[0.08] hover:border-[#2563EB] bg-white hover:bg-zinc-50/80 p-3.5 flex flex-col justify-between items-start transition-all duration-200 group cursor-pointer shadow-sm hover:shadow-md hover:-translate-y-0.5"
+              className="h-24 sm:h-28 rounded-2xl border border-black/[0.08] hover:border-black/30 bg-white hover:bg-zinc-50 p-4 flex flex-col items-center justify-center transition-all duration-200 group cursor-pointer shadow-sm hover:shadow-md hover:scale-[1.03] text-[#09090B]"
+              title={`Explore ${studio.name} Library`}
             >
-              {/* Studio Typography Logo */}
-              <span className={`text-sm sm:text-base font-bold text-[#09090B] group-hover:text-[#2563EB] transition-colors leading-tight ${studio.fontStyle}`}>
-                {studio.name}
-              </span>
-
-              {/* Category Tag */}
-              <span className="text-[10px] text-[#52525B] font-mono tracking-tight font-medium group-hover:text-[#09090B] transition-colors">
-                {studio.category}
-              </span>
+              {/* Studio Look-Alike Brand Logo */}
+              <div className="flex items-center justify-center text-[#09090B] group-hover:scale-105 transition-transform duration-200 w-full h-full">
+                <StudioLogo name={studio.name} />
+              </div>
             </button>
           );
         })}
