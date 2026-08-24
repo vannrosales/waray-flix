@@ -4,16 +4,26 @@ import { getImageUrl } from '../services/tmdb';
 import { storageService } from '../services/storageService';
 import { ChevronLeft, ChevronRight, Film, Star, X, Play } from 'lucide-react';
 import QuickViewModal from './QuickViewModal';
+import { useAuth } from '../context/AuthContext';
 
 export default function MyListRow() {
   const rowRef = useRef(null);
   const navigate = useNavigate();
-  const [myList, setMyList] = useState([]);
+  const { user } = useAuth();
+  const [myList, setMyList] = useState(() => storageService.getPlaylist());
   const [quickMedia, setQuickMedia] = useState(null);
 
   useEffect(() => {
-    setMyList(storageService.getPlaylist());
-  }, []);
+    const updateList = () => {
+      setMyList(storageService.getPlaylist());
+    };
+
+    updateList();
+    storageService.fetchCloudPlaylist(user?.id);
+
+    window.addEventListener('playlistUpdated', updateList);
+    return () => window.removeEventListener('playlistUpdated', updateList);
+  }, [user?.id]);
 
   const handleScroll = (direction) => {
     if (rowRef.current) {
@@ -25,11 +35,11 @@ export default function MyListRow() {
 
   const handleRemove = (e, item) => {
     e.stopPropagation();
-    storageService.togglePlaylistItem(item);
-    setMyList(storageService.getPlaylist());
+    storageService.togglePlaylistItem(item, user?.id);
   };
 
-  if (!myList || myList.length === 0) return null;
+  const listItems = Array.isArray(myList) ? myList : [];
+  if (listItems.length === 0) return null;
 
   return (
     <section className="space-y-3 px-6 md:px-12 my-10 max-w-[1440px] mx-auto content-auto">
@@ -37,7 +47,7 @@ export default function MyListRow() {
       <div className="flex items-center justify-between">
         <h2 className="text-lg sm:text-xl font-bold tracking-tight text-white font-['Outfit'] flex items-center gap-2">
           <span>My Watchlist</span>
-          <span className="text-xs font-mono text-zinc-500 font-normal">({myList.length})</span>
+          <span className="text-xs font-mono text-zinc-500 font-normal">({listItems.length})</span>
         </h2>
         
         <div className="flex items-center gap-1">
@@ -61,7 +71,7 @@ export default function MyListRow() {
       {/* Track */}
       <div className="relative group">
         <div ref={rowRef} className="flex gap-3.5 sm:gap-4 overflow-x-auto scrollbar-none scroll-smooth pb-3 pt-1">
-          {myList.map((item) => {
+          {listItems.map((item) => {
             const itemType = item.media_type || (item.title ? 'movie' : 'tv');
             const posterImg = getImageUrl(item.poster_path, 'posterSmall') || getImageUrl(item.backdrop_path, 'backdropSmall');
             const releaseYear = item.release_date?.substring(0, 4) || item.first_air_date?.substring(0, 4) || '2026';

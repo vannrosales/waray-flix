@@ -12,21 +12,21 @@ export default function WatchlistPage() {
 
   const [activeTab, setActiveTab] = useState('all'); // 'all' | 'movie' | 'tv'
   const [searchQuery, setSearchQuery] = useState('');
-  const [watchlist, setWatchlist] = useState([]);
-  const [history, setHistory] = useState([]);
+  const [watchlist, setWatchlist] = useState(() => storageService.getPlaylist());
+  const [history, setHistory] = useState(() => storageService.getHistory());
 
-  // Load playlist and watch history directly from Supabase Cloud
-  const loadData = async () => {
-    const [playlistData, historyData] = await Promise.all([
-      storageService.getPlaylist(user?.id),
-      storageService.getHistory(user?.id)
-    ]);
-    setWatchlist(playlistData || []);
-    setHistory(historyData || []);
+  // Load playlist and watch history
+  const loadData = () => {
+    setWatchlist(storageService.getPlaylist());
+    setHistory(storageService.getHistory());
   };
 
   useEffect(() => {
     loadData();
+    if (user?.id) {
+      storageService.fetchCloudPlaylist(user.id);
+      storageService.fetchCloudHistory(user.id);
+    }
 
     window.addEventListener('playlistUpdated', loadData);
     window.addEventListener('historyUpdated', loadData);

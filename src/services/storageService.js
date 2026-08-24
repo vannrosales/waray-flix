@@ -4,8 +4,18 @@ const PLAYLIST_KEY = 'warayflix_my_list';
 const HISTORY_KEY = 'warayflix_watch_history';
 
 export const storageService = {
-  // Fetch watchlist directly from Supabase (with local storage fallback for guests)
-  getPlaylist: async (userId = null) => {
+  // Synchronous getter - ALWAYS returns an Array for instant UI renders
+  getPlaylist: () => {
+    try {
+      const data = JSON.parse(localStorage.getItem(PLAYLIST_KEY) || '[]');
+      return Array.isArray(data) ? data : [];
+    } catch {
+      return [];
+    }
+  },
+
+  // Async cloud sync from Supabase
+  fetchCloudPlaylist: async (userId = null) => {
     if (isSupabaseConfigured && supabase && userId) {
       try {
         const { data, error } = await supabase
@@ -14,33 +24,29 @@ export const storageService = {
           .eq('user_id', userId)
           .order('created_at', { ascending: false });
 
-        if (!error && data) {
+        if (!error && Array.isArray(data)) {
           const normalized = data.map(item => ({
             ...item,
             id: item.media_id || item.id,
-            name: item.title,
+            name: item.title || item.name,
           }));
           localStorage.setItem(PLAYLIST_KEY, JSON.stringify(normalized));
+          window.dispatchEvent(new Event('playlistUpdated'));
           return normalized;
         }
       } catch (err) {
-        console.warn('Supabase getPlaylist error:', err);
+        console.warn('Supabase fetchCloudPlaylist error:', err);
       }
     }
-
-    try {
-      return JSON.parse(localStorage.getItem(PLAYLIST_KEY) || '[]');
-    } catch {
-      return [];
-    }
+    return storageService.getPlaylist();
   },
 
-  // Toggle Item in Supabase Cloud Watchlist
+  // Toggle Item in Watchlist (Instant UI update + Background Supabase Cloud sync)
   togglePlaylistItem: async (media, userId = null) => {
     if (!media || !media.id) return [];
     const mediaIdStr = String(media.id);
 
-    const localList = JSON.parse(localStorage.getItem(PLAYLIST_KEY) || '[]');
+    const localList = storageService.getPlaylist();
     const exists = localList.some(item => String(item.id) === mediaIdStr || String(item.media_id) === mediaIdStr);
 
     const normalizedItem = {
@@ -61,6 +67,7 @@ export const storageService = {
       : [normalizedItem, ...localList];
 
     localStorage.setItem(PLAYLIST_KEY, JSON.stringify(updatedList));
+    window.dispatchEvent(new Event('playlistUpdated'));
 
     // Direct Supabase Cloud Operation
     if (isSupabaseConfigured && supabase && userId) {
@@ -91,17 +98,26 @@ export const storageService = {
       }
     }
 
-    window.dispatchEvent(new Event('playlistUpdated'));
     return updatedList;
   },
 
   isInPlaylist: (id) => {
-    const list = JSON.parse(localStorage.getItem(PLAYLIST_KEY) || '[]');
+    const list = storageService.getPlaylist();
     return list.some(item => String(item.id) === String(id) || String(item.media_id) === String(id));
   },
 
-  // Fetch Watch History / Continue Watching directly from Supabase
-  getHistory: async (userId = null) => {
+  // Synchronous history getter - ALWAYS returns an Array
+  getHistory: () => {
+    try {
+      const data = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      return Array.isArray(data) ? data : [];
+    } catch {
+      return [];
+    }
+  },
+
+  // Async cloud sync for Watch History
+  fetchCloudHistory: async (userId = null) => {
     if (isSupabaseConfigured && supabase && userId) {
       try {
         const { data, error } = await supabase
@@ -110,7 +126,7 @@ export const storageService = {
           .eq('user_id', userId)
           .order('updated_at', { ascending: false });
 
-        if (!error && data) {
+        if (!error && Array.isArray(data)) {
           const normalized = data.map(item => ({
             ...item,
             id: item.media_id || item.id,
@@ -119,26 +135,22 @@ export const storageService = {
             type: item.media_type
           }));
           localStorage.setItem(HISTORY_KEY, JSON.stringify(normalized));
+          window.dispatchEvent(new Event('historyUpdated'));
           return normalized;
         }
       } catch (err) {
-        console.warn('Supabase getHistory error:', err);
+        console.warn('Supabase fetchCloudHistory error:', err);
       }
     }
-
-    try {
-      return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-    } catch {
-      return [];
-    }
+    return storageService.getHistory();
   },
 
-  // Save / Update Watch Progress to Supabase
+  // Save / Update Watch Progress
   saveHistoryProgress: async (userId, historyItem) => {
     if (!historyItem || !historyItem.id) return;
     const mediaIdStr = String(historyItem.id);
 
-    const localList = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+    const localList = storageService.getHistory();
     const existingIndex = localList.findIndex(item => String(item.id) === mediaIdStr);
 
     const record = {
@@ -161,6 +173,7 @@ export const storageService = {
       localList.unshift(record);
     }
     localStorage.setItem(HISTORY_KEY, JSON.stringify(localList.slice(0, 30)));
+    window.dispatchEvent(new Event('historyUpdated'));
 
     if (isSupabaseConfigured && supabase && userId) {
       try {
@@ -182,16 +195,15 @@ export const storageService = {
         console.warn('Supabase save history error:', err);
       }
     }
-
-    window.dispatchEvent(new Event('historyUpdated'));
   },
 
-  // Remove single history item from Supabase
+  // Remove single history item
   removeFromHistory: async (mediaId, userId = null) => {
     const mediaIdStr = String(mediaId);
-    const list = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+    const list = storageService.getHistory();
     const filtered = list.filter(item => String(item.id) !== mediaIdStr && String(item.media_id) !== mediaIdStr);
     localStorage.setItem(HISTORY_KEY, JSON.stringify(filtered));
+    window.dispatchEvent(new Event('historyUpdated'));
 
     if (isSupabaseConfigured && supabase && userId) {
       try {
@@ -205,13 +217,13 @@ export const storageService = {
       }
     }
 
-    window.dispatchEvent(new Event('historyUpdated'));
     return filtered;
   },
 
-  // Clear all history from Supabase
+  // Clear all history
   clearHistory: async (userId = null) => {
     localStorage.removeItem(HISTORY_KEY);
+    window.dispatchEvent(new Event('historyUpdated'));
 
     if (isSupabaseConfigured && supabase && userId) {
       try {
@@ -223,7 +235,5 @@ export const storageService = {
         console.warn('Supabase clear history error:', err);
       }
     }
-
-    window.dispatchEvent(new Event('historyUpdated'));
   }
 };
