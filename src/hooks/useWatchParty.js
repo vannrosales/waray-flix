@@ -16,7 +16,11 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
     { id: 'sys-1', sender: 'System', text: `Room #${roomId} active. Share invite link to sync playback.`, time: 'Just now', isSystem: true }
   ]);
   const [floatingReactions, setFloatingReactions] = useState([]);
-  const [peersList, setPeersList] = useState(new Set([username]));
+  
+  // Real-Time Active Peers Presence
+  const [activePeers, setActivePeers] = useState({
+    [username]: { username, lastSeen: Date.now(), isHost: true }
+  });
 
   const channelRef = useRef(null);
   const localTimeRef = useRef(0);
@@ -24,6 +28,9 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
   const peerRef = useRef(null);
   const connectionsRef = useRef([]);
   const hostConnRef = useRef(null);
+  const activePeersRef = useRef({
+    [username]: { username, lastSeen: Date.now(), isHost: true }
+  });
 
   useEffect(() => {
     localPlayerRef.current = selectedPlayerId;
@@ -60,6 +67,28 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
     }
   }, [broadcastData]);
 
+  // Update peer presence timestamp
+  const recordPeerHeartbeat = useCallback((peerName, isHost = false) => {
+    if (!peerName) return;
+    activePeersRef.current[peerName] = {
+      username: peerName,
+      lastSeen: Date.now(),
+      isHost
+    };
+    setActivePeers({ ...activePeersRef.current });
+  }, []);
+
+  // Remove peer on disconnect
+  const removePeer = useCallback((peerName) => {
+    if (!peerName || peerName === username) return;
+    delete activePeersRef.current[peerName];
+    setActivePeers({ ...activePeersRef.current });
+    setMessages((prev) => [
+      ...prev,
+      { id: `sys-${Date.now()}`, sender: 'System', text: `${peerName} disconnected.`, time: 'Now', isSystem: true }
+    ]);
+  }, [username]);
+
   // Process incoming data packet
   const handleIncomingData = useCallback((data) => {
     if (!data) return;
@@ -71,21 +100,8 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
       });
     } else if (data.type === 'REACTION') {
       triggerReaction(data.emoji, false);
-    } else if (data.type === 'USER_JOINED') {
-      setPeersList((prev) => new Set([...prev, data.username]));
-      setMessages((prev) => [
-        ...prev, 
-        { id: `sys-${Date.now()}`, sender: 'System', text: `${data.username} connected.`, time: 'Now', isSystem: true }
-      ]);
-      // Reply with current state snapshot
-      broadcastData({
-        type: 'USER_PRESENT',
-        username,
-        currentTime: localTimeRef.current,
-        player: localPlayerRef.current
-      });
-    } else if (data.type === 'USER_PRESENT') {
-      setPeersList((prev) => new Set([...prev, data.username]));
+    } else if (data.type === 'HEARTBEAT' || data.type === 'USER_PRESENT') {
+      recordPeerHeartbeat(data.username, data.isHost);
       if (data.currentTime > 0) {
         setHostTime(data.currentTime);
         if (localTimeRef.current === 0) {
@@ -94,8 +110,25 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
           localTimeRef.current = data.currentTime;
         }
       }
+    } else if (data.type === 'USER_JOINED') {
+      recordPeerHeartbeat(data.username, false);
+      setMessages((prev) => [
+        ...prev, 
+        { id: `sys-${Date.now()}`, sender: 'System', text: `${data.username} connected.`, time: 'Now', isSystem: true }
+      ]);
+      // Reply with current state snapshot & announce presence
+      broadcastData({
+        type: 'USER_PRESENT',
+        username,
+        currentTime: localTimeRef.current,
+        player: localPlayerRef.current,
+        isHost: true
+      });
+    } else if (data.type === 'USER_LEFT') {
+      removePeer(data.username);
     } else if (data.type === 'TIMESTAMP_BEAT') {
       setHostTime(data.time);
+      recordPeerHeartbeat(data.from, true);
     } else if (data.type === 'FORCE_SYNC') {
       setHostTime(data.time);
       setAppliedTime(data.time);
@@ -107,7 +140,53 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
         { id: `sys-${Date.now()}`, sender: 'System', text: `Room synchronized to ${formatTime(data.time)}.`, time: 'Now', isSystem: true }
       ]);
     }
-  }, [triggerReaction, username, broadcastData]);
+  }, [triggerReaction, username, broadcastData, recordPeerHeartbeat, removePeer]);
+
+  // Periodic heartbeat & stale peer pruning
+  useEffect(() => {
+    const heartbeatInterval = setInterval(() => {
+      // 1. Refresh self timestamp
+      activePeersRef.current[username] = {
+        username,
+        lastSeen: Date.now(),
+        isHost: true
+      };
+
+      // 2. Broadcast heartbeat to peers
+      broadcastData({
+        type: 'HEARTBEAT',
+        username,
+        currentTime: localTimeRef.current,
+        player: localPlayerRef.current
+      });
+
+      // 3. Prune inactive peers (> 8 seconds without heartbeat)
+      const now = Date.now();
+      let changed = false;
+      Object.keys(activePeersRef.current).forEach((peerKey) => {
+        if (peerKey !== username && now - activePeersRef.current[peerKey].lastSeen > 8000) {
+          delete activePeersRef.current[peerKey];
+          changed = true;
+        }
+      });
+
+      if (changed) {
+        setActivePeers({ ...activePeersRef.current });
+      }
+    }, 3000);
+
+    return () => clearInterval(heartbeatInterval);
+  }, [username, broadcastData]);
+
+  // Handle window unload / leave
+  useEffect(() => {
+    const handleUnload = () => {
+      broadcastData({ type: 'USER_LEFT', username });
+    };
+
+    window.addEventListener('beforeunload', handleUnload);
+    return () => window.removeEventListener('beforeunload', handleUnload);
+  }, [username, broadcastData]);
 
   // Setup WebRTC and BroadcastChannel
   useEffect(() => {
@@ -139,8 +218,10 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
       peerInstance.on('connection', (conn) => {
         connectionsRef.current.push(conn);
         conn.on('data', (data) => handleIncomingData(data));
+        conn.on('close', () => {
+          removePeer(conn.peer);
+        });
         conn.on('open', () => {
-          setPeersList((prev) => new Set([...prev, conn.peer]));
           conn.send({
             type: 'FORCE_SYNC',
             time: localTimeRef.current,
@@ -171,6 +252,9 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
               conn.send({ type: 'USER_JOINED', username });
             });
             conn.on('data', (data) => handleIncomingData(data));
+            conn.on('close', () => {
+              setConnectionStatus('offline');
+            });
           });
 
           peerRef.current = clientPeer;
@@ -185,10 +269,11 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
     broadcastData({ type: 'USER_JOINED', username });
 
     return () => {
+      broadcastData({ type: 'USER_LEFT', username });
       channel.close();
       if (peerRef.current) peerRef.current.destroy();
     };
-  }, [roomId, username, handleIncomingData, broadcastData]);
+  }, [roomId, username, handleIncomingData, broadcastData, removePeer]);
 
   // Iframe progress listener
   useEffect(() => {
@@ -263,6 +348,8 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
     });
   }, [currentPlaybackSecs, username, broadcastData]);
 
+  const peersList = Object.values(activePeers);
+
   return {
     selectedPlayerId,
     appliedTime,
@@ -272,6 +359,7 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
     messages,
     floatingReactions,
     peersList,
+    viewerCount: peersList.length,
     sendMessage,
     triggerReaction,
     syncToHost,
@@ -292,4 +380,3 @@ export function formatTime(seconds) {
   }
   return `${mins}:${String(secs).padStart(2, '0')}`;
 }
-

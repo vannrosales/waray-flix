@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Users2, Send, Zap, RotateCw, Wifi, WifiOff } from 'lucide-react';
+import { Users2, Send, Zap, RotateCw, Wifi, WifiOff, ChevronDown, ChevronUp } from 'lucide-react';
 import { formatTime } from '../../hooks/useWatchParty';
 
 const QUICK_REACTIONS = [
@@ -24,6 +24,7 @@ export default function PartyChatDrawer({
   onSendMessage
 }) {
   const [messageInput, setMessageInput] = useState('');
+  const [showViewersList, setShowViewersList] = useState(false);
   const chatEndRef = useRef(null);
 
   useEffect(() => {
@@ -37,16 +38,33 @@ export default function PartyChatDrawer({
     setMessageInput('');
   };
 
+  const viewersCount = Array.isArray(peersList) ? peersList.length : (peersList?.size || 1);
+  const viewersArray = Array.isArray(peersList) ? peersList : Array.from(peersList || []);
+
   return (
     <aside className="w-full md:w-80 lg:w-88 h-full bg-[#0E1017] border-t md:border-t-0 md:border-l border-white/[0.06] flex flex-col justify-between flex-shrink-0 z-30 animate-fade-in overflow-hidden">
       
       {/* Sidebar Top: Viewers Status & Quick Reactions */}
       <div className="p-2.5 sm:p-3.5 border-b border-white/[0.06] bg-[#11131A] space-y-2.5 flex-shrink-0">
+        
+        {/* Active Viewers Counter with Expand Toggle */}
         <div className="flex items-center justify-between text-xs font-mono">
-          <div className="flex items-center gap-1.5 text-zinc-300">
+          <button
+            onClick={() => setShowViewersList(!showViewersList)}
+            className="flex items-center gap-1.5 text-zinc-300 hover:text-white transition cursor-pointer p-0.5 rounded"
+            title="Click to view all connected viewers"
+          >
             <Users2 className="w-3.5 h-3.5 stroke-[1.5] text-zinc-400" />
-            <span className="text-[11px] sm:text-xs">Party Room ({peersList.size} Connected)</span>
-          </div>
+            <span className="text-[11px] sm:text-xs font-medium">
+              Party Room ({viewersCount} {viewersCount === 1 ? 'Viewer' : 'Viewers'})
+            </span>
+            {showViewersList ? (
+              <ChevronUp className="w-3 h-3 stroke-[1.5] text-zinc-400" />
+            ) : (
+              <ChevronDown className="w-3 h-3 stroke-[1.5] text-zinc-400" />
+            )}
+          </button>
+
           <div className="flex items-center gap-1 text-[10px] font-mono text-zinc-500">
             {connectionStatus === 'connected' ? (
               <span className="flex items-center gap-1 text-zinc-400">
@@ -59,6 +77,39 @@ export default function PartyChatDrawer({
             )}
           </div>
         </div>
+
+        {/* Expandable Active Viewers List */}
+        {showViewersList && (
+          <div className="p-2 rounded-xl bg-[#090A0F] border border-white/[0.06] space-y-1.5 animate-fade-in">
+            <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-wider block">
+              Active In Room ({viewersCount})
+            </span>
+            <div className="max-h-24 overflow-y-auto space-y-1">
+              {viewersArray.map((peer, idx) => {
+                const peerName = typeof peer === 'string' ? peer : peer.username;
+                const isSelf = peerName === username;
+                return (
+                  <div 
+                    key={peerName || idx}
+                    className="flex items-center justify-between text-[11px] font-mono px-2 py-1 rounded bg-white/[0.02] border border-white/[0.04]"
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                      <span className={isSelf ? "text-white font-medium" : "text-zinc-300"}>
+                        {peerName}
+                      </span>
+                    </div>
+                    {isSelf && (
+                      <span className="text-[9px] px-1.5 py-0.2 rounded bg-white/[0.08] text-zinc-300 border border-white/10">
+                        You
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Sync Controls Card */}
         <div className="p-2 rounded-xl bg-[#0E1017] border border-white/[0.06] flex items-center justify-between gap-2">
