@@ -39,6 +39,9 @@ export default function WatchPartyPage() {
     currentPlaybackSecs,
     hostTime,
     syncKey,
+    isHost,
+    isHostOnlyLock,
+    toggleHostLock,
     connectionStatus,
     messages,
     floatingReactions,
@@ -48,7 +51,6 @@ export default function WatchPartyPage() {
     syncToHost,
     broadcastSync,
     adjustPlaybackTime,
-    setManualPlaybackTime,
     changePlayer
   } = useWatchParty(roomId, username);
 
@@ -98,6 +100,9 @@ export default function WatchPartyPage() {
         onPlayerChange={changePlayer}
         hostTime={hostTime}
         currentPlaybackSecs={currentPlaybackSecs}
+        isHost={isHost}
+        isHostOnlyLock={isHostOnlyLock}
+        onToggleHostLock={toggleHostLock}
         onBroadcastSync={broadcastSync}
         onSyncToHost={syncToHost}
         copied={copied}
@@ -135,10 +140,11 @@ export default function WatchPartyPage() {
               connectionStatus={connectionStatus}
               hostTime={hostTime}
               currentPlaybackSecs={currentPlaybackSecs}
+              isHost={isHost}
+              isHostOnlyLock={isHostOnlyLock}
               onBroadcastSync={broadcastSync}
               onSyncToHost={syncToHost}
               onAdjustTime={adjustPlaybackTime}
-              onManualTime={setManualPlaybackTime}
               onTriggerReaction={triggerReaction}
               messages={messages}
               onSendMessage={sendMessage}

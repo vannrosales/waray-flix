@@ -13,6 +13,11 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
   const [appliedTime, setAppliedTime] = useState(0);
   const [syncKey, setSyncKey] = useState(0);
 
+  // Host-Only Control Lock State
+  const [isHost, setIsHost] = useState(true);
+  const [isHostOnlyLock, setIsHostOnlyLock] = useState(false);
+  const [hostUsername, setHostUsername] = useState(username);
+
   // Chat & Reactions
   const [messages, setMessages] = useState([
     { id: 'sys-1', sender: 'System', text: `Room #${roomId} active. Share invite link to sync playback.`, time: 'Just now', isSystem: true }
@@ -33,6 +38,10 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
   const peerRef = useRef(null);
   const connectionsRef = useRef([]);
   const hostConnRef = useRef(null);
+  const isHostOnlyLockRef = useRef(false);
+  const hostUsernameRef = useRef(username);
+  const isHostRef = useRef(true);
+
   const activePeersRef = useRef({
     [username]: { username, lastSeen: Date.now(), isHost: true }
   });
@@ -40,6 +49,18 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
   useEffect(() => {
     localPlayerRef.current = selectedPlayerId;
   }, [selectedPlayerId]);
+
+  useEffect(() => {
+    isHostOnlyLockRef.current = isHostOnlyLock;
+  }, [isHostOnlyLock]);
+
+  useEffect(() => {
+    hostUsernameRef.current = hostUsername;
+  }, [hostUsername]);
+
+  useEffect(() => {
+    isHostRef.current = isHost;
+  }, [isHost]);
 
   // Load existing watch history progress if available
   useEffect(() => {
@@ -114,12 +135,12 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
   }, [broadcastData]);
 
   // Update peer presence timestamp
-  const recordPeerHeartbeat = useCallback((peerName, isHost = false) => {
+  const recordPeerHeartbeat = useCallback((peerName, isPeerHost = false) => {
     if (!peerName) return;
     activePeersRef.current[peerName] = {
       username: peerName,
       lastSeen: Date.now(),
-      isHost
+      isHost: isPeerHost
     };
     setActivePeers({ ...activePeersRef.current });
   }, []);
@@ -167,6 +188,12 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
       triggerReaction(data.emoji, false);
     } else if (data.type === 'HEARTBEAT' || data.type === 'USER_PRESENT') {
       recordPeerHeartbeat(data.username, data.isHost);
+      if (data.isHost && data.username) {
+        setHostUsername(data.username);
+      }
+      if (typeof data.isLocked === 'boolean') {
+        setIsHostOnlyLock(data.isLocked);
+      }
       if (typeof data.currentTime === 'number' && data.currentTime > 0) {
         setHostTime(data.currentTime);
       }
@@ -183,8 +210,24 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
         username,
         currentTime: currentElapsed,
         player: localPlayerRef.current,
-        isHost: true
+        isHost: isHostRef.current,
+        isLocked: isHostOnlyLockRef.current
       });
+    } else if (data.type === 'HOST_LOCK_TOGGLED') {
+      setIsHostOnlyLock(data.isLocked);
+      if (data.host) setHostUsername(data.host);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `sys-${Date.now()}`,
+          sender: 'System',
+          text: data.isLocked 
+            ? `👑 Host enabled Host-Only Control Lock.` 
+            : `👑 Host unlocked playback controls for everyone.`,
+          time: 'Now',
+          isSystem: true
+        }
+      ]);
     } else if (data.type === 'USER_LEFT') {
       removePeer(data.username);
     } else if (data.type === 'TIMESTAMP_BEAT') {
@@ -193,6 +236,15 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
         recordPeerHeartbeat(data.from, true);
       }
     } else if (data.type === 'FORCE_SYNC') {
+      // If host lock is active and sender is not the host, ignore non-host sync command
+      if (isHostOnlyLockRef.current && data.from && data.from !== hostUsernameRef.current && !data.isHost) {
+        setMessages((prev) => [
+          ...prev,
+          { id: `sys-${Date.now()}`, sender: 'System', text: `${data.from}'s sync attempt ignored (Host Lock is Active).`, time: 'Now', isSystem: true }
+        ]);
+        return;
+      }
+
       applySyncTimeLocally(data.time, data.player);
       setMessages((prev) => [
         ...prev,
@@ -207,7 +259,7 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
       activePeersRef.current[username] = {
         username,
         lastSeen: Date.now(),
-        isHost: true
+        isHost: isHostRef.current
       };
 
       const currentElapsed = anchorSecondsRef.current + Math.floor((Date.now() - sessionStartRef.current) / 1000);
@@ -216,7 +268,9 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
         type: 'HEARTBEAT',
         username,
         currentTime: currentElapsed,
-        player: localPlayerRef.current
+        player: localPlayerRef.current,
+        isHost: isHostRef.current,
+        isLocked: isHostOnlyLockRef.current
       });
 
       const now = Date.now();
@@ -246,7 +300,7 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
     return () => window.removeEventListener('beforeunload', handleUnload);
   }, [username, broadcastData]);
 
-  // Tier 1 & 2: Setup Local BroadcastChannel + Public WSS MQTT Broker (Guaranteed PC-to-PC cross-network connectivity)
+  // Tier 1 & 2: Setup Local BroadcastChannel + Public WSS MQTT Broker
   useEffect(() => {
     // 1. BroadcastChannel
     const channelName = `warayflix_room_${roomId}`;
@@ -309,7 +363,10 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
         }
       });
 
-      peerInstance.on('open', () => setConnectionStatus('connected'));
+      peerInstance.on('open', () => {
+        setConnectionStatus('connected');
+        setIsHost(true);
+      });
 
       peerInstance.on('connection', (conn) => {
         connectionsRef.current.push(conn);
@@ -320,7 +377,9 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
           conn.send({
             type: 'FORCE_SYNC',
             time: currentElapsed,
-            player: localPlayerRef.current
+            player: localPlayerRef.current,
+            isLocked: isHostOnlyLockRef.current,
+            isHost: true
           });
         });
       });
@@ -328,6 +387,8 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
       peerInstance.on('error', (err) => {
         if (err.type === 'unavailable-id') {
           peerInstance.destroy();
+          setIsHost(false);
+
           const clientPeer = new Peer(myPeerId, {
             debug: 0,
             config: {
@@ -405,12 +466,43 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
     broadcastData({ type: 'CHAT_MESSAGE', message: newMsg });
   }, [username, broadcastData]);
 
+  const toggleHostLock = useCallback(() => {
+    const nextLocked = !isHostOnlyLock;
+    setIsHostOnlyLock(nextLocked);
+    broadcastData({
+      type: 'HOST_LOCK_TOGGLED',
+      isLocked: nextLocked,
+      host: username,
+      from: username
+    });
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: `sys-${Date.now()}`,
+        sender: 'System',
+        text: nextLocked 
+          ? `👑 You enabled Host-Only Control Lock.` 
+          : `👑 You unlocked playback controls for everyone.`,
+        time: 'Now',
+        isSystem: true
+      }
+    ]);
+  }, [isHostOnlyLock, username, broadcastData]);
+
   const syncToHost = useCallback(() => {
     const targetTime = hostTime > 0 ? hostTime : currentPlaybackSecs;
     applySyncTimeLocally(targetTime, selectedPlayerId);
   }, [hostTime, currentPlaybackSecs, selectedPlayerId, applySyncTimeLocally]);
 
   const broadcastSync = useCallback(() => {
+    if (isHostOnlyLock && !isHost) {
+      setMessages((prev) => [
+        ...prev,
+        { id: `sys-${Date.now()}`, sender: 'System', text: `Sync blocked: Host-Only Lock is active.`, time: 'Now', isSystem: true }
+      ]);
+      return;
+    }
+
     const currentElapsed = anchorSecondsRef.current + Math.floor((Date.now() - sessionStartRef.current) / 1000);
     const targetTime = Math.max(0, currentElapsed);
 
@@ -418,16 +510,25 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
       type: 'FORCE_SYNC',
       time: targetTime,
       player: selectedPlayerId,
-      from: username
+      from: username,
+      isHost
     });
     applySyncTimeLocally(targetTime, selectedPlayerId);
     setMessages((prev) => [
       ...prev,
       { id: `sys-${Date.now()}`, sender: 'System', text: `You synchronized the room to ${formatTime(targetTime)}.`, time: 'Now', isSystem: true }
     ]);
-  }, [selectedPlayerId, username, broadcastData, applySyncTimeLocally]);
+  }, [isHostOnlyLock, isHost, selectedPlayerId, username, broadcastData, applySyncTimeLocally]);
 
   const adjustPlaybackTime = useCallback((deltaSeconds) => {
+    if (isHostOnlyLock && !isHost) {
+      setMessages((prev) => [
+        ...prev,
+        { id: `sys-${Date.now()}`, sender: 'System', text: `Action blocked: Host-Only Lock is active.`, time: 'Now', isSystem: true }
+      ]);
+      return;
+    }
+
     const currentElapsed = anchorSecondsRef.current + Math.floor((Date.now() - sessionStartRef.current) / 1000);
     const targetTime = Math.max(0, currentElapsed + deltaSeconds);
     
@@ -435,33 +536,32 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
       type: 'FORCE_SYNC',
       time: targetTime,
       player: selectedPlayerId,
-      from: username
+      from: username,
+      isHost
     });
     applySyncTimeLocally(targetTime, selectedPlayerId);
-  }, [selectedPlayerId, username, broadcastData, applySyncTimeLocally]);
-
-  const setManualPlaybackTime = useCallback((targetSeconds) => {
-    const validTime = Math.max(0, targetSeconds);
-    broadcastData({
-      type: 'FORCE_SYNC',
-      time: validTime,
-      player: selectedPlayerId,
-      from: username
-    });
-    applySyncTimeLocally(validTime, selectedPlayerId);
-  }, [selectedPlayerId, username, broadcastData, applySyncTimeLocally]);
+  }, [isHostOnlyLock, isHost, selectedPlayerId, username, broadcastData, applySyncTimeLocally]);
 
   const changePlayer = useCallback((playerId) => {
+    if (isHostOnlyLock && !isHost) {
+      setMessages((prev) => [
+        ...prev,
+        { id: `sys-${Date.now()}`, sender: 'System', text: `Server switch blocked: Host-Only Lock is active.`, time: 'Now', isSystem: true }
+      ]);
+      return;
+    }
+
     setSelectedPlayerId(playerId);
     const currentElapsed = anchorSecondsRef.current + Math.floor((Date.now() - sessionStartRef.current) / 1000);
     broadcastData({
       type: 'FORCE_SYNC',
       time: currentElapsed,
       player: playerId,
-      from: username
+      from: username,
+      isHost
     });
     applySyncTimeLocally(currentElapsed, playerId);
-  }, [username, broadcastData, applySyncTimeLocally]);
+  }, [isHostOnlyLock, isHost, username, broadcastData, applySyncTimeLocally]);
 
   const peersList = Object.values(activePeers);
 
@@ -471,6 +571,10 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
     currentPlaybackSecs,
     hostTime,
     syncKey,
+    isHost,
+    isHostOnlyLock,
+    hostUsername,
+    toggleHostLock,
     connectionStatus,
     messages,
     floatingReactions,
@@ -481,7 +585,6 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
     syncToHost,
     broadcastSync,
     adjustPlaybackTime,
-    setManualPlaybackTime,
     changePlayer
   };
 }

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Users2, Send, Zap, RotateCw, Wifi, WifiOff, ChevronDown, ChevronUp } from 'lucide-react';
+import { Users2, Send, Zap, RotateCw, Wifi, WifiOff, ChevronDown, ChevronUp, Lock, Crown } from 'lucide-react';
 import { formatTime } from '../../hooks/useWatchParty';
 
 const QUICK_REACTIONS = [
@@ -17,6 +17,8 @@ export default function PartyChatDrawer({
   connectionStatus,
   hostTime,
   currentPlaybackSecs,
+  isHost,
+  isHostOnlyLock,
   onBroadcastSync,
   onSyncToHost,
   onAdjustTime,
@@ -41,6 +43,7 @@ export default function PartyChatDrawer({
 
   const viewersCount = Array.isArray(peersList) ? peersList.length : (peersList?.size || 1);
   const viewersArray = Array.isArray(peersList) ? peersList : Array.from(peersList || []);
+  const isControlsDisabled = isHostOnlyLock && !isHost;
 
   return (
     <aside className="w-full md:w-80 lg:w-88 h-full bg-[#0E1017] border-t md:border-t-0 md:border-l border-white/[0.06] flex flex-col justify-between flex-shrink-0 z-30 animate-fade-in overflow-hidden">
@@ -88,6 +91,7 @@ export default function PartyChatDrawer({
             <div className="max-h-24 overflow-y-auto space-y-1">
               {viewersArray.map((peer, idx) => {
                 const peerName = typeof peer === 'string' ? peer : peer.username;
+                const isPeerHost = typeof peer === 'object' ? peer.isHost : false;
                 const isSelf = peerName === username;
                 return (
                   <div 
@@ -100,11 +104,18 @@ export default function PartyChatDrawer({
                         {peerName}
                       </span>
                     </div>
-                    {isSelf && (
-                      <span className="text-[9px] px-1.5 py-0.2 rounded bg-white/[0.08] text-zinc-300 border border-white/10">
-                        You
-                      </span>
-                    )}
+                    <div className="flex items-center gap-1">
+                      {isPeerHost && (
+                        <span className="text-[9px] px-1.5 py-0.2 rounded bg-white/[0.06] text-zinc-300 border border-white/10 flex items-center gap-0.5">
+                          <Crown className="w-2.5 h-2.5 stroke-[1.5]" /> Host
+                        </span>
+                      )}
+                      {isSelf && (
+                        <span className="text-[9px] px-1.5 py-0.2 rounded bg-white/[0.08] text-zinc-300 border border-white/10">
+                          You
+                        </span>
+                      )}
+                    </div>
                   </div>
                 );
               })}
@@ -116,14 +127,26 @@ export default function PartyChatDrawer({
         <div className="p-2.5 rounded-xl bg-[#0E1017] border border-white/[0.06] space-y-2">
           <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-mono">
             <span className="text-zinc-500">Sync Position:</span>
-            <span className="text-zinc-200 font-semibold">{formatTime(currentPlaybackSecs || hostTime)}</span>
+            <div className="flex items-center gap-1.5">
+              {isHostOnlyLock && (
+                <span className="text-[9px] text-zinc-400 font-mono px-1.5 py-0.2 rounded bg-white/[0.04] border border-white/10 flex items-center gap-1">
+                  <Lock className="w-2.5 h-2.5 stroke-[1.5]" /> Host Lock
+                </span>
+              )}
+              <span className="text-zinc-200 font-semibold">{formatTime(currentPlaybackSecs || hostTime)}</span>
+            </div>
           </div>
           
           <div className="flex items-center gap-1.5">
             <button
               onClick={onBroadcastSync}
-              className="flex-1 py-1.5 rounded-lg bg-white text-black hover:bg-zinc-200 text-[10px] sm:text-xs font-mono font-medium transition cursor-pointer flex items-center justify-center gap-1 shadow-sm"
-              title="Force synchronize all viewers to this exact position"
+              disabled={isControlsDisabled}
+              className={`flex-1 py-1.5 rounded-lg text-[10px] sm:text-xs font-mono font-medium transition cursor-pointer flex items-center justify-center gap-1 shadow-sm ${
+                isControlsDisabled
+                  ? 'bg-white/10 text-zinc-500 cursor-not-allowed border border-white/5'
+                  : 'bg-white text-black hover:bg-zinc-200'
+              }`}
+              title={isControlsDisabled ? "Host Lock is Active" : "Force synchronize all viewers to this exact position"}
             >
               <Zap className="w-3 h-3 stroke-[2]" />
               <span>Sync All</span>
@@ -141,41 +164,24 @@ export default function PartyChatDrawer({
 
           {/* Quick Time Adjusters */}
           <div className="flex items-center justify-between gap-1 pt-1 border-t border-white/[0.04]">
-            <button
-              onClick={() => onAdjustTime && onAdjustTime(-30)}
-              className="px-2 py-0.5 rounded bg-white/[0.03] hover:bg-white/[0.08] text-[9px] font-mono text-zinc-400 hover:text-white border border-white/[0.06] transition"
-              title="Rewind 30 seconds for all"
-            >
-              -30s
-            </button>
-            <button
-              onClick={() => onAdjustTime && onAdjustTime(-10)}
-              className="px-2 py-0.5 rounded bg-white/[0.03] hover:bg-white/[0.08] text-[9px] font-mono text-zinc-400 hover:text-white border border-white/[0.06] transition"
-              title="Rewind 10 seconds for all"
-            >
-              -10s
-            </button>
-            <button
-              onClick={() => onAdjustTime && onAdjustTime(10)}
-              className="px-2 py-0.5 rounded bg-white/[0.03] hover:bg-white/[0.08] text-[9px] font-mono text-zinc-400 hover:text-white border border-white/[0.06] transition"
-              title="Forward 10 seconds for all"
-            >
-              +10s
-            </button>
-            <button
-              onClick={() => onAdjustTime && onAdjustTime(30)}
-              className="px-2 py-0.5 rounded bg-white/[0.03] hover:bg-white/[0.08] text-[9px] font-mono text-zinc-400 hover:text-white border border-white/[0.06] transition"
-              title="Forward 30 seconds for all"
-            >
-              +30s
-            </button>
-            <button
-              onClick={() => onAdjustTime && onAdjustTime(60)}
-              className="px-2 py-0.5 rounded bg-white/[0.03] hover:bg-white/[0.08] text-[9px] font-mono text-zinc-400 hover:text-white border border-white/[0.06] transition"
-              title="Forward 1 minute for all"
-            >
-              +1m
-            </button>
+            {[-30, -10, 10, 30, 60].map((delta) => {
+              const label = delta > 0 ? (delta === 60 ? '+1m' : `+${delta}s`) : `${delta}s`;
+              return (
+                <button
+                  key={delta}
+                  onClick={() => !isControlsDisabled && onAdjustTime && onAdjustTime(delta)}
+                  disabled={isControlsDisabled}
+                  className={`px-2 py-0.5 rounded text-[9px] font-mono border transition ${
+                    isControlsDisabled
+                      ? 'bg-white/[0.01] text-zinc-600 border-white/[0.02] cursor-not-allowed'
+                      : 'bg-white/[0.03] hover:bg-white/[0.08] text-zinc-400 hover:text-white border-white/[0.06]'
+                  }`}
+                  title={isControlsDisabled ? "Host Lock Active" : `Jump ${label} for all`}
+                >
+                  {label}
+                </button>
+              );
+            })}
           </div>
         </div>
 

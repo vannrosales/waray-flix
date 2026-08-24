@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Zap, RotateCw, Server, Check, Copy, QrCode, MessageSquare } from 'lucide-react';
+import { ArrowLeft, Zap, RotateCw, Server, Check, Copy, QrCode, MessageSquare, Lock, Unlock } from 'lucide-react';
 import { CONFIG } from '../../config/siteConfig';
 import { formatTime } from '../../hooks/useWatchParty';
 
@@ -11,6 +11,9 @@ export default function PartyHeader({
   onPlayerChange,
   hostTime,
   currentPlaybackSecs,
+  isHost,
+  isHostOnlyLock,
+  onToggleHostLock,
   onBroadcastSync,
   onSyncToHost,
   copied,
@@ -48,13 +51,42 @@ export default function PartyHeader({
       {/* Right Action Island */}
       <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
         
+        {/* Host Lock Control (Host Toggle or Guest Status) */}
+        {isHost ? (
+          <button
+            onClick={onToggleHostLock}
+            className={`flex items-center gap-1 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-full border text-[10px] sm:text-xs font-mono transition cursor-pointer ${
+              isHostOnlyLock 
+                ? 'bg-white text-black font-semibold border-white' 
+                : 'bg-white/[0.04] text-zinc-400 hover:text-white border-white/[0.08]'
+            }`}
+            title={isHostOnlyLock ? "Host Lock Enabled: Only you can control playback" : "Host Lock Disabled: Anyone can sync"}
+          >
+            {isHostOnlyLock ? <Lock className="w-3 h-3 stroke-[2]" /> : <Unlock className="w-3 h-3 stroke-[1.5]" />}
+            <span className="hidden md:inline">{isHostOnlyLock ? 'Host Locked' : 'Host Lock'}</span>
+          </button>
+        ) : isHostOnlyLock ? (
+          <div 
+            className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/[0.04] border border-white/10 text-[10px] font-mono text-zinc-400"
+            title="Host has locked playback controls"
+          >
+            <Lock className="w-3 h-3 stroke-[1.5] text-zinc-400" />
+            <span className="hidden sm:inline">Host Locked</span>
+          </div>
+        ) : null}
+
         {/* Host Broadcast Sync Action */}
         <button
           onClick={onBroadcastSync}
-          className="flex items-center gap-1 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full bg-white text-black text-[10px] sm:text-xs font-semibold uppercase tracking-wider transition cursor-pointer hover:bg-zinc-200"
-          title="Broadcast your exact playback timestamp to all viewers"
+          disabled={isHostOnlyLock && !isHost}
+          className={`flex items-center gap-1 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-semibold uppercase tracking-wider transition cursor-pointer ${
+            isHostOnlyLock && !isHost
+              ? 'bg-white/10 text-zinc-500 cursor-not-allowed border border-white/5'
+              : 'bg-white text-black hover:bg-zinc-200 shadow-sm'
+          }`}
+          title={isHostOnlyLock && !isHost ? "Host Lock is Active" : "Broadcast your exact playback timestamp to all viewers"}
         >
-          <Zap className="w-3 h-3 sm:w-3.5 sm:h-3.5 stroke-[2] text-black" />
+          <Zap className="w-3 h-3 sm:w-3.5 sm:h-3.5 stroke-[2]" />
           <span className="hidden xs:inline">Sync</span>
         </button>
 
@@ -80,9 +112,12 @@ export default function PartyHeader({
             <button
               key={player.id}
               onClick={() => onPlayerChange(player.id)}
+              disabled={isHostOnlyLock && !isHost}
               className={`px-2.5 py-0.5 rounded-full text-[11px] font-medium transition cursor-pointer ${
                 selectedPlayerId === player.id 
                   ? 'bg-white text-black font-semibold' 
+                  : isHostOnlyLock && !isHost
+                  ? 'text-zinc-600 cursor-not-allowed'
                   : 'text-zinc-400 hover:text-white'
               }`}
             >
