@@ -1,7 +1,7 @@
 {
   "rewrites": [
     {
-      "source": "/((?!assets/|favicon|icon|manifest|sw.js).*)",
+      "source": "/((?!assets/|favicon.svg|icon-192.svg|icon-512.svg|manifest.json|sw.js).*)",
       "destination": "/index.html"
     }
   ],
@@ -20,7 +20,7 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "public, max-age=0, must-revalidate"
+          "value": "no-store, no-cache, must-revalidate"
         },
         {
           "key": "Content-Type",
