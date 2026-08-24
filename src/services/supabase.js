@@ -8,12 +8,20 @@ const supabaseUrl = rawUrl.replace(/\/rest\/v1\/?$/, '').replace(/\/+$/, '');
 
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
 
-export const supabase = isSupabaseConfigured
-  ? createClient(supabaseUrl, supabaseAnonKey, {
+function getSupabaseClient() {
+  if (!isSupabaseConfigured) return null;
+  
+  // Singleton pattern to prevent duplicate GoTrueClient instances on HMR / Fast Refresh
+  if (!globalThis.__warayflix_supabase) {
+    globalThis.__warayflix_supabase = createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
         autoRefreshToken: true,
         persistSession: true,
         detectSessionInUrl: true
       }
-    })
-  : null;
+    });
+  }
+  return globalThis.__warayflix_supabase;
+}
+
+export const supabase = getSupabaseClient();
