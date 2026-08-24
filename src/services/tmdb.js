@@ -188,3 +188,33 @@ export async function fetchRandomMediaByGenre(genreIds, type = 'movie') {
   const randomIndex = Math.floor(Math.random() * valid.length);
   return { ...valid[randomIndex], media_type: type };
 }
+
+// Fetch a curated list of trending movies with verified YouTube trailer keys
+export async function fetchTrailersFeed() {
+  const [upcoming, trending] = await Promise.all([
+    fetchUpcomingMovies(1),
+    fetchTrendingMovies()
+  ]);
+
+  const candidates = [...(upcoming || []), ...(trending || [])].slice(0, 15);
+  
+  const itemsWithTrailers = await Promise.all(
+    candidates.map(async (item) => {
+      try {
+        const itemType = item.media_type || (item.title ? 'movie' : 'tv');
+        const videos = await fetchMediaVideos(item.id, itemType);
+        const trailer = (videos || []).find(
+          v => v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser')
+        );
+        if (trailer) {
+          return { ...item, media_type: itemType, trailerKey: trailer.key };
+        }
+        return null;
+      } catch {
+        return null;
+      }
+    })
+  );
+
+  return itemsWithTrailers.filter(Boolean);
+}

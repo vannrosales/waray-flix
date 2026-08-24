@@ -12,6 +12,7 @@ import NetworkHubPage from './pages/NetworkHubPage';
 import ScrollToTop from './components/ScrollToTop'; 
 import AnimePage from './pages/AnimePage';
 import PersonPage from './pages/PersonPage';
+import TrailersPage from './pages/TrailersPage';
 
 function Layout() {
   return (
@@ -35,6 +36,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/movies" element={<Movies />} />
           <Route path="/tv" element={<TVShows />} />
+          <Route path="/trailers" element={<TrailersPage />} />
           <Route path="/details/:type/:id" element={<DetailPage />} />
           <Route path="/person/:id" element={<PersonPage />} />
           <Route path="/search" element={<SearchPage />} />
