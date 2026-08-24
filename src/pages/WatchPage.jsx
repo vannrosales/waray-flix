@@ -2,7 +2,8 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { CONFIG } from '../config/siteConfig';
 import { fetchSeasonDetails, fetchMediaDetails, getImageUrl } from '../services/tmdb';
-import { ArrowLeft, Server, ChevronDown, SkipForward, Layers, X, Play } from 'lucide-react';
+import { ArrowLeft, Server, ChevronDown, SkipForward, Layers, X, Play, QrCode } from 'lucide-react';
+import ShareModal from '../components/ShareModal';
 
 export default function WatchPage() {
   const { type, id, season, episode } = useParams();
@@ -17,6 +18,7 @@ export default function WatchPage() {
   const [selectedPlayerId, setSelectedPlayerId] = useState(CONFIG.players[0].id);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [epDrawerOpen, setEpDrawerOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const [hudVisible, setHudVisible] = useState(true);
 
   const [tvShowDetails, setTvShowDetails] = useState(null);
@@ -290,6 +292,16 @@ export default function WatchPage() {
             </button>
           )}
 
+          {/* Send to Phone / Share Button */}
+          <button
+            onClick={() => setShareOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#0E1017]/90 hover:bg-[#161922] text-xs font-mono text-zinc-300 hover:text-white border border-white/10 backdrop-blur-xl transition cursor-pointer shadow-lg"
+            title="Send to Phone via QR Code"
+          >
+            <QrCode className="w-3.5 h-3.5 stroke-[1.5]" />
+            <span className="hidden lg:inline">Phone Sync</span>
+          </button>
+
           {/* Server Switcher */}
           <div className="relative" ref={menuRef}>
             {/* Mobile Server Toggle */}
@@ -460,6 +472,13 @@ export default function WatchPage() {
           </div>
         </div>
       )}
+
+      {/* Send to Phone / Share QR Modal */}
+      <ShareModal
+        isOpen={shareOpen}
+        onClose={() => setShareOpen(false)}
+        title={mediaTitle || "Live Stream Player"}
+      />
 
     </div>
   );

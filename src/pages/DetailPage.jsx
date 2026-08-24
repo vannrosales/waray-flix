@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchMediaDetails, fetchSeasonDetails, fetchMediaVideos, getImageUrl } from '../services/tmdb';
-import { Play, ArrowLeft, Star, Clock, Layers, VolumeX, Volume2, Bookmark, Film, Users } from 'lucide-react';
+import { Play, ArrowLeft, Star, Clock, Layers, VolumeX, Volume2, Bookmark, Film, Users, QrCode } from 'lucide-react';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 import { usePlaylist } from '../hooks/usePlaylist';
 import MediaRow from '../components/MediaRow';
+import ShareModal from '../components/ShareModal';
 
 export default function DetailPage() {
   const { type, id } = useParams();
@@ -18,6 +19,7 @@ export default function DetailPage() {
   const [isMuted, setIsMuted] = useState(true);
   const [showVideo, setShowVideo] = useState(false);
   const [watchProgress, setWatchProgress] = useState(null);
+  const [shareOpen, setShareOpen] = useState(false);
 
   const { isAdded, toggle } = usePlaylist(id);
 
@@ -265,6 +267,15 @@ export default function DetailPage() {
                 <Bookmark className="w-3.5 h-3.5 stroke-[1.5]" />
                 <span>{isAdded ? 'In Watchlist' : 'Add to Watchlist'}</span>
               </button>
+
+              <button 
+                onClick={() => setShareOpen(true)}
+                className="px-4 py-2.5 rounded-full border border-white/10 bg-white/[0.04] text-zinc-400 hover:text-white hover:border-white/30 text-xs font-medium uppercase tracking-wider flex items-center gap-2 transition cursor-pointer backdrop-blur-md"
+                title="Send to Phone via QR Code"
+              >
+                <QrCode className="w-3.5 h-3.5 stroke-[1.5]" />
+                <span className="hidden sm:inline">Send to Phone</span>
+              </button>
             </div>
 
             {/* Synopsis */}
@@ -409,6 +420,11 @@ export default function DetailPage() {
 
       </div>
 
+      <ShareModal 
+        isOpen={shareOpen} 
+        onClose={() => setShareOpen(false)} 
+        title={media.title || media.name} 
+      />
     </div>
   );
 }

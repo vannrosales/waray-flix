@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Clapperboard, Search, Menu, X, Compass, Film, Tv, Sparkles, Dices } from 'lucide-react';
 import SearchModal from './SearchModal';
 import SurpriseModal from './SurpriseModal';
+import InstallPrompt from './InstallPrompt';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -90,6 +91,9 @@ export default function Navbar() {
 
           {/* Right Action Island */}
           <div className="flex items-center gap-2.5">
+            {/* Install PWA Prompt Button */}
+            <InstallPrompt />
+
             {/* Surprise Me Roulette Button */}
             <button
               onClick={() => setSurpriseOpen(true)}
