@@ -10,6 +10,8 @@ export const IMAGE_SIZES = {
   backdrop: 'w1280',
   backdropSmall: 'w780',
   thumbnail: 'w185',
+  profile: 'w185',
+  profileLarge: 'h632',
   original: 'original'
 };
 
@@ -158,4 +160,31 @@ export async function fetchTop10MoviesToday() {
 export async function fetchTop10ShowsToday() {
   const data = await fetchFromTMDB('/trending/tv/day');
   return (data || []).slice(0, 10);
+}
+
+// Actor / Person details with filmography combined credits
+export async function fetchPersonDetails(personId) {
+  return fetchFromTMDB(`/person/${personId}`, {
+    append_to_response: 'combined_credits,external_ids,images'
+  });
+}
+
+// Random media picker by genre/mood
+export async function fetchRandomMediaByGenre(genreIds, type = 'movie') {
+  const page = Math.floor(Math.random() * 3) + 1;
+  const endpoint = type === 'movie' ? '/discover/movie' : '/discover/tv';
+  const params = {
+    sort_by: 'popularity.desc',
+    'vote_count.gte': '150',
+    'vote_average.gte': '6.5',
+    page
+  };
+  if (genreIds && genreIds !== 'all') {
+    params.with_genres = genreIds;
+  }
+  const results = await fetchFromTMDB(endpoint, params);
+  const valid = (results || []).filter(item => item.poster_path && item.backdrop_path);
+  if (valid.length === 0) return null;
+  const randomIndex = Math.floor(Math.random() * valid.length);
+  return { ...valid[randomIndex], media_type: type };
 }

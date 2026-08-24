@@ -290,10 +290,20 @@ export default function DetailPage() {
               {castList.map((actor) => {
                 const profileImg = getImageUrl(actor.profile_path, 'thumbnail');
                 return (
-                  <div key={actor.id} className="w-20 sm:w-24 flex-shrink-0 space-y-1.5 text-center group">
-                    <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full overflow-hidden bg-[#11131A] border border-white/10 group-hover:border-white/25 transition">
+                  <div 
+                    key={actor.id} 
+                    onClick={() => navigate(`/person/${actor.id}`)}
+                    className="w-20 sm:w-24 flex-shrink-0 space-y-1.5 text-center group cursor-pointer"
+                  >
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full overflow-hidden bg-[#11131A] border border-white/10 group-hover:border-white/30 transition shadow-sm relative flex items-center justify-center">
                       {profileImg ? (
-                        <img src={profileImg} alt={actor.name} className="w-full h-full object-cover" />
+                        <img 
+                          src={profileImg} 
+                          alt={actor.name} 
+                          loading="lazy"
+                          onError={(e) => { e.target.style.display = 'none'; }}
+                          className="w-full h-full object-cover group-hover:scale-105 transition" 
+                        />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-zinc-600 font-mono text-[9px]">
                           CAST
@@ -301,7 +311,7 @@ export default function DetailPage() {
                       )}
                     </div>
                     <div>
-                      <h4 className="text-[11px] font-medium text-zinc-200 group-hover:text-white truncate">
+                      <h4 className="text-[11px] font-medium text-zinc-200 group-hover:text-white truncate transition-colors">
                         {actor.name}
                       </h4>
                       <p className="text-[9px] text-zinc-500 font-mono truncate">

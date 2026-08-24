@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Clapperboard, Search, Menu, X, Compass, Film, Tv, Sparkles } from 'lucide-react';
+import { Clapperboard, Search, Menu, X, Compass, Film, Tv, Sparkles, Dices } from 'lucide-react';
 import SearchModal from './SearchModal';
+import SurpriseModal from './SurpriseModal';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [surpriseOpen, setSurpriseOpen] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -87,7 +89,18 @@ export default function Navbar() {
           </nav>
 
           {/* Right Action Island */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
+            {/* Surprise Me Roulette Button */}
+            <button
+              onClick={() => setSurpriseOpen(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-xs text-zinc-300 hover:text-white transition cursor-pointer"
+              title="Surprise Me / Cinema Roulette"
+              aria-label="Surprise Me"
+            >
+              <Dices className="w-3.5 h-3.5 stroke-[1.5] text-zinc-400" />
+              <span className="hidden lg:inline text-[11px] font-mono">Surprise</span>
+            </button>
+
             {/* Outlined Minimalist Search Trigger */}
             <button
               onClick={() => setSearchOpen(true)}
@@ -135,12 +148,26 @@ export default function Navbar() {
                 </Link>
               );
             })}
+
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                setSurpriseOpen(true);
+              }}
+              className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-zinc-300 hover:text-white hover:bg-white/[0.04] transition"
+            >
+              <Dices className="w-4 h-4 stroke-[1.5]" />
+              <span>Surprise Me (Mood Matcher)</span>
+            </button>
           </div>
         )}
       </header>
 
       {/* Global Command Palette Search Modal */}
       <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
+
+      {/* Surprise Me / Cinema Roulette Modal */}
+      <SurpriseModal isOpen={surpriseOpen} onClose={() => setSurpriseOpen(false)} />
     </>
   );
 }
