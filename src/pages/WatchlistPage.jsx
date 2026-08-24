@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Bookmark, Play, Trash2, Film, Clock, Star, X, Compass, Search } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Bookmark, Play, Trash2, Film, Clock, Star, X, Compass, Search, Info } from 'lucide-react';
 import { storageService } from '../services/storageService';
 import { getImageUrl } from '../services/tmdb';
 import useDocumentTitle from '../hooks/useDocumentTitle';
@@ -8,6 +8,7 @@ import { useAuth } from '../context/AuthContext';
 
 export default function WatchlistPage() {
   useDocumentTitle('My Library & Watchlist — WarayFlix');
+  const navigate = useNavigate();
   const { user } = useAuth();
 
   const [activeTab, setActiveTab] = useState('all'); // 'all' | 'movie' | 'tv'
@@ -37,17 +38,22 @@ export default function WatchlistPage() {
     };
   }, [user?.id]);
 
-  const handleRemoveFromWatchlist = async (media) => {
+  const handleRemoveFromWatchlist = async (e, media) => {
+    e.stopPropagation();
     await storageService.togglePlaylistItem(media, user?.id);
+    loadData();
   };
 
-  const handleRemoveFromHistory = async (mediaId) => {
+  const handleRemoveFromHistory = async (e, mediaId) => {
+    e.stopPropagation();
     await storageService.removeFromHistory(mediaId, user?.id);
+    loadData();
   };
 
   const handleClearHistory = async () => {
     if (window.confirm('Clear all in-progress watch history?')) {
       await storageService.clearHistory(user?.id);
+      loadData();
     }
   };
 
@@ -75,7 +81,7 @@ export default function WatchlistPage() {
       
       {/* Header Banner */}
       <div className="border-b border-black/[0.08] pb-8 space-y-2">
-        <div className="flex items-center gap-2 text-xs font-mono text-[#52525B] uppercase tracking-widest">
+        <div className="flex items-center gap-2 text-xs font-mono text-[#52525B] uppercase tracking-widest font-semibold">
           <Bookmark className="w-3.5 h-3.5 stroke-[2] text-[#2563EB]" />
           <span>PERSONAL CINEMA LIBRARY</span>
         </div>
@@ -83,7 +89,7 @@ export default function WatchlistPage() {
           Watchlist & History
         </h1>
         <p className="text-xs sm:text-sm text-[#52525B] font-normal max-w-xl">
-          Your saved titles and resume points, synchronized across your devices.
+          Your saved titles and resume points, synchronized across your devices. Click any title to view details or resume.
         </p>
       </div>
 
@@ -108,6 +114,7 @@ export default function WatchlistPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {history.map((item) => {
               const poster = getImageUrl(item.poster_path || item.backdrop_path, 'posterSmall');
+              const itemType = item.type || (item.season ? 'tv' : 'movie');
               const progressPercent = item.totalSeconds > 0 
                 ? Math.min(100, Math.round((item.lastWatchedSeconds / item.totalSeconds) * 100))
                 : 0;
@@ -119,13 +126,14 @@ export default function WatchlistPage() {
               return (
                 <div 
                   key={item.id}
-                  className="group relative rounded-2xl bg-white border border-black/[0.06] hover:border-[#2563EB]/40 p-3.5 space-y-3 transition duration-200 shadow-sm hover:shadow-md"
+                  onClick={() => navigate(`/details/${itemType}/${item.id}`)}
+                  className="group relative rounded-2xl bg-white border border-black/[0.08] hover:border-[#2563EB]/40 p-3.5 space-y-3 transition duration-200 shadow-sm hover:shadow-md cursor-pointer"
                 >
                   <div className="flex gap-3.5">
                     {/* Thumbnail */}
                     <div className="relative w-18 sm:w-20 aspect-[2/3] rounded-xl overflow-hidden bg-zinc-100 flex-shrink-0 border border-black/10">
                       {poster ? (
-                        <img src={poster} alt="" className="w-full h-full object-cover" />
+                        <img src={poster} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-zinc-400">
                           <Film className="w-5 h-5 stroke-[1.5]" />
@@ -139,7 +147,7 @@ export default function WatchlistPage() {
                         <span className="text-[10px] font-mono text-[#52525B] uppercase tracking-wider block font-semibold">
                           {item.type === 'tv' ? `S${item.season || 1} E${item.episode || 1}` : 'MOVIE'}
                         </span>
-                        <h3 className="text-sm font-semibold text-[#09090B] truncate font-['Outfit'] leading-tight">
+                        <h3 className="text-sm font-semibold text-[#09090B] truncate font-['Outfit'] leading-tight group-hover:text-[#2563EB] transition">
                           {item.title || item.name || 'Untitled Stream'}
                         </h3>
                       </div>
@@ -161,16 +169,19 @@ export default function WatchlistPage() {
                         )}
 
                         <div className="flex items-center gap-2">
-                          <Link
-                            to={watchUrl}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(watchUrl);
+                            }}
                             className="flex-1 py-1.5 px-3 rounded-xl bg-[#2563EB] text-white text-[11px] font-semibold font-mono uppercase tracking-wider flex items-center justify-center gap-1.5 transition hover:bg-[#1D4ED8] shadow-sm"
                           >
                             <Play className="w-3 h-3 stroke-[2] fill-white" />
                             <span>Resume</span>
-                          </Link>
+                          </button>
 
                           <button
-                            onClick={() => handleRemoveFromHistory(item.id)}
+                            onClick={(e) => handleRemoveFromHistory(e, item.id)}
                             className="p-1.5 rounded-xl bg-black/[0.04] hover:bg-red-50 text-[#52525B] hover:text-red-600 border border-black/[0.08] transition cursor-pointer"
                             title="Remove from history"
                           >
@@ -253,10 +264,11 @@ export default function WatchlistPage() {
               return (
                 <div 
                   key={item.id}
-                  className="group relative flex flex-col space-y-2 select-none"
+                  onClick={() => navigate(`/details/${itemType}/${item.id}`)}
+                  className="group relative flex flex-col space-y-2 select-none cursor-pointer transition-all duration-200"
                 >
                   {/* Poster Card */}
-                  <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden bg-white border border-black/[0.06] group-hover:border-[#2563EB]/40 transition-all duration-300 shadow-sm hover:shadow-md">
+                  <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden bg-white border border-black/[0.08] group-hover:border-[#2563EB]/40 transition-all duration-300 shadow-sm hover:shadow-md">
                     {poster ? (
                       <img
                         src={poster}
@@ -271,41 +283,69 @@ export default function WatchlistPage() {
                       </div>
                     )}
 
-                    {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-3">
+                    {/* Media Type Chip */}
+                    <div className="absolute top-2.5 left-2.5 z-20">
+                      <span className="px-2 py-0.5 rounded bg-[#09090B] text-white text-[9px] font-mono uppercase tracking-wider font-semibold shadow-sm">
+                        {itemType}
+                      </span>
+                    </div>
+
+                    {/* Rating Badge */}
+                    {item.vote_average > 0 && (
+                      <div className="absolute top-2.5 right-2.5 bg-black/80 backdrop-blur-md px-2 py-0.5 rounded flex items-center gap-1 border border-white/20 z-20 shadow-sm text-white">
+                        <Star className="w-2.5 h-2.5 text-white stroke-[1.5]" />
+                        <span className="text-[10px] font-mono font-bold text-white">{item.vote_average.toFixed(1)}</span>
+                      </div>
+                    )}
+
+                    {/* Gradient Overlay on Hover with Quick Actions */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-3 z-30">
                       
                       {/* Top Remove Button */}
-                      <div className="flex justify-end">
+                      <div className="flex justify-end pt-8">
                         <button
-                          onClick={() => handleRemoveFromWatchlist(item)}
-                          className="p-1.5 rounded-full bg-black/80 hover:bg-black text-white transition cursor-pointer backdrop-blur-md shadow-sm"
+                          onClick={(e) => handleRemoveFromWatchlist(e, item)}
+                          className="p-1.5 rounded-full bg-black/80 hover:bg-red-600 text-white transition cursor-pointer backdrop-blur-md shadow-md hover:scale-110"
                           title="Remove from Watchlist"
                         >
                           <Trash2 className="w-3.5 h-3.5 stroke-[1.5]" />
                         </button>
                       </div>
 
-                      {/* Play CTA */}
-                      <Link
-                        to={`/details/${itemType}/${item.id}`}
-                        className="w-full py-2 rounded-xl bg-[#2563EB] text-white font-semibold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-lg hover:bg-[#1D4ED8] transition"
-                      >
-                        <Play className="w-3.5 h-3.5 stroke-[2] fill-white text-white" />
-                        <span>Watch</span>
-                      </Link>
-                    </div>
+                      {/* Bottom Action Bar */}
+                      <div className="space-y-1.5">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (itemType === 'tv') {
+                              navigate(`/watch/tv/${item.id}/1/1`);
+                            } else {
+                              navigate(`/watch/movie/${item.id}`);
+                            }
+                          }}
+                          className="w-full py-2 rounded-xl bg-[#2563EB] text-white font-semibold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-lg hover:bg-[#1D4ED8] transition cursor-pointer"
+                        >
+                          <Play className="w-3.5 h-3.5 stroke-[2] fill-white text-white" />
+                          <span>Watch Now</span>
+                        </button>
 
-                    {/* Media Type Chip */}
-                    <div className="absolute top-2.5 left-2.5">
-                      <span className="px-2 py-0.5 rounded bg-[#09090B] text-white text-[9px] font-mono uppercase tracking-wider font-semibold">
-                        {itemType}
-                      </span>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/details/${itemType}/${item.id}`);
+                          }}
+                          className="w-full py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white font-medium text-[11px] uppercase tracking-wider flex items-center justify-center gap-1 backdrop-blur-md transition cursor-pointer"
+                        >
+                          <Info className="w-3 h-3 stroke-[1.5]" />
+                          <span>Details</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
 
                   {/* Title & Metadata */}
-                  <div className="space-y-0.5">
-                    <h3 className="text-xs sm:text-sm font-medium text-[#09090B] truncate font-['Outfit'] group-hover:text-[#2563EB] transition">
+                  <div className="space-y-0.5 px-0.5">
+                    <h3 className="text-xs sm:text-sm font-semibold text-[#09090B] truncate font-['Outfit'] group-hover:text-[#2563EB] transition">
                       {item.title || item.name}
                     </h3>
                     <div className="flex items-center gap-2 text-[10px] font-mono text-[#52525B]">
