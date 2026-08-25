@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { Bookmark, Play, Trash2, Film, Clock, Star, X, Compass, Search, Info } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Bookmark } from 'lucide-react';
 import { storageService } from '../services/storageService';
-import { getImageUrl } from '../services/tmdb';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 import { useAuth } from '../context/AuthContext';
 import EmptyState from '../components/common/EmptyState';
+import WatchlistHistorySection from '../components/watchlist/WatchlistHistorySection';
+import WatchlistFilterBar from '../components/watchlist/WatchlistFilterBar';
+import WatchlistCard from '../components/watchlist/WatchlistCard';
 
 export default function WatchlistPage() {
   useDocumentTitle('My Library & Watchlist — WarayFlix');
@@ -17,7 +19,6 @@ export default function WatchlistPage() {
   const [watchlist, setWatchlist] = useState(() => storageService.getPlaylist());
   const [history, setHistory] = useState(() => storageService.getHistory());
 
-  // Load playlist and watch history
   const loadData = () => {
     setWatchlist(storageService.getPlaylist());
     setHistory(storageService.getHistory());
@@ -58,7 +59,6 @@ export default function WatchlistPage() {
     }
   };
 
-  // Filter watchlist items
   const filteredWatchlist = watchlist.filter((item) => {
     const matchesTab = 
       activeTab === 'all' 
@@ -79,7 +79,6 @@ export default function WatchlistPage() {
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] text-[#09090B] pt-24 sm:pt-28 pb-20 px-6 md:px-12 max-w-[1440px] mx-auto space-y-12 select-none">
-      
       {/* Header Banner */}
       <div className="border-b border-black/[0.08] pb-8 space-y-2">
         <div className="flex items-center gap-2 text-xs font-mono text-[#52525B] uppercase tracking-widest font-semibold">
@@ -95,279 +94,35 @@ export default function WatchlistPage() {
       </div>
 
       {/* Section 1: Continue Watching (In-Progress Sessions) */}
-      {history.length > 0 && (
-        <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-[#2563EB] stroke-[2]" />
-              <h2 className="text-base sm:text-lg font-bold text-[#09090B] font-['Outfit']">
-                Continue Watching ({history.length})
-              </h2>
-            </div>
-            <button
-              onClick={handleClearHistory}
-              className="text-[11px] font-mono text-[#52525B] hover:text-red-600 transition cursor-pointer"
-            >
-              Clear History
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {history.map((item) => {
-              const poster = getImageUrl(item.poster_path || item.backdrop_path, 'posterSmall');
-              const itemType = item.type || (item.season ? 'tv' : 'movie');
-              const progressPercent = item.totalSeconds > 0 
-                ? Math.min(100, Math.round((item.lastWatchedSeconds / item.totalSeconds) * 100))
-                : 0;
-
-              const watchUrl = item.type === 'tv'
-                ? `/watch/tv/${item.id}/${item.season || 1}/${item.episode || 1}?startAt=${item.lastWatchedSeconds || 0}`
-                : `/watch/movie/${item.id}?startAt=${item.lastWatchedSeconds || 0}`;
-
-              return (
-                <div 
-                  key={item.id}
-                  onClick={() => navigate(`/details/${itemType}/${item.id}`)}
-                  className="group relative rounded-2xl bg-white border border-black/[0.08] hover:border-[#2563EB]/40 p-3.5 space-y-3 transition duration-200 shadow-sm hover:shadow-md cursor-pointer"
-                >
-                  <div className="flex gap-3.5">
-                    {/* Thumbnail */}
-                    <div className="relative w-18 sm:w-20 aspect-[2/3] rounded-xl overflow-hidden bg-zinc-100 flex-shrink-0 border border-black/10">
-                      {poster ? (
-                        <img src={poster} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-zinc-400">
-                          <Film className="w-5 h-5 stroke-[1.5]" />
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Info */}
-                    <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
-                      <div className="space-y-1">
-                        <span className="text-[10px] font-mono text-[#52525B] uppercase tracking-wider block font-semibold">
-                          {item.type === 'tv' ? `S${item.season || 1} E${item.episode || 1}` : 'MOVIE'}
-                        </span>
-                        <h3 className="text-sm font-semibold text-[#09090B] truncate font-['Outfit'] leading-tight group-hover:text-[#2563EB] transition">
-                          {item.title || item.name || 'Untitled Stream'}
-                        </h3>
-                      </div>
-
-                      {/* Progress Bar & Actions */}
-                      <div className="space-y-2">
-                        {progressPercent > 0 && (
-                          <div className="space-y-1">
-                            <div className="w-full h-1.5 bg-zinc-100 rounded-full overflow-hidden">
-                              <div 
-                                className="h-full bg-[#2563EB] transition-all duration-300"
-                                style={{ width: `${progressPercent}%` }}
-                              />
-                            </div>
-                            <span className="text-[9px] font-mono text-[#52525B] block font-medium">
-                              {progressPercent}% completed
-                            </span>
-                          </div>
-                        )}
-
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              navigate(watchUrl);
-                            }}
-                            className="flex-1 py-1.5 px-3 rounded-xl bg-[#2563EB] text-white text-[11px] font-semibold font-mono uppercase tracking-wider flex items-center justify-center gap-1.5 transition hover:bg-[#1D4ED8] shadow-sm"
-                          >
-                            <Play className="w-3 h-3 stroke-[2] fill-white" />
-                            <span>Resume</span>
-                          </button>
-
-                          <button
-                            onClick={(e) => handleRemoveFromHistory(e, item.id)}
-                            className="p-1.5 rounded-xl bg-black/[0.04] hover:bg-red-50 text-[#52525B] hover:text-red-600 border border-black/[0.08] transition cursor-pointer"
-                            title="Remove from history"
-                          >
-                            <X className="w-3.5 h-3.5 stroke-[1.5]" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-      )}
+      <WatchlistHistorySection
+        history={history}
+        onClearHistory={handleClearHistory}
+        onRemoveHistoryItem={handleRemoveFromHistory}
+      />
 
       {/* Section 2: Saved Watchlist */}
       <section className="space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-black/[0.08] pb-4">
-          
-          {/* Tabs */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
-            <button
-              onClick={() => setActiveTab('all')}
-              className={`px-4 py-2 rounded-full text-xs font-mono transition cursor-pointer ${
-                activeTab === 'all'
-                  ? 'bg-[#09090B] text-white font-semibold shadow-sm'
-                  : 'bg-black/[0.04] hover:bg-black/[0.08] text-[#52525B] hover:text-[#09090B] border border-black/[0.08]'
-              }`}
-            >
-              All ({watchlist.length})
-            </button>
+        <WatchlistFilterBar
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          totalCount={watchlist.length}
+          movieCount={movieCount}
+          tvCount={tvCount}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+        />
 
-            <button
-              onClick={() => setActiveTab('movie')}
-              className={`px-4 py-2 rounded-full text-xs font-mono transition cursor-pointer ${
-                activeTab === 'movie'
-                  ? 'bg-[#09090B] text-white font-semibold shadow-sm'
-                  : 'bg-black/[0.04] hover:bg-black/[0.08] text-[#52525B] hover:text-[#09090B] border border-black/[0.08]'
-              }`}
-            >
-              Movies ({movieCount})
-            </button>
-
-            <button
-              onClick={() => setActiveTab('tv')}
-              className={`px-4 py-2 rounded-full text-xs font-mono transition cursor-pointer ${
-                activeTab === 'tv'
-                  ? 'bg-[#09090B] text-white font-semibold shadow-sm'
-                  : 'bg-black/[0.04] hover:bg-black/[0.08] text-[#52525B] hover:text-[#09090B] border border-black/[0.08]'
-              }`}
-            >
-              Series ({tvCount})
-            </button>
-          </div>
-
-          {/* Library Search */}
-          {watchlist.length > 0 && (
-            <div className="relative w-full md:w-64">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#52525B] stroke-[1.5]" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Filter saved titles..."
-                className="w-full bg-white border border-black/[0.08] rounded-full pl-9 pr-4 py-1.5 text-xs text-[#09090B] placeholder-[#52525B] focus:outline-none focus:border-[#2563EB] font-sans shadow-sm"
-              />
-            </div>
-          )}
-        </div>
-
-        {/* Watchlist Grid */}
         {filteredWatchlist.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6">
-            {filteredWatchlist.map((item) => {
-              const poster = getImageUrl(item.poster_path, 'poster');
-              const itemType = item.media_type || (item.first_air_date ? 'tv' : 'movie');
-              const releaseYear = (item.release_date || item.first_air_date || '').substring(0, 4);
-
-              return (
-                <div 
-                  key={item.id}
-                  onClick={() => navigate(`/details/${itemType}/${item.id}`)}
-                  className="group relative flex flex-col space-y-2 select-none cursor-pointer transition-all duration-200"
-                >
-                  {/* Poster Card */}
-                  <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden bg-white border border-black/[0.08] group-hover:border-[#2563EB]/40 transition-all duration-300 shadow-sm hover:shadow-md">
-                    {poster ? (
-                      <img
-                        src={poster}
-                        alt={item.title || item.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex flex-col items-center justify-center text-zinc-400 gap-2 bg-zinc-100">
-                        <Film className="w-8 h-8 opacity-30 stroke-[1.5]" />
-                        <span className="text-[9px] font-mono">NO POSTER</span>
-                      </div>
-                    )}
-
-                    {/* Media Type Chip */}
-                    <div className="absolute top-2.5 left-2.5 z-20">
-                      <span className="px-2 py-0.5 rounded bg-[#09090B] text-white text-[9px] font-mono uppercase tracking-wider font-semibold shadow-sm">
-                        {itemType}
-                      </span>
-                    </div>
-
-                    {/* Rating Badge */}
-                    {item.vote_average > 0 && (
-                      <div className="absolute top-2.5 right-2.5 bg-black/80 backdrop-blur-md px-2 py-0.5 rounded flex items-center gap-1 border border-white/20 z-20 shadow-sm text-white">
-                        <Star className="w-2.5 h-2.5 text-white stroke-[1.5]" />
-                        <span className="text-[10px] font-mono font-bold text-white">{item.vote_average.toFixed(1)}</span>
-                      </div>
-                    )}
-
-                    {/* Gradient Overlay on Hover with Quick Actions */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-3 z-30">
-                      
-                      {/* Top Remove Button */}
-                      <div className="flex justify-end pt-8">
-                        <button
-                          onClick={(e) => handleRemoveFromWatchlist(e, item)}
-                          className="p-1.5 rounded-full bg-black/80 hover:bg-red-600 text-white transition cursor-pointer backdrop-blur-md shadow-md hover:scale-110"
-                          title="Remove from Watchlist"
-                        >
-                          <Trash2 className="w-3.5 h-3.5 stroke-[1.5]" />
-                        </button>
-                      </div>
-
-                      {/* Bottom Action Bar */}
-                      <div className="space-y-1.5">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (itemType === 'tv') {
-                              navigate(`/watch/tv/${item.id}/1/1`);
-                            } else {
-                              navigate(`/watch/movie/${item.id}`);
-                            }
-                          }}
-                          className="w-full py-2 rounded-xl bg-[#2563EB] text-white font-semibold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-lg hover:bg-[#1D4ED8] transition cursor-pointer"
-                        >
-                          <Play className="w-3.5 h-3.5 stroke-[2] fill-white text-white" />
-                          <span>Watch Now</span>
-                        </button>
-
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`/details/${itemType}/${item.id}`);
-                          }}
-                          className="w-full py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white font-medium text-[11px] uppercase tracking-wider flex items-center justify-center gap-1 backdrop-blur-md transition cursor-pointer"
-                        >
-                          <Info className="w-3 h-3 stroke-[1.5]" />
-                          <span>Details</span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Title & Metadata */}
-                  <div className="space-y-0.5 px-0.5">
-                    <h3 className="text-xs sm:text-sm font-semibold text-[#09090B] truncate font-['Outfit'] group-hover:text-[#2563EB] transition">
-                      {item.title || item.name}
-                    </h3>
-                    <div className="flex items-center gap-2 text-[10px] font-mono text-[#52525B]">
-                      {releaseYear && <span>{releaseYear}</span>}
-                      {item.vote_average > 0 && (
-                        <>
-                          <span>·</span>
-                          <span className="flex items-center gap-0.5 text-[#09090B] font-bold">
-                            <Star className="w-2.5 h-2.5 text-[#2563EB] fill-[#2563EB] stroke-[1.5]" />
-                            {item.vote_average.toFixed(1)}
-                          </span>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+            {filteredWatchlist.map((item) => (
+              <WatchlistCard
+                key={item.id}
+                item={item}
+                onRemove={handleRemoveFromWatchlist}
+              />
+            ))}
           </div>
         ) : (
-          /* Empty State */
           <div className="border border-black/[0.06] rounded-3xl bg-white shadow-sm overflow-hidden">
             <EmptyState
               icon={Bookmark}
@@ -383,7 +138,6 @@ export default function WatchlistPage() {
           </div>
         )}
       </section>
-
     </div>
   );
 }

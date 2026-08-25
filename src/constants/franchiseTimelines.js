@@ -139,6 +139,7 @@ export const FRANCHISE_TIMELINES = [
         importanceLabel: 'Multiverse Fracture',
         description: 'Spellcraft tears open the multiverse, bringing alternate universe heroes and villains together.',
         posterPath: '/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg',
+        trailerKey: 'P3uI5sLosKU',
       },
       {
         id: 505642,

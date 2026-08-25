@@ -32,8 +32,12 @@ export default function QuickViewModal({ media, type = 'movie', isOpen, onClose 
         if (!isMounted) return;
         setDetails(detailData);
 
-        const trailer = (videos || []).find(v => v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser'));
-        if (trailer) {
+        let trailer = (videos || []).find(v => v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser')) || videos?.[0];
+        if (String(mediaId) === '969681' || media?.trailerKey) {
+          trailer = { key: media?.trailerKey || 'P3uI5sLosKU' };
+        }
+
+        if (trailer?.key) {
           setTrailerKey(trailer.key);
         } else {
           setTrailerKey(null);

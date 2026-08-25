@@ -9,6 +9,8 @@ import { fetchMediaDetails, fetchSeasonDetails } from '../services/tmdb';
 import WatchTopHUD from '../components/player/WatchTopHUD';
 import EpisodeDrawer from '../components/player/EpisodeDrawer';
 import GuestNudgeBanner from '../components/player/GuestNudgeBanner';
+import { useWatchHistoryTracker } from '../hooks/useWatchHistoryTracker';
+import { useWatchHUD } from '../hooks/useWatchHUD';
 
 export default function WatchPage() {
   const { type, id, season, episode } = useParams();
@@ -21,7 +23,6 @@ export default function WatchPage() {
   const currentSeason = season ? parseInt(season) : 1;
   const currentEpisode = episode ? parseInt(episode) : 1;
 
-  // Retrieve initial seek position once on load
   const parsedSeconds = useMemo(() => {
     if (startParam) {
       return startParam.endsWith('m') ? parseInt(startParam) * 60 : parseInt(startParam);
@@ -35,171 +36,48 @@ export default function WatchPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [epDrawerOpen, setEpDrawerOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
-  const [hudVisible, setHudVisible] = useState(true);
 
   const [tvShowDetails, setTvShowDetails] = useState(null);
   const [currentSeasonData, setCurrentSeasonData] = useState(null);
   const [selectedDrawerSeason, setSelectedDrawerSeason] = useState(currentSeason);
   const [inWatchlist, setInWatchlist] = useState(false);
-
   const mediaDataRef = useRef(null);
-  const menuRef = useRef(null);
-  const hudTimeoutRef = useRef(null);
 
-  // Scrubber Tracking Refs (prevent 60fps React re-renders)
-  const lastScrubSecondsRef = useRef(parsedSeconds);
-  const lastSaveTimestampRef = useRef(0);
-  const mediaTitleRef = useRef('');
-
-  useEffect(() => {
-    mediaTitleRef.current = mediaTitle;
-  }, [mediaTitle]);
+  // Scrubber & History tracking hook
+  const { lastScrubSecondsRef } = useWatchHistoryTracker({
+    id,
+    type,
+    currentSeason,
+    currentEpisode,
+    userId: user?.id,
+    mediaTitle,
+    initialSeconds: parsedSeconds,
+  });
 
   const activePlayer = useMemo(() => {
     return CONFIG.players.find(p => p.id === selectedPlayerId) || CONFIG.players[0];
   }, [selectedPlayerId]);
 
-  // Memoized embed URL - stays completely stable without blinking
   const embedUrl = useMemo(() => {
     return type === 'movie'
       ? activePlayer.getMovieUrl(id, parsedSeconds)
       : activePlayer.getTvUrl(id, currentSeason, currentEpisode, parsedSeconds);
   }, [activePlayer, type, id, currentSeason, currentEpisode, parsedSeconds]);
 
-  // Scrubber Message Event Listener (throttled saving without state thrashing)
-  useEffect(() => {
-    function handlePlayerScrubberEvent(event) {
-      if (!event.data) return;
-      let payload = event.data;
-      if (typeof payload === 'string') {
-        try {
-          payload = JSON.parse(payload);
-        } catch {
-          return;
-        }
-      }
-
-      const isProgressEvent =
-        payload &&
-        (payload.type === 'MEDIA_PROGRESS' ||
-          payload.type === 'PLAYER_EVENT' ||
-          payload.event === 'timeupdate' ||
-          payload.type === 'timeupdate' ||
-          payload.currentTime !== undefined ||
-          (payload.data && payload.data.currentTime !== undefined));
-
-      if (isProgressEvent) {
-        const rawTime =
-          payload.currentTime !== undefined
-            ? payload.currentTime
-            : payload.data?.currentTime !== undefined
-            ? payload.data.currentTime
-            : payload.time;
-
-        const rawDuration =
-          payload.duration !== undefined
-            ? payload.duration
-            : payload.data?.duration !== undefined
-            ? payload.data.duration
-            : type === 'movie'
-            ? 7200
-            : 2700;
-
-        if (rawTime !== undefined && !isNaN(rawTime) && Number(rawTime) >= 0) {
-          const exactSeekSeconds = Math.floor(Number(rawTime));
-          const exactDuration = Math.floor(Number(rawDuration) || (type === 'movie' ? 7200 : 2700));
-
-          lastScrubSecondsRef.current = exactSeekSeconds;
-
-          const now = Date.now();
-          if (now - lastSaveTimestampRef.current > 4000) {
-            lastSaveTimestampRef.current = now;
-            storageService.saveHistoryProgress(user?.id, {
-              id,
-              media_id: String(id),
-              title: mediaTitleRef.current,
-              media_type: type,
-              season: type === 'tv' ? currentSeason : 1,
-              episode: type === 'tv' ? currentEpisode : 1,
-              lastWatchedSeconds: exactSeekSeconds,
-              totalSeconds: exactDuration,
-              durationSeconds: exactDuration,
-            });
-          }
-        }
-      }
-    }
-
-    window.addEventListener('message', handlePlayerScrubberEvent);
-
-    return () => {
-      window.removeEventListener('message', handlePlayerScrubberEvent);
-      // Flush final position on unmount
-      if (lastScrubSecondsRef.current > 0) {
-        const estimatedDuration = type === 'movie' ? 7200 : 2700;
-        storageService.saveHistoryProgress(user?.id, {
-          id,
-          media_id: String(id),
-          title: mediaTitleRef.current,
-          media_type: type,
-          season: type === 'tv' ? currentSeason : 1,
-          episode: type === 'tv' ? currentEpisode : 1,
-          lastWatchedSeconds: lastScrubSecondsRef.current,
-          totalSeconds: estimatedDuration,
-          durationSeconds: estimatedDuration,
-        });
-      }
-    };
-  }, [id, type, currentSeason, currentEpisode, user?.id]);
-
-  // Auto-hide HUD on inactivity
-  useEffect(() => {
-    const showHud = () => {
-      setHudVisible(true);
-      if (hudTimeoutRef.current) clearTimeout(hudTimeoutRef.current);
-      hudTimeoutRef.current = setTimeout(() => {
-        if (!mobileMenuOpen && !epDrawerOpen) setHudVisible(false);
-      }, 4000);
-    };
-
-    window.addEventListener('mousemove', showHud);
-    window.addEventListener('touchstart', showHud);
-
-    return () => {
-      window.removeEventListener('mousemove', showHud);
-      window.removeEventListener('touchstart', showHud);
-      if (hudTimeoutRef.current) clearTimeout(hudTimeoutRef.current);
-    };
-  }, [mobileMenuOpen, epDrawerOpen]);
-
-  // Close menus on outside click
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (menuRef.current && !menuRef.current.contains(event.target)) setMobileMenuOpen(false);
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('touchstart', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('touchstart', handleClickOutside);
-    };
-  }, []);
-
-  // Fetch TV Series structure for Binge Mode
+  // Load TV structure
   useEffect(() => {
     if (type === 'tv') {
       fetchMediaDetails(id, 'tv').then(setTvShowDetails).catch(err => console.error('Failed to load show:', err));
     }
   }, [id, type]);
 
-  // Fetch Season episodes for drawer
+  // Load TV Season
   useEffect(() => {
     if (type === 'tv') {
       fetchSeasonDetails(id, selectedDrawerSeason).then(setCurrentSeasonData).catch(err => console.error('Failed to load season:', err));
     }
   }, [id, type, selectedDrawerSeason]);
 
-  // Calculate Next Episode
   const getNextEpisodeInfo = useCallback(() => {
     if (type !== 'tv') return null;
     const episodes = currentSeasonData?.episodes || [];
@@ -217,24 +95,18 @@ export default function WatchPage() {
     navigate(`/watch/tv/${id}/${nextEpisodeInfo.season}/${nextEpisodeInfo.episode}`);
   }, [nextEpisodeInfo, id, navigate]);
 
-  // Keyboard Shortcuts
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
-      if (e.key.toLowerCase() === 'n' && type === 'tv' && nextEpisodeInfo) {
-        e.preventDefault();
-        handleNextEpisode();
-      } else if (e.key.toLowerCase() === 's') {
-        e.preventDefault();
-        const currentIndex = CONFIG.players.findIndex(p => p.id === selectedPlayerId);
-        setSelectedPlayerId(CONFIG.players[(currentIndex + 1) % CONFIG.players.length].id);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [type, nextEpisodeInfo, selectedPlayerId, handleNextEpisode]);
+  // HUD & Shortcuts hook
+  const { hudVisible, menuRef } = useWatchHUD({
+    mobileMenuOpen,
+    epDrawerOpen,
+    type,
+    nextEpisodeInfo,
+    onNextEpisode: handleNextEpisode,
+    selectedPlayerId,
+    onSelectPlayerId: setSelectedPlayerId,
+  });
 
-  // Fetch initial media title metadata
+  // Load initial media metadata & initial progress record
   useEffect(() => {
     let isMounted = true;
     async function updateWatchHistory() {
@@ -244,7 +116,6 @@ export default function WatchPage() {
         const data = await res.json();
         const title = data.title || data.name;
         setMediaTitle(title);
-        mediaTitleRef.current = title;
 
         const normalized = {
           id: data.id,
@@ -292,7 +163,6 @@ export default function WatchPage() {
     };
   }, [type, id, currentSeason, currentEpisode, user?.id, parsedSeconds]);
 
-  // Quick Watchlist Toggle
   const handleToggleWatchlist = useCallback(async () => {
     if (!user) {
       openAuthModal();
@@ -373,7 +243,7 @@ export default function WatchPage() {
         />
       )}
 
-      {/* ─── Share / QR Modal ─── */}
+      {/* ─── Share Modal ─── */}
       {shareOpen && (
         <ShareModal
           isOpen={shareOpen}
@@ -386,7 +256,7 @@ export default function WatchPage() {
         />
       )}
 
-      {/* ─── Guest Sign-In Nudge Banner ─── */}
+      {/* ─── Guest Banner ─── */}
       {!user && (
         <GuestNudgeBanner
           visible={hudVisible}
