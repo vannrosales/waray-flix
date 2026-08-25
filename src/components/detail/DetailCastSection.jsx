@@ -9,7 +9,7 @@ export default function DetailCastSection({ castList }) {
 
   return (
     <div className="space-y-3 pt-4 border-t border-white/[0.08]">
-      <div className="flex items-center gap-2 text-xs font-mono text-zinc-400 uppercase tracking-wider font-semibold">
+      <div className="flex items-center gap-2 text-xs text-zinc-400 uppercase tracking-wider font-semibold">
         <Users className="w-3.5 h-3.5 stroke-[1.5] text-white" />
         <span>Cast & Crew</span>
       </div>
@@ -33,7 +33,7 @@ export default function DetailCastSection({ castList }) {
                     className="w-full h-full object-cover group-hover:scale-105 transition" 
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-zinc-500 font-mono text-[9px]">
+                  <div className="w-full h-full flex items-center justify-center text-zinc-500 text-[9px]">
                     CAST
                   </div>
                 )}
@@ -42,7 +42,7 @@ export default function DetailCastSection({ castList }) {
                 <h4 className="text-[11px] font-semibold text-white group-hover:text-zinc-300 truncate transition-colors">
                   {actor.name}
                 </h4>
-                <p className="text-[9px] text-zinc-400 font-mono truncate">
+                <p className="text-[9px] text-zinc-400 truncate">
                   {actor.character}
                 </p>
               </div>

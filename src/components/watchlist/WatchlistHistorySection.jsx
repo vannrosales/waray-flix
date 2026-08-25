@@ -18,7 +18,7 @@ export default function WatchlistHistorySection({ history, onClearHistory, onRem
         </div>
         <button
           onClick={onClearHistory}
-          className="text-[11px] font-mono text-zinc-400 hover:text-white transition cursor-pointer"
+          className="text-[11px] text-zinc-400 hover:text-white transition cursor-pointer"
         >
           Clear History
         </button>
@@ -40,11 +40,11 @@ export default function WatchlistHistorySection({ history, onClearHistory, onRem
             <div 
               key={item.id}
               onClick={() => navigate(`/details/${itemType}/${item.id}`)}
-              className="group relative rounded-2xl bg-[#18181C] border border-white/[0.08] hover:border-white/40 p-3.5 space-y-3 transition duration-200 shadow-sm hover:shadow-md cursor-pointer"
+              className="group relative rounded-none bg-[#121212] border border-white/[0.08] hover:border-white/40 p-3.5 space-y-3 transition duration-200 shadow-sm hover:shadow-md cursor-pointer"
             >
               <div className="flex gap-3.5">
-                {/* Thumbnail */}
-                <div className="relative w-18 sm:w-20 aspect-[2/3] rounded-xl overflow-hidden bg-zinc-900 flex-shrink-0 border border-white/10">
+                {/* Thumbnail - Sharp Geometric Zero Border Radius */}
+                <div className="relative w-18 sm:w-20 aspect-[2/3] rounded-none overflow-hidden bg-zinc-900 flex-shrink-0 border border-white/10">
                   {poster ? (
                     <img src={poster} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   ) : (
@@ -57,7 +57,7 @@ export default function WatchlistHistorySection({ history, onClearHistory, onRem
                 {/* Info */}
                 <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
                   <div className="space-y-1">
-                    <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider block font-semibold">
+                    <span className="text-[10px] text-zinc-400 uppercase tracking-wider block font-semibold">
                       {item.type === 'tv' ? `S${item.season || 1} E${item.episode || 1}` : 'MOVIE'}
                     </span>
                     <h3 className="text-sm font-semibold text-white truncate leading-tight group-hover:text-zinc-300 transition">
@@ -69,13 +69,13 @@ export default function WatchlistHistorySection({ history, onClearHistory, onRem
                   <div className="space-y-2">
                     {progressPercent > 0 && (
                       <div className="space-y-1">
-                        <div className="w-full h-1.5 bg-zinc-900 rounded-full overflow-hidden">
+                        <div className="w-full h-1 bg-zinc-900 rounded-none overflow-hidden">
                           <div 
                             className="h-full bg-white transition-all duration-300"
                             style={{ width: `${progressPercent}%` }}
                           />
                         </div>
-                        <span className="text-[9px] font-mono text-zinc-400 block font-medium">
+                        <span className="text-[9px] text-zinc-400 block font-medium">
                           {progressPercent}% completed
                         </span>
                       </div>
@@ -87,7 +87,7 @@ export default function WatchlistHistorySection({ history, onClearHistory, onRem
                           e.stopPropagation();
                           navigate(watchUrl);
                         }}
-                        className="flex-1 py-1.5 px-3 rounded-xl bg-white text-black text-[11px] font-semibold font-mono uppercase tracking-wider flex items-center justify-center gap-1.5 transition hover:bg-zinc-200 shadow-sm"
+                        className="flex-1 py-1.5 px-3 rounded-none bg-white text-black text-[11px] font-semibold uppercase tracking-wider flex items-center justify-center gap-1.5 transition hover:bg-zinc-200 shadow-sm"
                       >
                         <Play className="w-3 h-3 stroke-[2] fill-black" />
                         <span>Resume</span>
@@ -95,7 +95,7 @@ export default function WatchlistHistorySection({ history, onClearHistory, onRem
 
                       <button
                         onClick={(e) => onRemoveHistoryItem(e, item.id)}
-                        className="p-1.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.15] text-zinc-400 hover:text-white border border-white/[0.08] transition cursor-pointer"
+                        className="p-1.5 rounded-none bg-white/[0.06] hover:bg-white/[0.15] text-zinc-400 hover:text-white border border-white/[0.08] transition cursor-pointer"
                         title="Remove from history"
                       >
                         <X className="w-3.5 h-3.5 stroke-[1.5]" />

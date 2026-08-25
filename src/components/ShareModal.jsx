@@ -39,7 +39,7 @@ export default function ShareModal({ isOpen, onClose, title, url }) {
 
         {/* Header */}
         <div className="space-y-1 pt-1">
-          <div className="flex items-center justify-center gap-1.5 text-xs font-mono text-zinc-400">
+          <div className="flex items-center justify-center gap-1.5 text-xs text-zinc-400">
             <Smartphone className="w-3.5 h-3.5 stroke-[1.5]" />
             <span>Send to Phone / Share</span>
           </div>
@@ -67,7 +67,7 @@ export default function ShareModal({ isOpen, onClose, title, url }) {
             type="text"
             readOnly
             value={shareUrl}
-            className="w-full bg-transparent text-[11px] text-zinc-300 px-2 truncate font-mono focus:outline-none select-all"
+            className="w-full bg-transparent text-[11px] text-zinc-300 px-2 truncate focus:outline-none select-all"
           />
           <button
             onClick={handleCopy}

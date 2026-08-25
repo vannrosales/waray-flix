@@ -127,7 +127,7 @@ export default function QuickViewModal({ media, type = 'movie', isOpen, onClose 
           ) : (
             <div className="flex flex-col items-center justify-center text-zinc-500 gap-2">
               <Film className="w-8 h-8 opacity-30 stroke-[1.5]" />
-              <span className="text-[10px] font-mono">PREVIEW UNAVAILABLE</span>
+              <span className="text-[10px]">PREVIEW UNAVAILABLE</span>
             </div>
           )}
 
@@ -146,7 +146,7 @@ export default function QuickViewModal({ media, type = 'movie', isOpen, onClose 
 
           {/* Type Badge */}
           <div className="absolute top-4 left-4 z-20">
-            <span className="px-2.5 py-0.5 rounded-full bg-white text-black text-[10px] font-mono uppercase tracking-wider font-semibold shadow-sm">
+            <span className="px-2.5 py-0.5 rounded-full bg-white text-black text-[10px] uppercase tracking-wider font-semibold shadow-sm">
               {mediaType}
             </span>
           </div>
@@ -155,7 +155,7 @@ export default function QuickViewModal({ media, type = 'movie', isOpen, onClose 
         {/* Modal Body */}
         <div className="p-6 sm:p-7 space-y-5">
           <div className="space-y-1.5">
-            <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-400 font-mono">
+            <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-400">
               <span className="text-white font-medium">{releaseYear}</span>
               <span>·</span>
               {currentData.vote_average > 0 && (
@@ -181,7 +181,7 @@ export default function QuickViewModal({ media, type = 'movie', isOpen, onClose 
             {currentData.genres && currentData.genres.length > 0 && (
               <div className="flex flex-wrap gap-1.5 pt-1">
                 {currentData.genres.slice(0, 4).map((g) => (
-                  <span key={g.id} className="px-2.5 py-0.5 rounded-full bg-white/[0.06] border border-white/[0.08] text-[10px] font-mono text-zinc-300">
+                  <span key={g.id} className="px-2.5 py-0.5 rounded-full bg-white/[0.06] border border-white/[0.08] text-[10px] text-zinc-300">
                     {g.name}
                   </span>
                 ))}
@@ -195,7 +195,7 @@ export default function QuickViewModal({ media, type = 'movie', isOpen, onClose 
 
           {/* Cast */}
           {details?.credits?.cast && details.credits.cast.length > 0 && (
-            <div className="text-xs text-zinc-400 space-x-1 font-mono">
+            <div className="text-xs text-zinc-400 space-x-1">
               <span className="text-white font-bold uppercase text-[10px]">Cast:</span>
               <span className="text-zinc-300 text-[11px]">
                 {details.credits.cast.slice(0, 4).map(c => c.name).join(', ')}
@@ -229,7 +229,7 @@ export default function QuickViewModal({ media, type = 'movie', isOpen, onClose 
 
             <button
               onClick={handleFullDetails}
-              className="text-xs text-zinc-400 hover:text-white flex items-center gap-1.5 font-mono group py-1.5 cursor-pointer transition font-medium"
+              className="text-xs text-zinc-400 hover:text-white flex items-center gap-1.5 group py-1.5 cursor-pointer transition font-medium"
             >
               <span>Full Details</span>
               <ArrowRight className="w-3.5 h-3.5 stroke-[1.5] group-hover:translate-x-1 transition-transform" />

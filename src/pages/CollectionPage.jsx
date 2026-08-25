@@ -59,7 +59,7 @@ export default function CollectionPage() {
       <div className="fixed top-20 sm:top-24 left-6 z-40">
         <button 
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/70 hover:bg-black text-xs font-mono text-white border border-white/20 backdrop-blur-xl transition cursor-pointer shadow-md"
+          className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/70 hover:bg-black text-xs text-white border border-white/20 backdrop-blur-xl transition cursor-pointer shadow-md"
         >
           <ArrowLeft className="w-3.5 h-3.5 stroke-[1.5]" />
           <span>BACK</span>
@@ -99,7 +99,7 @@ export default function CollectionPage() {
           {/* Metadata & Actions */}
           <div className="flex-1 space-y-4">
             <div className="space-y-2">
-              <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-400 font-mono">
+              <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-400">
                 <span className="px-2.5 py-0.5 rounded-full bg-white text-black uppercase text-[10px] font-bold">
                   Franchise Collection
                 </span>
@@ -135,7 +135,7 @@ export default function CollectionPage() {
             {/* Overview */}
             {collection.overview && (
               <div className="space-y-1.5 pt-2 border-t border-white/[0.08]">
-                <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest font-bold">ABOUT THE SAGA</span>
+                <span className="text-[10px] text-zinc-400 uppercase tracking-widest font-bold">ABOUT THE SAGA</span>
                 <p className="text-zinc-300 text-xs sm:text-sm leading-relaxed max-w-3xl font-normal">
                   {collection.overview}
                 </p>
@@ -181,7 +181,7 @@ export default function CollectionPage() {
 
                     {/* Part Number Badge */}
                     <div className="absolute top-2 left-2 z-20">
-                      <span className="px-2 py-0.5 rounded-md bg-black/90 text-white font-mono text-[10px] font-bold tracking-wider shadow-sm border border-white/10">
+                      <span className="px-2 py-0.5 rounded-md bg-black/90 text-white text-[10px] font-bold tracking-wider shadow-sm border border-white/10">
                         Part {index + 1}
                       </span>
                     </div>
@@ -190,7 +190,7 @@ export default function CollectionPage() {
                     {item.vote_average > 0 && (
                       <div className="absolute top-2 right-2 bg-black/80 backdrop-blur-md px-2 py-0.5 rounded-md flex items-center gap-1 border border-white/20 z-20 shadow-sm text-white">
                         <Star className="w-2.5 h-2.5 text-white fill-white stroke-[1.5]" />
-                        <span className="text-[10px] font-mono font-bold text-white">{item.vote_average.toFixed(1)}</span>
+                        <span className="text-[10px] font-bold text-white">{item.vote_average.toFixed(1)}</span>
                       </div>
                     )}
                   </div>
@@ -200,7 +200,7 @@ export default function CollectionPage() {
                     <h3 className="text-xs font-semibold text-white line-clamp-1 group-hover/item:text-zinc-300 transition">
                       {item.title}
                     </h3>
-                    <div className="flex items-center gap-2 text-[10px] text-zinc-400 font-mono">
+                    <div className="flex items-center gap-2 text-[10px] text-zinc-400">
                       <span>{releaseYear || '—'}</span>
                     </div>
                   </div>

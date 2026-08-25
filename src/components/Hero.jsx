@@ -74,7 +74,7 @@ export default function Hero({ content, items = [] }) {
 
   if (!activeContent) {
     return (
-      <div className="w-full h-[72vh] sm:h-[82vh] bg-[#000000] shimmer-skeleton flex items-center justify-center text-zinc-400 font-mono text-xs">
+      <div className="w-full h-[72vh] sm:h-[82vh] bg-[#000000] shimmer-skeleton flex items-center justify-center text-zinc-400 text-xs">
         LOADING_SELECTION...
       </div>
     );
@@ -148,7 +148,7 @@ export default function Hero({ content, items = [] }) {
       {/* Hero Content Section */}
       <div className="relative z-20 max-w-[1440px] w-full mx-auto px-6 md:px-12 pb-14 space-y-4">
         {/* Minimalist Metadata Line matching Image 1 */}
-        <div className="flex flex-wrap items-center gap-2.5 text-xs font-mono">
+        <div className="flex flex-wrap items-center gap-2.5 text-xs">
           <span className="px-2.5 py-0.5 rounded bg-[#252525] border border-white/10 text-white font-bold text-[10px] tracking-wider uppercase shadow-xs">
             {itemType === 'tv' ? 'TV SERIES' : 'MOVIE'}
           </span>

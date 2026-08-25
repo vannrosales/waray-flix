@@ -16,7 +16,7 @@ export default function WatchlistFilterBar({
       <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
         <button
           onClick={() => onTabChange('all')}
-          className={`px-4 py-2 rounded-full text-xs font-mono transition cursor-pointer ${
+          className={`px-4 py-2 rounded-full text-xs transition cursor-pointer ${
             activeTab === 'all'
               ? 'bg-white text-black font-semibold shadow-sm'
               : 'bg-white/[0.06] hover:bg-white/[0.12] text-zinc-400 hover:text-white border border-white/[0.08]'
@@ -27,7 +27,7 @@ export default function WatchlistFilterBar({
 
         <button
           onClick={() => onTabChange('movie')}
-          className={`px-4 py-2 rounded-full text-xs font-mono transition cursor-pointer ${
+          className={`px-4 py-2 rounded-full text-xs transition cursor-pointer ${
             activeTab === 'movie'
               ? 'bg-white text-black font-semibold shadow-sm'
               : 'bg-white/[0.06] hover:bg-white/[0.12] text-zinc-400 hover:text-white border border-white/[0.08]'
@@ -38,7 +38,7 @@ export default function WatchlistFilterBar({
 
         <button
           onClick={() => onTabChange('tv')}
-          className={`px-4 py-2 rounded-full text-xs font-mono transition cursor-pointer ${
+          className={`px-4 py-2 rounded-full text-xs transition cursor-pointer ${
             activeTab === 'tv'
               ? 'bg-white text-black font-semibold shadow-sm'
               : 'bg-white/[0.06] hover:bg-white/[0.12] text-zinc-400 hover:text-white border border-white/[0.08]'

@@ -131,13 +131,13 @@ export default function Navbar() {
               aria-label="Surprise Me"
             >
               <Dices className="w-3.5 h-3.5 stroke-[1.5] text-[#52525B]" />
-              <span className="hidden lg:inline text-[11px] font-mono">Surprise</span>
+              <span className="hidden lg:inline text-[11px]">Surprise</span>
             </button>
 
             {/* Keyboard Shortcuts Button */}
             <button
               onClick={() => setShortcutsOpen(true)}
-              className="hidden sm:flex items-center justify-center w-8 h-8 rounded-full bg-black/[0.04] hover:bg-black/[0.08] border border-black/[0.08] text-xs text-[#52525B] hover:text-[#09090B] font-mono transition cursor-pointer"
+              className="hidden sm:flex items-center justify-center w-8 h-8 rounded-full bg-black/[0.04] hover:bg-black/[0.08] border border-black/[0.08] text-xs text-[#52525B] hover:text-[#09090B] transition cursor-pointer"
               title="Keyboard Shortcuts (Key: ?)"
               aria-label="Keyboard Shortcuts"
             >
@@ -152,7 +152,7 @@ export default function Navbar() {
             >
               <Search className="w-3.5 h-3.5 text-[#52525B] stroke-[1.5] group-hover:text-[#09090B] transition-colors" />
               <span className="hidden sm:inline text-xs font-sans text-[#09090B]">Search</span>
-              <kbd className="hidden sm:inline-block px-1.5 py-0.5 rounded bg-black/[0.06] border border-black/[0.08] text-[9px] font-mono text-[#52525B]">
+              <kbd className="hidden sm:inline-block px-1.5 py-0.5 rounded bg-black/[0.06] border border-black/[0.08] text-[9px] text-[#52525B]">
                 ⌘K
               </kbd>
             </button>
@@ -164,10 +164,10 @@ export default function Navbar() {
                   onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                   className="flex items-center gap-2 pl-2 pr-3 py-1 rounded-full bg-black/[0.04] hover:bg-black/[0.08] border border-black/[0.08] text-xs text-[#09090B] transition cursor-pointer"
                 >
-                  <div className="w-6 h-6 rounded-full bg-[#09090B] text-white font-semibold text-[10px] flex items-center justify-center font-mono">
+                  <div className="w-6 h-6 rounded-full bg-[#09090B] text-white font-semibold text-[10px] flex items-center justify-center">
                     {username.charAt(0).toUpperCase()}
                   </div>
-                  <span className="hidden sm:inline font-mono text-[11px] truncate max-w-[80px]">
+                  <span className="hidden sm:inline text-[11px] truncate max-w-[80px]">
                     {username}
                   </span>
                   <ChevronDown className="w-3 h-3 text-[#52525B] stroke-[1.5]" />
@@ -177,7 +177,7 @@ export default function Navbar() {
                 {profileDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white border border-black/10 rounded-2xl shadow-2xl p-1.5 z-50 animate-slide-up space-y-1">
                     <div className="px-3 py-2 border-b border-black/[0.06]">
-                      <span className="text-[10px] font-mono text-[#52525B] uppercase block">Signed in as</span>
+                      <span className="text-[10px] text-[#52525B] uppercase block">Signed in as</span>
                       <p className="text-xs font-medium text-[#09090B] truncate">{user.email || username}</p>
                     </div>
 

@@ -59,13 +59,13 @@ export default function DownloadModal({
           </div>
 
           <div className="flex-1 min-w-0 space-y-1">
-            <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest block">
+            <span className="text-[10px] text-zinc-500 uppercase tracking-widest block">
               OFFLINE DOWNLOAD
             </span>
             <h3 className="text-base sm:text-lg font-bold text-white truncate leading-tight">
               {media.title || media.name}
             </h3>
-            <div className="flex items-center gap-2 text-[11px] font-mono text-zinc-400">
+            <div className="flex items-center gap-2 text-[11px] text-zinc-400">
               <span>{releaseYear}</span>
               {type === 'tv' && (
                 <>
@@ -80,10 +80,10 @@ export default function DownloadModal({
         {/* Download Mirrors List */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider block">
+            <span className="text-[10px] text-zinc-500 uppercase tracking-wider block">
               VERIFIED STREAM DOWNLOAD RESOLVERS
             </span>
-            <span className="text-[10px] font-mono text-zinc-400">
+            <span className="text-[10px] text-zinc-400">
               {DOWNLOAD_PROVIDERS.length} Active Mirrors
             </span>
           </div>
@@ -108,7 +108,7 @@ export default function DownloadModal({
                       <span className="text-xs font-medium text-white block truncate">
                         {provider.name}
                       </span>
-                      <div className="flex items-center gap-2 text-[10px] font-mono text-zinc-400">
+                      <div className="flex items-center gap-2 text-[10px] text-zinc-400">
                         <span className="text-zinc-300 font-semibold">{provider.quality}</span>
                         <span>·</span>
                         <span>{provider.speed}</span>
@@ -130,7 +130,7 @@ export default function DownloadModal({
                       href={downloadUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-3 py-1.5 rounded-lg bg-white text-black hover:bg-zinc-200 text-[11px] font-semibold font-mono uppercase tracking-wider flex items-center gap-1.5 transition cursor-pointer shadow-sm"
+                      className="px-3 py-1.5 rounded-lg bg-white text-black hover:bg-zinc-200 text-[11px] font-semibold uppercase tracking-wider flex items-center gap-1.5 transition cursor-pointer shadow-sm"
                     >
                       <span>Open Mirror</span>
                       <ArrowUpRight className="w-3 h-3 stroke-[2]" />
@@ -144,7 +144,7 @@ export default function DownloadModal({
 
         {/* Tip on How to Save */}
         <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] space-y-1.5">
-          <div className="flex items-center gap-1.5 text-[11px] font-mono text-zinc-300 font-medium">
+          <div className="flex items-center gap-1.5 text-[11px] text-zinc-300 font-medium">
             <Info className="w-3.5 h-3.5 stroke-[1.5] text-zinc-400" />
             <span>How to save video to your device:</span>
           </div>
@@ -156,7 +156,7 @@ export default function DownloadModal({
         </div>
 
         {/* Security Note */}
-        <div className="flex items-center gap-2 pt-1 border-t border-white/[0.06] text-[10px] font-mono text-zinc-500">
+        <div className="flex items-center gap-2 pt-1 border-t border-white/[0.06] text-[10px] text-zinc-500">
           <ShieldCheck className="w-3.5 h-3.5 stroke-[1.5] text-zinc-400 flex-shrink-0" />
           <span>Verified active stream resolvers for personal offline viewing.</span>
         </div>

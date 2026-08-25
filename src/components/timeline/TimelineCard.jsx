@@ -22,8 +22,8 @@ export default function TimelineCard({
       onClick={() => navigate(`/details/${item.mediaType}/${item.id}`)}
       className="cursor-pointer group/item flex flex-col gap-2 flex-shrink-0 transition-all duration-200"
     >
-      {/* Poster Canvas */}
-      <div className={`relative aspect-[2/3] w-full rounded-2xl overflow-hidden bg-[#18181C] border border-white/[0.08] group-hover/item:border-white/40 transition-all duration-200 group-hover/item:scale-[1.02] shadow-sm hover:shadow-md ${
+      {/* Poster Canvas - Sharp Geometric Zero Border Radius */}
+      <div className={`relative aspect-[2/3] w-full rounded-none overflow-hidden bg-[#121212] border border-white/[0.08] group-hover/item:border-white/40 transition-all duration-200 group-hover/item:scale-[1.02] shadow-sm hover:shadow-md ${
         isChecked ? 'ring-2 ring-white/30' : ''
       }`}>
         {posterUrl ? (
@@ -37,15 +37,15 @@ export default function TimelineCard({
             }`}
           />
         ) : (
-          <div className="absolute inset-0 flex flex-col items-center justify-center p-3 text-center text-zinc-500 bg-[#18181C]">
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-3 text-center text-zinc-500 bg-[#121212]">
             <Film className="w-6 h-6 mb-1 opacity-30 stroke-[1.5]" />
-            <span className="text-[9px] font-mono text-zinc-500 line-clamp-2">{item.title}</span>
+            <span className="text-[9px] text-zinc-500 line-clamp-2">{item.title}</span>
           </div>
         )}
 
         {/* Top Left: Chronological Number Badge */}
         <div className="absolute top-2 left-2 z-20 pointer-events-none">
-          <span className="bg-black/90 text-white text-[9px] font-mono font-bold px-2 py-0.5 rounded-md shadow-xs border border-white/10">
+          <span className="bg-black/90 text-white text-[9px] font-bold px-2 py-0.5 rounded-none shadow-xs border border-white/10">
             #{item.order}
           </span>
         </div>
@@ -54,7 +54,7 @@ export default function TimelineCard({
         <div className="absolute top-2 right-2 z-20">
           <button
             onClick={(e) => onToggleCheck(item.id, e)}
-            className={`px-2 py-0.5 rounded-md text-[9px] font-mono font-bold flex items-center gap-1 transition cursor-pointer shadow-xs ${
+            className={`px-2 py-0.5 rounded-none text-[9px] font-bold flex items-center gap-1 transition cursor-pointer shadow-xs ${
               isChecked
                 ? 'bg-white text-black'
                 : 'bg-black/80 backdrop-blur-md text-white border border-white/20 hover:bg-black'
@@ -83,7 +83,7 @@ export default function TimelineCard({
                 navigate(`/watch/movie/${item.id}`);
               }
             }}
-            className="pointer-events-auto w-9 h-9 rounded-full bg-white text-black flex items-center justify-center transition cursor-pointer shadow-md hover:scale-105 hover:bg-zinc-200"
+            className="pointer-events-auto w-9 h-9 rounded-none bg-white text-black flex items-center justify-center transition cursor-pointer shadow-md hover:scale-105 hover:bg-zinc-200"
             title="Watch Now"
           >
             <Play className="w-3.5 h-3.5 stroke-[2] fill-black text-black" />
@@ -94,7 +94,7 @@ export default function TimelineCard({
               e.stopPropagation();
               onQuickView({ ...item, media_type: item.mediaType });
             }}
-            className="pointer-events-auto w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 text-white backdrop-blur-md flex items-center justify-center border border-white/20 transition cursor-pointer shadow-xs hover:scale-105"
+            className="pointer-events-auto w-8 h-8 rounded-none bg-white/15 hover:bg-white/25 text-white backdrop-blur-md flex items-center justify-center border border-white/20 transition cursor-pointer shadow-xs hover:scale-105"
             title="Quick Preview"
           >
             <Eye className="w-3.5 h-3.5 stroke-[1.5]" />
@@ -104,21 +104,13 @@ export default function TimelineCard({
 
       {/* Title & Metadata */}
       <div className="space-y-0.5 px-0.5">
-        <h3 className={`text-xs font-semibold line-clamp-1 transition group-hover/item:text-zinc-300 ${
-          isChecked ? 'text-zinc-500 line-through' : 'text-white'
-        }`}>
+        <h3 className="text-xs font-semibold text-white line-clamp-1 group-hover/item:text-zinc-300 transition">
           {item.title}
         </h3>
-        <div className="flex items-center gap-1.5 text-[10px] text-zinc-400 font-mono">
+        <div className="flex items-center gap-1.5 text-[10px] text-zinc-400">
           <span>{item.year}</span>
           <span>·</span>
-          <span className="uppercase font-medium">{item.mediaType}</span>
-          {item.importanceLabel && (
-            <>
-              <span>·</span>
-              <span className="text-white font-bold">{item.importanceLabel}</span>
-            </>
-          )}
+          <span className="uppercase font-medium">{item.mediaType === 'tv' ? 'Series' : 'Movie'}</span>
         </div>
       </div>
     </div>

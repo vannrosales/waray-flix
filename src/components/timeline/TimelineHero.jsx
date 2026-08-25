@@ -53,7 +53,7 @@ export default function TimelineHero({
 
             <button
               onClick={onCloseVideo}
-              className="px-3 py-2 rounded-full bg-black/70 hover:bg-black text-white border border-white/20 backdrop-blur-md text-xs font-mono flex items-center gap-1.5 transition cursor-pointer shadow-xl"
+              className="px-3 py-2 rounded-full bg-black/70 hover:bg-black text-white border border-white/20 backdrop-blur-md text-xs flex items-center gap-1.5 transition cursor-pointer shadow-xl"
               title="Exit Special Look"
             >
               <X className="w-4 h-4" />
@@ -70,7 +70,7 @@ export default function TimelineHero({
 
       {/* Hero Content Section */}
       <div className="relative z-20 max-w-[1440px] w-full mx-auto px-6 md:px-12 pb-14 space-y-4">
-        <div className="flex flex-wrap items-center gap-3 text-xs font-mono text-zinc-300">
+        <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-300">
           <span className="px-2.5 py-0.5 rounded-full border border-white/20 bg-white/10 backdrop-blur-md text-white font-bold text-[10px] tracking-wider uppercase shadow-sm">
             {currentTimeline.universe}
           </span>

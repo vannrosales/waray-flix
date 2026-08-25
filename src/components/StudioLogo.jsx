@@ -62,7 +62,7 @@ export default function StudioLogo({ name, studio, active = false }) {
 
     case 'marvel':
       return (
-        <div className="px-2.5 py-1 rounded-sm font-black tracking-[0.15em] uppercase text-xs sm:text-sm font-mono leading-none select-none bg-[#ED1D24] text-white shadow-sm">
+        <div className="px-2.5 py-1 rounded-sm font-black tracking-[0.15em] uppercase text-xs sm:text-sm leading-none select-none bg-[#ED1D24] text-white shadow-sm">
           MARVEL
         </div>
       );
@@ -78,7 +78,7 @@ export default function StudioLogo({ name, studio, active = false }) {
 
     case 'a24':
       return (
-        <span className={`font-mono font-black text-sm sm:text-base tracking-[0.3em] uppercase select-none leading-none ${
+        <span className={` font-black text-sm sm:text-base tracking-[0.3em] uppercase select-none leading-none ${
           active ? 'text-black' : 'text-white'
         }`}>
           A24
@@ -105,7 +105,7 @@ export default function StudioLogo({ name, studio, active = false }) {
 
     case 'tubi':
       return (
-        <span className="font-black text-xs sm:text-sm font-mono tracking-widest uppercase select-none leading-none text-[#FA3200]">
+        <span className="font-black text-xs sm:text-sm tracking-widest uppercase select-none leading-none text-[#FA3200]">
           TUBI
         </span>
       );

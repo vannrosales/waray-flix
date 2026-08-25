@@ -36,7 +36,7 @@ export default function DetailInfoSection({
       {/* Metadata & Actions */}
       <div className="flex-1 space-y-5 pt-4 sm:pt-8">
         <div className="space-y-2">
-          <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-400 font-mono">
+          <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-400">
             <span className="px-2.5 py-0.5 rounded-full bg-white text-black font-bold uppercase text-[10px] shadow-sm">
               {type}
             </span>
@@ -65,7 +65,7 @@ export default function DetailInfoSection({
           {media.genres && media.genres.length > 0 && (
             <div className="flex flex-wrap gap-1.5 pt-1">
               {media.genres.map((g) => (
-                <span key={g.id} className="px-3 py-1 rounded-full bg-white/[0.06] border border-white/[0.08] text-[11px] text-zinc-300 font-mono font-semibold">
+                <span key={g.id} className="px-3 py-1 rounded-full bg-white/[0.06] border border-white/[0.08] text-[11px] text-zinc-300 font-semibold">
                   {g.name}
                 </span>
               ))}
@@ -76,7 +76,7 @@ export default function DetailInfoSection({
         {/* Saved Progress Bar if applicable */}
         {watchProgress && totalSeconds > 0 && (
           <div className="space-y-1.5 max-w-md p-3.5 rounded-2xl bg-[#18181C] border border-white/[0.08] shadow-sm">
-            <div className="flex items-center justify-between text-[10px] font-mono text-zinc-400">
+            <div className="flex items-center justify-between text-[10px] text-zinc-400">
               <span className="font-bold uppercase tracking-wider text-white">RESUME PROGRESS</span>
               <span className="text-white font-bold">{progressPercent}%</span>
             </div>
@@ -142,7 +142,7 @@ export default function DetailInfoSection({
                 <Layers className="w-4 h-4 stroke-[1.5]" />
               </div>
               <div>
-                <span className="text-[10px] font-mono text-zinc-400 uppercase font-semibold">Part of Universe</span>
+                <span className="text-[10px] text-zinc-400 uppercase font-semibold">Part of Universe</span>
                 <h4 className="text-xs sm:text-sm font-semibold text-white group-hover:text-zinc-200">
                   {media.belongs_to_collection.name}
                 </h4>

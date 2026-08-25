@@ -45,7 +45,7 @@ export default function SearchPage() {
         
         {/* Header */}
         <div className="space-y-3">
-          <div className="flex items-center gap-2 text-xs font-mono text-zinc-400 font-semibold">
+          <div className="flex items-center gap-2 text-xs text-zinc-400 font-semibold">
             <Search className="w-3.5 h-3.5 stroke-[1.5] text-white" />
             <span>Search</span>
           </div>

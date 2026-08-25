@@ -144,7 +144,7 @@ export default function AnimePage() {
             <button
               onClick={loadMoreAnime}
               disabled={loadingMore}
-              className="px-6 py-2.5 rounded-full bg-white hover:bg-zinc-200 text-black text-xs font-mono tracking-wider uppercase transition flex items-center gap-2 cursor-pointer disabled:opacity-50 shadow-md hover:scale-105"
+              className="px-6 py-2.5 rounded-full bg-white hover:bg-zinc-200 text-black text-xs tracking-wider uppercase transition flex items-center gap-2 cursor-pointer disabled:opacity-50 shadow-md hover:scale-105"
             >
               <span>{loadingMore ? 'LOADING...' : 'LOAD MORE'}</span>
               {!loadingMore && <ChevronDown className="w-3.5 h-3.5 stroke-[1.5]" />}

@@ -52,7 +52,7 @@ export default function PartyChatDrawer({
       <div className="p-2.5 sm:p-3.5 border-b border-white/[0.06] bg-[#11131A] space-y-2.5 flex-shrink-0">
         
         {/* Active Viewers Counter with Expand Toggle */}
-        <div className="flex items-center justify-between text-xs font-mono">
+        <div className="flex items-center justify-between text-xs">
           <button
             onClick={() => setShowViewersList(!showViewersList)}
             className="flex items-center gap-1.5 text-zinc-300 hover:text-white transition cursor-pointer p-0.5 rounded"
@@ -69,7 +69,7 @@ export default function PartyChatDrawer({
             )}
           </button>
 
-          <div className="flex items-center gap-1 text-[10px] font-mono text-zinc-500">
+          <div className="flex items-center gap-1 text-[10px] text-zinc-500">
             {connectionStatus === 'connected' ? (
               <span className="flex items-center gap-1 text-zinc-400">
                 <Wifi className="w-2.5 h-2.5 stroke-[1.5]" /> P2P Live
@@ -85,7 +85,7 @@ export default function PartyChatDrawer({
         {/* Expandable Active Viewers List */}
         {showViewersList && (
           <div className="p-2 rounded-xl bg-[#090A0F] border border-white/[0.06] space-y-1.5 animate-fade-in">
-            <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-wider block">
+            <span className="text-[9px] text-zinc-500 uppercase tracking-wider block">
               Active In Room ({viewersCount})
             </span>
             <div className="max-h-24 overflow-y-auto space-y-1">
@@ -96,7 +96,7 @@ export default function PartyChatDrawer({
                 return (
                   <div 
                     key={peerName || idx}
-                    className="flex items-center justify-between text-[11px] font-mono px-2 py-1 rounded bg-white/[0.02] border border-white/[0.04]"
+                    className="flex items-center justify-between text-[11px] px-2 py-1 rounded bg-white/[0.02] border border-white/[0.04]"
                   >
                     <div className="flex items-center gap-1.5">
                       <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
@@ -125,11 +125,11 @@ export default function PartyChatDrawer({
 
         {/* Sync Controls Card */}
         <div className="p-2.5 rounded-xl bg-[#0E1017] border border-white/[0.06] space-y-2">
-          <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-mono">
+          <div className="flex items-center justify-between text-[10px] sm:text-[11px]">
             <span className="text-zinc-500">Sync Position:</span>
             <div className="flex items-center gap-1.5">
               {isHostOnlyLock && (
-                <span className="text-[9px] text-zinc-400 font-mono px-1.5 py-0.2 rounded bg-white/[0.04] border border-white/10 flex items-center gap-1">
+                <span className="text-[9px] text-zinc-400 px-1.5 py-0.2 rounded bg-white/[0.04] border border-white/10 flex items-center gap-1">
                   <Lock className="w-2.5 h-2.5 stroke-[1.5]" /> Host Lock
                 </span>
               )}
@@ -141,7 +141,7 @@ export default function PartyChatDrawer({
             <button
               onClick={onBroadcastSync}
               disabled={isControlsDisabled}
-              className={`flex-1 py-1.5 rounded-lg text-[10px] sm:text-xs font-mono font-medium transition cursor-pointer flex items-center justify-center gap-1 shadow-sm ${
+              className={`flex-1 py-1.5 rounded-lg text-[10px] sm:text-xs font-medium transition cursor-pointer flex items-center justify-center gap-1 shadow-sm ${
                 isControlsDisabled
                   ? 'bg-white/10 text-zinc-500 cursor-not-allowed border border-white/5'
                   : 'bg-white text-black hover:bg-zinc-200'
@@ -154,7 +154,7 @@ export default function PartyChatDrawer({
 
             <button
               onClick={onSyncToHost}
-              className="flex-1 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 text-[10px] sm:text-xs font-mono transition cursor-pointer flex items-center justify-center gap-1 border border-white/10"
+              className="flex-1 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 text-[10px] sm:text-xs transition cursor-pointer flex items-center justify-center gap-1 border border-white/10"
               title="Catch up to room timestamp"
             >
               <RotateCw className="w-3 h-3 stroke-[1.5]" />
@@ -171,7 +171,7 @@ export default function PartyChatDrawer({
                   key={delta}
                   onClick={() => !isControlsDisabled && onAdjustTime && onAdjustTime(delta)}
                   disabled={isControlsDisabled}
-                  className={`px-2 py-0.5 rounded text-[9px] font-mono border transition ${
+                  className={`px-2 py-0.5 rounded text-[9px] border transition ${
                     isControlsDisabled
                       ? 'bg-white/[0.01] text-zinc-600 border-white/[0.02] cursor-not-allowed'
                       : 'bg-white/[0.03] hover:bg-white/[0.08] text-zinc-400 hover:text-white border-white/[0.06]'
@@ -208,7 +208,7 @@ export default function PartyChatDrawer({
             className={`space-y-0.5 ${m.isSystem ? 'text-center py-0.5' : ''}`}
           >
             {m.isSystem ? (
-              <span className="text-[9px] sm:text-[10px] font-mono text-zinc-500 bg-white/[0.02] px-2 py-0.5 rounded-full border border-white/[0.04] inline-block">
+              <span className="text-[9px] sm:text-[10px] text-zinc-500 bg-white/[0.02] px-2 py-0.5 rounded-full border border-white/[0.04] inline-block">
                 {m.text}
               </span>
             ) : (
@@ -217,7 +217,7 @@ export default function PartyChatDrawer({
                   ? 'bg-white/[0.04] border border-white/10 ml-3 sm:ml-4' 
                   : 'bg-[#11131A] border border-white/[0.04] mr-3 sm:mr-4'
               }`}>
-                <div className="flex items-center justify-between text-[9px] sm:text-[10px] font-mono text-zinc-500">
+                <div className="flex items-center justify-between text-[9px] sm:text-[10px] text-zinc-500">
                   <span className="font-medium text-zinc-300">{m.sender}</span>
                   <span>{m.time}</span>
                 </div>

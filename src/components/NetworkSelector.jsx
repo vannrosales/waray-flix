@@ -24,7 +24,7 @@ export default function NetworkSelector() {
             <button
               key={studio.id}
               onClick={() => navigate(`/network/${networkSlug}/${studio.code}`)}
-              className="h-20 sm:h-24 rounded-2xl border border-white/[0.08] hover:border-white/25 bg-[#121212] hover:bg-[#18181C] p-4 flex flex-col items-center justify-center transition-all duration-200 group cursor-pointer shadow-sm hover:shadow-md hover:scale-[1.02] text-white"
+              className="h-20 sm:h-24 rounded-none border border-white/[0.08] hover:border-white/25 bg-[#121212] hover:bg-[#18181C] p-4 flex flex-col items-center justify-center transition-all duration-200 group cursor-pointer shadow-sm hover:shadow-md hover:scale-[1.02] text-white"
               title={`Explore ${studio.name} Library`}
             >
               {/* Studio Look-Alike Brand Logo */}

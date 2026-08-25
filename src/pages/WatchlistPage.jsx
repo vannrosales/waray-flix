@@ -81,7 +81,7 @@ export default function WatchlistPage() {
     <div className="min-h-screen bg-[#000000] text-[#FFFFFF] pt-24 sm:pt-28 pb-20 px-6 md:px-12 max-w-[1440px] mx-auto space-y-12 select-none">
       {/* Header Banner */}
       <div className="border-b border-white/[0.08] pb-8 space-y-2">
-        <div className="flex items-center gap-2 text-xs font-mono text-zinc-400 uppercase tracking-widest font-semibold">
+        <div className="flex items-center gap-2 text-xs text-zinc-400 uppercase tracking-widest font-semibold">
           <Bookmark className="w-3.5 h-3.5 stroke-[2] text-white" />
           <span>PERSONAL CINEMA LIBRARY</span>
         </div>

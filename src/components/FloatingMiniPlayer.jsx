@@ -36,7 +36,7 @@ export default function FloatingMiniPlayer() {
             {title || 'Now Playing'}
           </span>
           {type === 'tv' && (
-            <span className="text-[10px] font-mono text-zinc-400 flex-shrink-0">
+            <span className="text-[10px] text-zinc-400 flex-shrink-0">
               S{season}E{episode}
             </span>
           )}

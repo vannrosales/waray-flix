@@ -51,7 +51,7 @@ export default function InstallPrompt() {
       aria-label="Install App"
     >
       <Download className="w-3.5 h-3.5 stroke-[1.5] text-zinc-400" />
-      <span className="text-[11px] font-mono">Install</span>
+      <span className="text-[11px]">Install</span>
     </button>
   );
 }

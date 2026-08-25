@@ -23,7 +23,7 @@ export default function EpisodeDrawer({
       {/* Drawer Header */}
       <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 flex-shrink-0">
         <div>
-          <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Binge Drawer</span>
+          <span className="text-[10px] text-zinc-500 uppercase tracking-widest">Binge Drawer</span>
           <h2 className="text-base font-bold text-white truncate max-w-[220px]">{mediaTitle || 'Episodes'}</h2>
         </div>
         <button
@@ -38,11 +38,11 @@ export default function EpisodeDrawer({
       {/* Season Select */}
       {tvShowDetails?.seasons && (
         <div className="px-5 pt-4 pb-2 flex-shrink-0">
-          <label className="text-[10px] font-mono text-zinc-500 uppercase block mb-1.5">Season</label>
+          <label className="text-[10px] text-zinc-500 uppercase block mb-1.5">Season</label>
           <select
             value={selectedSeason}
             onChange={(e) => onSelectSeason(Number(e.target.value))}
-            className="w-full bg-[#161922] border border-white/10 text-white text-xs font-mono rounded-xl p-2.5 focus:outline-none focus:border-white/30 cursor-pointer"
+            className="w-full bg-[#161922] border border-white/10 text-white text-xs rounded-xl p-2.5 focus:outline-none focus:border-white/30 cursor-pointer"
           >
             {tvShowDetails.seasons.filter(s => s.season_number > 0).map(s => (
               <option key={s.id} value={s.season_number}>
@@ -68,12 +68,12 @@ export default function EpisodeDrawer({
               }`}
             >
               <div className="min-w-0 flex-1">
-                <span className="text-[10px] font-mono opacity-50 block">EP {ep.episode_number}</span>
+                <span className="text-[10px] opacity-50 block">EP {ep.episode_number}</span>
                 <h4 className="text-xs font-semibold truncate leading-snug">{ep.name || `Episode ${ep.episode_number}`}</h4>
               </div>
               <div className="flex-shrink-0">
                 {isPlaying ? (
-                  <span className="px-2 py-0.5 rounded bg-black text-white text-[9px] font-mono font-bold uppercase">
+                  <span className="px-2 py-0.5 rounded bg-black text-white text-[9px] font-bold uppercase">
                     Playing
                   </span>
                 ) : (

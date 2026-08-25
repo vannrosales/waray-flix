@@ -33,7 +33,7 @@ export default function PersonPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0F0F12] flex items-center justify-center text-zinc-400 font-mono text-xs">
+      <div className="min-h-screen bg-[#0F0F12] flex items-center justify-center text-zinc-400 text-xs">
         LOADING_CREATIVE_PROFILE...
       </div>
     );
@@ -81,7 +81,7 @@ export default function PersonPage() {
         <div>
           <button 
             onClick={() => navigate(-1)}
-            className="inline-flex items-center gap-2 text-xs font-mono text-zinc-400 hover:text-white bg-[#18181C] hover:bg-[#222228] px-3.5 py-1.5 rounded-full border border-white/10 transition cursor-pointer shadow-sm"
+            className="inline-flex items-center gap-2 text-xs text-zinc-400 hover:text-white bg-[#18181C] hover:bg-[#222228] px-3.5 py-1.5 rounded-full border border-white/10 transition cursor-pointer shadow-sm"
           >
             <ArrowLeft className="w-3.5 h-3.5 stroke-[1.5]" /> Back
           </button>
@@ -94,7 +94,7 @@ export default function PersonPage() {
             {profileImg ? (
               <img src={profileImg} alt={person.name} className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-zinc-500 bg-[#18181C] font-mono text-xs">
+              <div className="w-full h-full flex items-center justify-center text-zinc-500 bg-[#18181C] text-xs">
                 NO PHOTO
               </div>
             )}
@@ -103,7 +103,7 @@ export default function PersonPage() {
           {/* Details */}
           <div className="flex-1 space-y-4">
             <div className="space-y-1">
-              <span className="text-[10px] font-mono text-white font-bold uppercase tracking-widest block">
+              <span className="text-[10px] text-white font-bold uppercase tracking-widest block">
                 {person.known_for_department || 'Acting & Directing'}
               </span>
               <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-white">
@@ -112,7 +112,7 @@ export default function PersonPage() {
             </div>
 
             {/* Quick Metadata Chips */}
-            <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-zinc-400">
+            <div className="flex flex-wrap items-center gap-4 text-xs text-zinc-400">
               {person.birthday && (
                 <span className="flex items-center gap-1.5">
                   <Calendar className="w-3.5 h-3.5 stroke-[1.5]" />
@@ -130,7 +130,7 @@ export default function PersonPage() {
             {/* Biography */}
             {person.biography && (
               <div className="space-y-1 pt-1">
-                <span className="text-[10px] font-mono text-zinc-400 uppercase font-bold tracking-wider block">Biography</span>
+                <span className="text-[10px] text-zinc-400 uppercase font-bold tracking-wider block">Biography</span>
                 <p className="text-zinc-300 text-xs sm:text-sm leading-relaxed max-w-3xl line-clamp-4 font-normal">
                   {person.biography}
                 </p>
@@ -152,7 +152,7 @@ export default function PersonPage() {
 
             <div className="flex items-center gap-3">
               {/* Filter Tabs */}
-              <div className="flex items-center gap-1 bg-[#18181C] p-1 rounded-full border border-white/[0.06] text-xs font-mono">
+              <div className="flex items-center gap-1 bg-[#18181C] p-1 rounded-full border border-white/[0.06] text-xs">
                 {['all', 'movie', 'tv'].map((t) => (
                   <button
                     key={t}
@@ -173,7 +173,7 @@ export default function PersonPage() {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="appearance-none bg-[#18181C] hover:bg-[#222228] border border-white/10 text-white text-xs font-mono py-1.5 pl-3 pr-8 rounded-full focus:outline-none focus:border-white/40 transition cursor-pointer shadow-sm"
+                  className="appearance-none bg-[#18181C] hover:bg-[#222228] border border-white/10 text-white text-xs py-1.5 pl-3 pr-8 rounded-full focus:outline-none focus:border-white/40 transition cursor-pointer shadow-sm"
                 >
                   <option value="popularity" className="bg-[#18181C] text-white">Most Popular</option>
                   <option value="rating" className="bg-[#18181C] text-white">Top Rated</option>
@@ -216,7 +216,7 @@ export default function PersonPage() {
                     {item.vote_average > 0 && (
                       <div className="absolute top-2 right-2 bg-black/80 backdrop-blur-md px-2 py-0.5 rounded-md flex items-center gap-1 border border-white/20 z-20 shadow-sm text-white">
                         <Star className="w-2.5 h-2.5 text-white fill-white stroke-[1.5]" />
-                        <span className="text-[10px] font-mono font-bold text-white">{item.vote_average.toFixed(1)}</span>
+                        <span className="text-[10px] font-bold text-white">{item.vote_average.toFixed(1)}</span>
                       </div>
                     )}
                   </div>
@@ -226,7 +226,7 @@ export default function PersonPage() {
                     <h3 className="text-xs font-semibold text-white line-clamp-1 group-hover/item:text-zinc-300 transition">
                       {item.title || item.name}
                     </h3>
-                    <div className="flex items-center justify-between text-[10px] text-zinc-400 font-mono">
+                    <div className="flex items-center justify-between text-[10px] text-zinc-400">
                       <span>{releaseYear || '—'}</span>
                       {item.character && (
                         <span className="text-zinc-400 truncate max-w-[90px]" title={item.character}>

@@ -132,11 +132,11 @@ export default function Home() {
         <div className="px-6 md:px-12 my-6 max-w-[1440px] mx-auto">
           <Link
             to="/timeline/mcu-doomsday"
-            className="group block relative rounded-3xl overflow-hidden p-6 sm:p-8 border border-white/[0.08] bg-[#121212] hover:border-white/30 shadow-sm hover:shadow-md transition-all duration-300"
+            className="group block relative rounded-none overflow-hidden p-6 sm:p-8 border border-white/[0.08] bg-[#121212] hover:border-white/30 shadow-sm hover:shadow-md transition-all duration-300"
           >
             <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
               <div className="space-y-2 max-w-2xl">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-white text-[10px] font-mono uppercase tracking-widest font-bold border border-white/15">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-none bg-white/10 text-white text-[10px] uppercase tracking-widest font-bold border border-white/15">
                   <Sparkles className="w-3.5 h-3.5 stroke-[2]" />
                   <span>CHRONOLOGICAL STORYLINE ROADMAP</span>
                 </div>
@@ -151,7 +151,7 @@ export default function Home() {
               </div>
 
               <div className="flex items-center gap-3 flex-shrink-0 self-start md:self-center">
-                <div className="px-6 py-3 rounded-full bg-white group-hover:bg-zinc-200 text-black text-xs font-semibold uppercase tracking-wider transition flex items-center gap-2 shadow-sm group-hover:scale-105">
+                <div className="px-6 py-3 rounded-none bg-white group-hover:bg-zinc-200 text-black text-xs font-bold uppercase tracking-wider transition flex items-center gap-2 shadow-sm group-hover:scale-105">
                   <span>Open Roadmap</span>
                   <ArrowRight className="w-3.5 h-3.5 stroke-[2]" />
                 </div>

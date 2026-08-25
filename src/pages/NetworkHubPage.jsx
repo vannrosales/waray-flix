@@ -100,7 +100,7 @@ export default function NetworkHubPage() {
         <div>
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#18181C] hover:bg-[#222228] text-xs font-mono text-white border border-white/10 transition cursor-pointer shadow-sm"
+            className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#18181C] hover:bg-[#222228] text-xs text-white border border-white/10 transition cursor-pointer shadow-sm"
           >
             <ArrowLeft className="w-3.5 h-3.5 stroke-[1.5]" />
             <span>BACK</span>
@@ -133,7 +133,7 @@ export default function NetworkHubPage() {
         {/* Studio Banner Header */}
         <div className="relative rounded-3xl overflow-hidden p-8 sm:p-10 border border-white/[0.08] shadow-md bg-[#18181C] flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="space-y-3 text-center md:text-left z-10">
-            <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest font-semibold block">
+            <span className="text-[10px] text-zinc-400 uppercase tracking-widest font-semibold block">
               OFFICIAL HUB & ARCHIVES
             </span>
             <div className="flex items-center justify-center md:justify-start gap-3">
@@ -145,7 +145,7 @@ export default function NetworkHubPage() {
           </div>
 
           <div className="flex items-center gap-3 z-10">
-            <div className="px-4 py-2 rounded-2xl bg-white/[0.06] border border-white/10 text-xs font-mono text-zinc-300">
+            <div className="px-4 py-2 rounded-2xl bg-white/[0.06] border border-white/10 text-xs text-zinc-300">
               {items.length}+ Titles Available
             </div>
           </div>
@@ -195,7 +195,7 @@ export default function NetworkHubPage() {
             <button
               onClick={loadMoreItems}
               disabled={loadingMore}
-              className="px-6 py-2.5 rounded-full bg-white hover:bg-zinc-200 text-black text-xs font-mono tracking-wider uppercase transition flex items-center gap-2 cursor-pointer disabled:opacity-50 shadow-md hover:scale-105"
+              className="px-6 py-2.5 rounded-full bg-white hover:bg-zinc-200 text-black text-xs tracking-wider uppercase transition flex items-center gap-2 cursor-pointer disabled:opacity-50 shadow-md hover:scale-105"
             >
               {loadingMore ? (
                 <>

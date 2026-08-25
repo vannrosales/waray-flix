@@ -68,7 +68,7 @@ export const STUDIOS_LIST = [
     name: 'A24', 
     code: 41077, 
     type: 'company', 
-    fontStyle: 'font-mono font-bold tracking-[0.35em] text-[#09090B]',
+    fontStyle: ' font-bold tracking-[0.35em] text-[#09090B]',
     category: 'Auteur Cinema'
   },
   { 
@@ -76,7 +76,7 @@ export const STUDIOS_LIST = [
     name: 'Peacock', 
     code: 386, 
     type: 'provider', 
-    fontStyle: 'font-mono font-medium tracking-wider text-[#09090B]',
+    fontStyle: ' font-medium tracking-wider text-[#09090B]',
     category: 'NBC Universal'
   },
   { 

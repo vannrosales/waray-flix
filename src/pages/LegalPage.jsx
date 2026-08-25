@@ -44,7 +44,7 @@ export default function LegalPage() {
     <div className="min-h-screen bg-[#000000] text-[#FFFFFF] pt-24 sm:pt-28 pb-20 px-6 md:px-12 max-w-[1440px] mx-auto space-y-10 select-none">
       {/* Page Header */}
       <div className="border-b border-white/[0.08] pb-8 space-y-3">
-        <div className="flex items-center gap-2 text-xs font-mono text-zinc-400 uppercase tracking-widest font-semibold">
+        <div className="flex items-center gap-2 text-xs text-zinc-400 uppercase tracking-widest font-semibold">
           <ShieldCheck className="w-4 h-4 stroke-[2] text-white" />
           <span>COMPLIANCE & LEGAL NOTICE</span>
         </div>
@@ -95,7 +95,7 @@ export default function LegalPage() {
         <div className="space-y-3 pt-1 text-xs sm:text-sm text-zinc-400 leading-relaxed">
           <div className="flex flex-wrap items-center gap-2">
             <span>For general inquiries or to report issues:</span>
-            <div className="inline-flex items-center gap-2 bg-[#141416] border border-white/[0.08] rounded-full px-3 py-1 text-xs font-mono text-white font-semibold">
+            <div className="inline-flex items-center gap-2 bg-[#141416] border border-white/[0.08] rounded-full px-3 py-1 text-xs text-white font-semibold">
               <span>{contactEmail}</span>
               <button
                 onClick={handleCopyEmail}

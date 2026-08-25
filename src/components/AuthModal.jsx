@@ -75,7 +75,7 @@ export default function AuthModal() {
 
         {/* Modal Header */}
         <div className="space-y-1">
-          <span className="text-[10px] font-mono text-zinc-400 font-bold uppercase tracking-widest block">
+          <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest block">
             ACCOUNT ACCESS
           </span>
           <h3 className="text-xl font-bold text-white">
@@ -91,7 +91,7 @@ export default function AuthModal() {
         {/* 1-Click Google OAuth */}
         <button
           onClick={handleGoogleAuth}
-          className="w-full py-2.5 px-4 rounded-xl bg-[#141416] hover:bg-[#222228] border border-white/10 text-xs font-mono font-medium text-white flex items-center justify-center gap-2.5 transition cursor-pointer shadow-sm"
+          className="w-full py-2.5 px-4 rounded-xl bg-[#141416] hover:bg-[#222228] border border-white/10 text-xs font-medium text-white flex items-center justify-center gap-2.5 transition cursor-pointer shadow-sm"
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -105,7 +105,7 @@ export default function AuthModal() {
         {/* Divider */}
         <div className="flex items-center gap-2">
           <div className="flex-1 h-px bg-white/[0.08]" />
-          <span className="text-[10px] font-mono text-zinc-400 uppercase">OR EMAIL</span>
+          <span className="text-[10px] text-zinc-400 uppercase">OR EMAIL</span>
           <div className="flex-1 h-px bg-white/[0.08]" />
         </div>
 
@@ -113,7 +113,7 @@ export default function AuthModal() {
         <form onSubmit={handleSubmit} className="space-y-3">
           {mode === 'signup' && (
             <div className="space-y-1">
-              <label className="text-[10px] font-mono text-zinc-400 block uppercase font-medium">Display Name</label>
+              <label className="text-[10px] text-zinc-400 block uppercase font-medium">Display Name</label>
               <div className="relative flex items-center">
                 <User className="absolute left-3 w-3.5 h-3.5 text-zinc-400 stroke-[1.5]" />
                 <input
@@ -129,7 +129,7 @@ export default function AuthModal() {
           )}
 
           <div className="space-y-1">
-            <label className="text-[10px] font-mono text-zinc-400 block uppercase font-medium">Email Address</label>
+            <label className="text-[10px] text-zinc-400 block uppercase font-medium">Email Address</label>
             <div className="relative flex items-center">
               <Mail className="absolute left-3 w-3.5 h-3.5 text-zinc-400 stroke-[1.5]" />
               <input
@@ -144,7 +144,7 @@ export default function AuthModal() {
           </div>
 
           <div className="space-y-1">
-            <label className="text-[10px] font-mono text-zinc-400 block uppercase font-medium">Password</label>
+            <label className="text-[10px] text-zinc-400 block uppercase font-medium">Password</label>
             <div className="relative flex items-center">
               <Lock className="absolute left-3 w-3.5 h-3.5 text-zinc-400 stroke-[1.5]" />
               <input
@@ -161,12 +161,12 @@ export default function AuthModal() {
 
           {/* Feedback messages */}
           {errorMsg && (
-            <div className="p-2.5 rounded-xl bg-zinc-900 border border-white/20 text-zinc-200 text-[11px] font-mono leading-tight">
+            <div className="p-2.5 rounded-xl bg-zinc-900 border border-white/20 text-zinc-200 text-[11px] leading-tight">
               {errorMsg}
             </div>
           )}
           {successMsg && (
-            <div className="p-2.5 rounded-xl bg-zinc-900 border border-white/20 text-white text-[11px] font-mono leading-tight">
+            <div className="p-2.5 rounded-xl bg-zinc-900 border border-white/20 text-white text-[11px] leading-tight">
               {successMsg}
             </div>
           )}
@@ -189,7 +189,7 @@ export default function AuthModal() {
         </form>
 
         {/* Toggle Mode */}
-        <div className="pt-2 border-t border-white/[0.08] text-center text-xs font-mono text-zinc-400">
+        <div className="pt-2 border-t border-white/[0.08] text-center text-xs text-zinc-400">
           {mode === 'signin' ? (
             <span>
               Don't have an account?{' '}
@@ -223,7 +223,7 @@ export default function AuthModal() {
 
         {/* Setup notice if keys not configured yet */}
         {!isConfigured && (
-          <div className="flex items-center gap-2 p-2 rounded-xl bg-[#141416] border border-white/10 text-[10px] font-mono text-zinc-400">
+          <div className="flex items-center gap-2 p-2 rounded-xl bg-[#141416] border border-white/10 text-[10px] text-zinc-400">
             <ShieldCheck className="w-3.5 h-3.5 stroke-[1.5] flex-shrink-0 text-white" />
             <span>Supabase Cloud Mode active with instant local login fallback.</span>
           </div>

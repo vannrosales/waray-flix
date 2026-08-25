@@ -17,7 +17,7 @@ export default function DetailHeroVisual({
       <div className="fixed top-20 sm:top-24 left-6 z-40">
         <button 
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/70 hover:bg-black text-xs font-mono text-white border border-white/20 backdrop-blur-xl transition cursor-pointer shadow-lg hover:scale-105"
+          className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/70 hover:bg-black text-xs text-white border border-white/20 backdrop-blur-xl transition cursor-pointer shadow-lg hover:scale-105"
         >
           <ArrowLeft className="w-3.5 h-3.5 stroke-[1.5]" />
           <span>BACK</span>

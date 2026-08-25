@@ -137,7 +137,7 @@ export default function DetailPage() {
           isAdded={isAdded}
           user={user}
           onPlayClick={handlePlayClick}
-          onToggleWatchlist={() => user ? toggle({ ...media, media_type: type }, user?.id) : openAuthModal()}
+          onToggleWatchlist={() => toggle({ ...media, media_type: type })}
           onOpenParty={() => user ? navigate(`/party/${type}/${id}`) : openAuthModal()}
           onOpenShare={() => setShareOpen(true)}
         />

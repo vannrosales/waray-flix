@@ -16,8 +16,8 @@ export default function WatchlistCard({ item, onRemove }) {
       onClick={() => navigate(`/details/${itemType}/${item.id}`)}
       className="group relative flex flex-col space-y-2 select-none cursor-pointer transition-all duration-200"
     >
-      {/* Poster Card */}
-      <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden bg-[#18181C] border border-white/[0.08] group-hover:border-white/40 transition-all duration-300 shadow-sm hover:shadow-md">
+      {/* Poster Card - Sharp Geometric with No Border Radius */}
+      <div className="relative aspect-[2/3] w-full rounded-none overflow-hidden bg-[#121212] border border-white/[0.08] group-hover:border-white/40 transition-all duration-300 shadow-sm hover:shadow-md">
         {poster ? (
           <img
             src={poster}
@@ -26,24 +26,24 @@ export default function WatchlistCard({ item, onRemove }) {
             loading="lazy"
           />
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center text-zinc-500 gap-2 bg-[#18181C]">
+          <div className="w-full h-full flex flex-col items-center justify-center text-zinc-500 gap-2 bg-[#121212]">
             <Film className="w-8 h-8 opacity-30 stroke-[1.5]" />
-            <span className="text-[9px] font-mono">NO POSTER</span>
+            <span className="text-[9px]">NO POSTER</span>
           </div>
         )}
 
         {/* Media Type Chip */}
         <div className="absolute top-2.5 left-2.5 z-20">
-          <span className="px-2 py-0.5 rounded bg-black/90 text-white text-[9px] font-mono uppercase tracking-wider font-semibold shadow-sm border border-white/10">
+          <span className="px-2 py-0.5 rounded-none bg-black/90 text-white text-[9px] uppercase tracking-wider font-semibold shadow-sm border border-white/10">
             {itemType}
           </span>
         </div>
 
         {/* Rating Badge */}
         {item.vote_average > 0 && (
-          <div className="absolute top-2.5 right-2.5 bg-black/80 backdrop-blur-md px-2 py-0.5 rounded flex items-center gap-1 border border-white/20 z-20 shadow-sm text-white">
+          <div className="absolute top-2.5 right-2.5 bg-black/80 backdrop-blur-md px-2 py-0.5 rounded-none flex items-center gap-1 border border-white/20 z-20 shadow-sm text-white">
             <Star className="w-2.5 h-2.5 text-white fill-white stroke-[1.5]" />
-            <span className="text-[10px] font-mono font-bold text-white">{item.vote_average.toFixed(1)}</span>
+            <span className="text-[10px] font-bold text-white">{item.vote_average.toFixed(1)}</span>
           </div>
         )}
 
@@ -54,7 +54,7 @@ export default function WatchlistCard({ item, onRemove }) {
           <div className="flex justify-end pt-8">
             <button
               onClick={(e) => onRemove(e, item)}
-              className="p-1.5 rounded-full bg-black/80 hover:bg-white hover:text-black text-zinc-300 transition cursor-pointer backdrop-blur-md shadow-md hover:scale-110 border border-white/10"
+              className="p-1.5 rounded-none bg-black/80 hover:bg-white hover:text-black text-zinc-300 transition cursor-pointer backdrop-blur-md shadow-md hover:scale-110 border border-white/10"
               title="Remove from Watchlist"
             >
               <Trash2 className="w-3.5 h-3.5 stroke-[1.5]" />
@@ -72,7 +72,7 @@ export default function WatchlistCard({ item, onRemove }) {
                   navigate(`/watch/movie/${item.id}`);
                 }
               }}
-              className="w-full py-2 rounded-xl bg-white text-black font-semibold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-lg hover:bg-zinc-200 transition cursor-pointer hover:scale-[1.02]"
+              className="w-full py-2 rounded-none bg-white text-black font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-lg hover:bg-zinc-200 transition cursor-pointer hover:scale-[1.02]"
             >
               <Play className="w-3.5 h-3.5 stroke-[2] fill-black text-black" />
               <span>Watch Now</span>
@@ -83,7 +83,7 @@ export default function WatchlistCard({ item, onRemove }) {
                 e.stopPropagation();
                 navigate(`/details/${itemType}/${item.id}`);
               }}
-              className="w-full py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white font-medium text-[11px] uppercase tracking-wider flex items-center justify-center gap-1 backdrop-blur-md transition cursor-pointer"
+              className="w-full py-1.5 rounded-none bg-white/15 hover:bg-white/25 text-white font-semibold text-[11px] uppercase tracking-wider flex items-center justify-center gap-1 backdrop-blur-md transition cursor-pointer"
             >
               <Info className="w-3 h-3 stroke-[1.5]" />
               <span>Details</span>
@@ -97,7 +97,7 @@ export default function WatchlistCard({ item, onRemove }) {
         <h3 className="text-xs sm:text-sm font-semibold text-white truncate group-hover:text-zinc-300 transition">
           {item.title || item.name}
         </h3>
-        <div className="flex items-center gap-2 text-[10px] font-mono text-zinc-400">
+        <div className="flex items-center gap-2 text-[10px] text-zinc-400">
           {releaseYear && <span>{releaseYear}</span>}
           {item.vote_average > 0 && (
             <>

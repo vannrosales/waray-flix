@@ -26,7 +26,7 @@ export default function DetailSeasonPicker({
           <select
             value={selectedSeason}
             onChange={(e) => onSelectSeason(Number(e.target.value))}
-            className="appearance-none bg-[#18181C] hover:bg-[#222228] border border-white/10 text-white text-xs font-mono py-2 pl-3.5 pr-8 rounded-full focus:outline-none focus:border-white/40 transition cursor-pointer shadow-sm"
+            className="appearance-none bg-[#18181C] hover:bg-[#222228] border border-white/10 text-white text-xs py-2 pl-3.5 pr-8 rounded-full focus:outline-none focus:border-white/40 transition cursor-pointer shadow-sm"
           >
             {media.seasons.map((season) => (
               <option key={season.id} value={season.season_number} className="bg-[#18181C] text-white">
@@ -52,7 +52,7 @@ export default function DetailSeasonPicker({
                   {epStill ? (
                     <img src={epStill} alt="" className="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-zinc-500 text-[9px] font-mono">NO IMAGE</div>
+                    <div className="w-full h-full flex items-center justify-center text-zinc-500 text-[9px]">NO IMAGE</div>
                   )}
                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
                     <Play className="w-5 h-5 text-white stroke-[2] fill-white" />
@@ -60,7 +60,7 @@ export default function DetailSeasonPicker({
                 </div>
 
                 <div className="flex-1 min-w-0 space-y-1">
-                  <div className="flex items-center justify-between text-[10px] font-mono text-zinc-400">
+                  <div className="flex items-center justify-between text-[10px] text-zinc-400">
                     <span className="font-bold text-white">EP {ep.episode_number}</span>
                     {ep.runtime && <span>{ep.runtime}m</span>}
                   </div>
@@ -75,7 +75,7 @@ export default function DetailSeasonPicker({
             );
           })
         ) : (
-          <div className="col-span-2 text-xs text-zinc-400 font-mono py-8 text-center">
+          <div className="col-span-2 text-xs text-zinc-400 py-8 text-center">
             Loading season episodes...
           </div>
         )}

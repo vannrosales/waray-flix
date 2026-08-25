@@ -77,14 +77,14 @@ export default function Sidebar() {
                 link.action();
                 setMobileOpen(false);
               }}
-              className="w-full flex items-center justify-between pl-3.5 pr-3 py-2.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white hover:bg-white/[0.05] transition cursor-pointer text-left group"
+              className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-none text-xs font-semibold text-zinc-400 hover:text-white hover:bg-white/[0.05] transition cursor-pointer text-left group select-none"
             >
               <div className="flex items-center gap-3">
-                <Icon className="w-4 h-4 stroke-[2] text-zinc-400 group-hover:text-white transition-colors" />
-                <span>{link.name}</span>
+                <Icon className="w-4 h-4 stroke-[2] text-zinc-400 group-hover:text-white transition-colors shrink-0" />
+                <span className="leading-none">{link.name}</span>
               </div>
               {link.shortcut && (
-                <span className="text-[10px] font-mono text-zinc-400 bg-[#252525] border border-white/[0.08] px-1.5 py-0.5 rounded">
+                <span className="text-[10px] text-zinc-400 bg-[#252525] border border-white/[0.08] px-1.5 py-0.5 rounded-none leading-none">
                   {link.shortcut}
                 </span>
               )}
@@ -97,24 +97,19 @@ export default function Sidebar() {
             key={link.name}
             to={link.path}
             onClick={() => setMobileOpen(false)}
-            className={`flex items-center justify-between pl-4 pr-3.5 py-2.5 rounded-xl text-xs font-bold transition group relative select-none ${
+            className={`flex items-center justify-between px-3.5 py-2.5 rounded-none text-xs font-bold transition group relative select-none ${
               isActive
-                ? 'bg-[#252525] text-white shadow-sm'
+                ? 'bg-[#252525] text-white shadow-sm border-l-3 border-white'
                 : 'text-zinc-400 hover:text-white hover:bg-white/[0.05]'
             }`}
           >
-            {/* Active Vertical Left Pill Indicator matching user reference */}
-            {isActive && (
-              <span className="absolute left-0 top-1.5 bottom-1.5 w-[3px] bg-white rounded-r-full" />
-            )}
-            
             <div className="flex items-center gap-3">
-              <Icon className={`w-4 h-4 stroke-[2] ${isActive ? 'text-white' : 'text-zinc-400 group-hover:text-white transition-colors'}`} />
+              <Icon className={`w-4 h-4 stroke-[2] shrink-0 ${isActive ? 'text-white' : 'text-zinc-400 group-hover:text-white transition-colors'}`} />
               <span className="leading-none">{link.name}</span>
             </div>
 
             {link.badge && (
-              <span className={`text-[9px] font-mono font-bold uppercase px-2 py-0.5 rounded-full ${
+              <span className={`text-[9px] font-bold uppercase px-2 py-0.5 rounded-none ${
                 isActive ? 'bg-white/20 text-white' : 'bg-white/10 text-zinc-300 border border-white/10'
               }`}>
                 {link.badge}
@@ -129,9 +124,9 @@ export default function Sidebar() {
   return (
     <>
       {/* ─── Mobile Top App Bar ─── */}
-      <header className="md:hidden fixed top-0 inset-x-0 h-16 bg-[#000000]/95 backdrop-blur-xl border-b border-white/[0.08] z-40 px-4 flex items-center justify-between select-none">
+      <header className="md:hidden fixed top-0 inset-x-0 h-16 bg-[#121212]/95 backdrop-blur-xl border-b border-white/[0.08] z-40 px-4 flex items-center justify-between select-none">
         <Link to="/" className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-white text-black flex items-center justify-center shadow-sm">
+          <div className="w-7 h-7 rounded-none bg-white text-black flex items-center justify-center shadow-sm">
             <Clapperboard className="w-3.5 h-3.5 stroke-[2]" />
           </div>
           <div className="flex flex-col font-black leading-none tracking-wider text-white text-xs">
@@ -143,7 +138,7 @@ export default function Sidebar() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setSearchOpen(true)}
-            className="p-2 rounded-xl bg-[#252525] border border-white/[0.08] text-white hover:bg-[#333333]"
+            className="p-2 rounded-none bg-[#252525] border border-white/[0.08] text-white hover:bg-[#333333]"
             title="Search"
           >
             <Search className="w-4 h-4 stroke-[1.5]" />
@@ -151,7 +146,7 @@ export default function Sidebar() {
 
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="p-2 rounded-xl bg-[#252525] border border-white/[0.08] text-white hover:bg-[#333333]"
+            className="p-2 rounded-none bg-[#252525] border border-white/[0.08] text-white hover:bg-[#333333]"
             aria-label="Toggle menu"
           >
             {mobileOpen ? <X className="w-4 h-4 stroke-[1.5]" /> : <Menu className="w-4 h-4 stroke-[1.5]" />}
@@ -167,17 +162,17 @@ export default function Sidebar() {
         />
       )}
 
-      {/* ─── Desktop & Mobile Sidebar ─── */}
+      {/* ─── Desktop & Mobile Grey Sidebar with Zero Border Radius ─── */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 w-64 bg-[#0A0A0C] border-r border-white/[0.08] flex flex-col justify-between p-4.5 transition-transform duration-300 select-none overflow-y-auto ${
+        className={`fixed top-0 bottom-0 left-0 z-50 w-64 bg-[#121212] border-r border-white/[0.08] flex flex-col justify-between p-4 transition-transform duration-300 select-none overflow-y-auto ${
           mobileOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full md:translate-x-0'
         }`}
       >
         <div className="space-y-6">
-          {/* Distinctive Brand Logo Header */}
-          <div className="px-2 pt-1 flex items-center justify-between">
+          {/* Brand Logo Header */}
+          <div className="px-3 pt-1 flex items-center justify-between">
             <Link to="/" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 group">
-              <div className="w-8 h-8 rounded-xl bg-white text-black flex items-center justify-center shadow-md transition-transform group-hover:scale-105">
+              <div className="w-8 h-8 rounded-none bg-white text-black flex items-center justify-center shadow-md transition-transform group-hover:scale-105">
                 <Clapperboard className="w-4 h-4 stroke-[2]" />
               </div>
               <div className="flex flex-col font-black leading-tight tracking-wider text-white text-sm">
@@ -192,7 +187,7 @@ export default function Sidebar() {
 
           {/* Section 1: MENU */}
           <div className="space-y-1.5">
-            <span className="text-[10px] uppercase text-zinc-500 px-3 font-bold tracking-widest block">
+            <span className="text-[10px] uppercase text-zinc-500 px-3.5 font-bold tracking-widest block">
               MENU
             </span>
             {renderNavGroup(menuLinks)}
@@ -200,15 +195,15 @@ export default function Sidebar() {
 
           {/* Section 2: MEDIA */}
           <div className="space-y-1.5">
-            <span className="text-[10px] uppercase text-zinc-500 px-3 font-bold tracking-widest block">
+            <span className="text-[10px] uppercase text-zinc-500 px-3.5 font-bold tracking-widest block">
               MEDIA
             </span>
             {renderNavGroup(mediaLinks)}
           </div>
 
-          {/* Section 3: LEGAL & COMPLIANCE */}
+          {/* Section 3: LEGAL & INFO */}
           <div className="space-y-1.5">
-            <span className="text-[10px] uppercase text-zinc-500 px-3 font-bold tracking-widest block">
+            <span className="text-[10px] uppercase text-zinc-500 px-3.5 font-bold tracking-widest block">
               LEGAL & INFO
             </span>
             {renderNavGroup(infoLinks)}

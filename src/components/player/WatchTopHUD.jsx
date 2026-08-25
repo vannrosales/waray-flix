@@ -38,7 +38,7 @@ export default function WatchTopHUD({
   setMobileMenuOpen,
   menuRef,
 }) {
-  const pillBase = 'flex items-center gap-1.5 rounded-full backdrop-blur-xl border border-white/10 shadow-lg transition cursor-pointer text-xs font-mono';
+  const pillBase = 'flex items-center gap-1.5 rounded-full backdrop-blur-xl border border-white/10 shadow-lg transition cursor-pointer text-xs';
   const pillDark = `${pillBase} bg-[#0E1017]/90 hover:bg-[#161922] text-zinc-300 hover:text-white`;
 
   return (
@@ -71,7 +71,7 @@ export default function WatchTopHUD({
                 {mediaTitle}
               </span>
               {type === 'tv' && (
-                <span className="text-[10px] font-mono text-zinc-400 flex-shrink-0">
+                <span className="text-[10px] text-zinc-400 flex-shrink-0">
                   S{currentSeason}·E{currentEpisode}
                 </span>
               )}
@@ -110,7 +110,7 @@ export default function WatchTopHUD({
             onClick={onToggleWatchlist}
             className={`${
               inWatchlist
-                ? 'flex items-center gap-1.5 rounded-full backdrop-blur-xl shadow-lg transition cursor-pointer text-xs font-mono px-2.5 py-1.5 bg-white text-black border border-white/20'
+                ? 'flex items-center gap-1.5 rounded-full backdrop-blur-xl shadow-lg transition cursor-pointer text-xs px-2.5 py-1.5 bg-white text-black border border-white/20'
                 : `${pillDark} px-2.5 py-1.5`
             }`}
             title={user ? (inWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist') : 'Sign in to save to Watchlist'}

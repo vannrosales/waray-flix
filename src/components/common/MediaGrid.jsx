@@ -15,9 +15,9 @@ export default function MediaGrid({
       <div className={className}>
         {[...Array(skeletonCount)].map((_, i) => (
           <div key={i} className="flex flex-col gap-2">
-            <div className="aspect-[2/3] rounded-2xl shimmer-skeleton-grey" />
-            <div className="h-3 w-3/4 bg-white/[0.08] rounded-md animate-pulse" />
-            <div className="h-2.5 w-1/2 bg-white/[0.04] rounded-md animate-pulse" />
+            <div className="aspect-[2/3] rounded-none shimmer-skeleton" />
+            <div className="h-3 w-3/4 bg-white/[0.08] rounded-none animate-pulse" />
+            <div className="h-2.5 w-1/2 bg-white/[0.04] rounded-none animate-pulse" />
           </div>
         ))}
       </div>
@@ -26,7 +26,7 @@ export default function MediaGrid({
 
   if (!items || items.length === 0) {
     return (
-      <div className="py-16 text-center text-xs font-mono text-zinc-400">
+      <div className="py-16 text-center text-xs text-zinc-400">
         {emptyMessage}
       </div>
     );

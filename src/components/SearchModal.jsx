@@ -101,13 +101,13 @@ export default function SearchModal({ isOpen, onClose }) {
               <X className="w-4 h-4 stroke-[1.5]" />
             </button>
           )}
-          <kbd className="hidden sm:inline-block px-1.5 py-0.5 rounded bg-white/[0.06] border border-white/[0.08] text-[9px] font-mono text-zinc-400">
+          <kbd className="hidden sm:inline-block px-1.5 py-0.5 rounded bg-white/[0.06] border border-white/[0.08] text-[9px] text-zinc-400">
             ESC
           </kbd>
         </div>
 
         {/* Filter Pills */}
-        <div className="flex items-center gap-2 px-5 py-2.5 border-b border-white/[0.06] bg-[#141416] text-xs font-mono">
+        <div className="flex items-center gap-2 px-5 py-2.5 border-b border-white/[0.06] bg-[#141416] text-xs">
           <span className="text-zinc-400 text-[11px] mr-1 font-medium">Filter:</span>
           {['all', 'movie', 'tv'].map((tab) => (
             <button
@@ -131,7 +131,7 @@ export default function SearchModal({ isOpen, onClose }) {
         <div className="overflow-y-auto p-4 space-y-3">
           {!query.trim() ? (
             <div className="space-y-3 py-2">
-              <div className="flex items-center gap-2 text-xs font-mono text-zinc-400 font-medium">
+              <div className="flex items-center gap-2 text-xs text-zinc-400 font-medium">
                 <TrendingUp className="w-3.5 h-3.5 stroke-[1.5] text-white" />
                 <span>Popular Searches</span>
               </div>
@@ -140,7 +140,7 @@ export default function SearchModal({ isOpen, onClose }) {
                   <button
                     key={tag}
                     onClick={() => handleTagClick(tag)}
-                    className="px-3 py-1.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.08] text-xs text-zinc-300 font-mono transition cursor-pointer"
+                    className="px-3 py-1.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.08] text-xs text-zinc-300 transition cursor-pointer"
                   >
                     {tag}
                   </button>
@@ -174,7 +174,7 @@ export default function SearchModal({ isOpen, onClose }) {
                       <h4 className="text-xs sm:text-sm font-semibold text-white truncate group-hover:text-zinc-300 transition">
                         {item.title || item.name}
                       </h4>
-                      <div className="flex items-center gap-2 text-[10px] font-mono text-zinc-400 mt-0.5">
+                      <div className="flex items-center gap-2 text-[10px] text-zinc-400 mt-0.5">
                         <span className="uppercase font-medium text-white">{itemType}</span>
                         <span>·</span>
                         <span>{year}</span>
@@ -194,7 +194,7 @@ export default function SearchModal({ isOpen, onClose }) {
               })}
             </div>
           ) : (
-            <div className="py-12 text-center text-xs font-mono text-zinc-400">
+            <div className="py-12 text-center text-xs text-zinc-400">
               No cinema titles found matching "{query}"
             </div>
           )}

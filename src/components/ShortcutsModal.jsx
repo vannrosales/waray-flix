@@ -61,7 +61,7 @@ export default function ShortcutsModal({ isOpen, onClose }) {
             <h3 className="text-base font-bold text-white">
               Keyboard Shortcuts
             </h3>
-            <p className="text-[11px] text-zinc-400 font-mono">
+            <p className="text-[11px] text-zinc-400">
               Speed up your navigation across WarayFlix
             </p>
           </div>
@@ -71,7 +71,7 @@ export default function ShortcutsModal({ isOpen, onClose }) {
         <div className="space-y-4">
           {SHORTCUT_GROUPS.map((group) => (
             <div key={group.title} className="space-y-2">
-              <h4 className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest font-semibold">
+              <h4 className="text-[10px] text-zinc-400 uppercase tracking-widest font-semibold">
                 {group.title}
               </h4>
               
@@ -82,7 +82,7 @@ export default function ShortcutsModal({ isOpen, onClose }) {
                     className="flex items-center justify-between p-2.5 rounded-2xl bg-[#141416] border border-white/[0.06] text-xs font-sans shadow-sm"
                   >
                     <span className="text-zinc-200 font-medium">{sc.label}</span>
-                    <kbd className="px-2 py-0.5 rounded-md bg-[#18181C] border border-white/15 text-[10px] font-mono text-white font-bold shadow-sm">
+                    <kbd className="px-2 py-0.5 rounded-md bg-[#18181C] border border-white/15 text-[10px] text-white font-bold shadow-sm">
                       {sc.key}
                     </kbd>
                   </div>

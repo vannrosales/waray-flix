@@ -18,13 +18,13 @@ export default function Footer() {
                 WARAY<span className="text-zinc-400 font-bold ml-1">FLIX</span>
               </span>
             </Link>
-            <p className="text-[10px] text-zinc-500 font-mono">
+            <p className="text-[10px] text-zinc-500">
               High-Precision Cinema Index
             </p>
           </div>
 
           {/* Quick Links */}
-          <div className="flex flex-wrap items-center gap-6 font-mono text-[11px] text-zinc-400">
+          <div className="flex flex-wrap items-center gap-6 text-[11px] text-zinc-400">
             <Link to="/" className="hover:text-white transition">Discover</Link>
             <Link to="/movies" className="hover:text-white transition">Movies</Link>
             <Link to="/tv" className="hover:text-white transition">Series</Link>
@@ -35,7 +35,7 @@ export default function Footer() {
         </div>
 
         {/* Disclaimer */}
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-[10px] text-zinc-500 font-mono leading-relaxed">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-[10px] text-zinc-500 leading-relaxed">
           <p className="max-w-3xl">
             WarayFlix does not store or host video media on its servers. All metadata is indexed via public APIs.
           </p>

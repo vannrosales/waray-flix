@@ -12,7 +12,7 @@ export default function ServerSwitcher({
   mobileMenuOpen,
   setMobileMenuOpen,
   menuRef,
-  pillDark = 'flex items-center gap-1.5 rounded-full backdrop-blur-xl border border-white/10 shadow-lg transition cursor-pointer text-xs font-mono bg-[#0E1017]/90 hover:bg-[#161922] text-zinc-300 hover:text-white',
+  pillDark = 'flex items-center gap-1.5 rounded-full backdrop-blur-xl border border-white/10 shadow-lg transition cursor-pointer text-xs bg-[#0E1017]/90 hover:bg-[#161922] text-zinc-300 hover:text-white',
 }) {
   return (
     <div className="relative" ref={menuRef}>
@@ -37,7 +37,7 @@ export default function ServerSwitcher({
                   onSelectPlayer(player.id);
                   setMobileMenuOpen(false);
                 }}
-                className={`w-full flex items-center justify-between px-4 py-3 text-xs font-mono transition cursor-pointer ${
+                className={`w-full flex items-center justify-between px-4 py-3 text-xs transition cursor-pointer ${
                   isSelected ? 'bg-white text-black font-semibold' : 'text-zinc-300 hover:bg-white/10 hover:text-white'
                 }`}
               >
@@ -57,7 +57,7 @@ export default function ServerSwitcher({
             <button
               key={player.id}
               onClick={() => onSelectPlayer(player.id)}
-              className={`px-3 py-1 rounded-full text-xs font-mono transition cursor-pointer ${
+              className={`px-3 py-1 rounded-full text-xs transition cursor-pointer ${
                 isSelected ? 'bg-white text-black font-semibold shadow-sm' : 'text-zinc-400 hover:text-white hover:bg-white/5'
               }`}
             >

@@ -79,7 +79,7 @@ export default function SurpriseModal({ isOpen, onClose }) {
 
         {/* Modal Header */}
         <div className="p-5 sm:p-6 border-b border-white/[0.08] bg-[#141416] space-y-3">
-          <div className="flex items-center gap-2 text-xs font-mono text-zinc-400 font-semibold">
+          <div className="flex items-center gap-2 text-xs text-zinc-400 font-semibold">
             <Dices className="w-4 h-4 stroke-[2] text-white" />
             <span>Cinema Roulette & Mood Matcher</span>
           </div>
@@ -105,7 +105,7 @@ export default function SurpriseModal({ isOpen, onClose }) {
           </div>
 
           {/* Movie / TV Toggle */}
-          <div className="flex items-center gap-2 pt-1 text-[11px] font-mono text-zinc-400">
+          <div className="flex items-center gap-2 pt-1 text-[11px] text-zinc-400">
             <span className="font-semibold">Format:</span>
             {['movie', 'tv'].map((t) => (
               <button
@@ -131,7 +131,7 @@ export default function SurpriseModal({ isOpen, onClose }) {
           {isRolling ? (
             <div className="py-16 flex flex-col items-center justify-center text-center space-y-3">
               <RefreshCw className="w-6 h-6 stroke-[1.5] text-white animate-spin" />
-              <p className="text-xs font-mono text-zinc-400">ROLLING THE ARCHIVES...</p>
+              <p className="text-xs text-zinc-400">ROLLING THE ARCHIVES...</p>
             </div>
           ) : pickedMedia ? (
             <div className="space-y-5">
@@ -149,7 +149,7 @@ export default function SurpriseModal({ isOpen, onClose }) {
                 </div>
 
                 <div className="flex-1 min-w-0 space-y-2">
-                  <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
+                  <div className="flex items-center gap-2 text-xs text-zinc-400">
                     <span className="text-white font-medium">{releaseYear}</span>
                     <span>·</span>
                     <span className="uppercase text-[10px] font-bold text-white">{pickedMedia.media_type || mediaType}</span>
@@ -195,7 +195,7 @@ export default function SurpriseModal({ isOpen, onClose }) {
 
                 <button
                   onClick={handleFullDetails}
-                  className="text-xs text-zinc-400 hover:text-white flex items-center gap-1 font-mono group py-1 cursor-pointer transition font-medium"
+                  className="text-xs text-zinc-400 hover:text-white flex items-center gap-1 group py-1 cursor-pointer transition font-medium"
                 >
                   <span>Details</span>
                   <ArrowRight className="w-3.5 h-3.5 stroke-[1.5] group-hover:translate-x-1 transition-transform" />

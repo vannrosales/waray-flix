@@ -31,7 +31,7 @@ export default function PartyHeader({
       <div className="flex items-center gap-2 sm:gap-3 min-w-0">
         <button 
           onClick={() => navigate(-1)}
-          className="flex items-center gap-1 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-[11px] sm:text-xs font-mono text-zinc-400 hover:text-white border border-white/[0.08] transition cursor-pointer flex-shrink-0"
+          className="flex items-center gap-1 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-[11px] sm:text-xs text-zinc-400 hover:text-white border border-white/[0.08] transition cursor-pointer flex-shrink-0"
         >
           <ArrowLeft className="w-3.5 h-3.5 stroke-[1.5]" />
           <span className="hidden sm:inline">BACK</span>
@@ -42,7 +42,7 @@ export default function PartyHeader({
           <span className="text-xs sm:text-sm font-bold text-white truncate max-w-[100px] xs:max-w-[140px] sm:max-w-xs">
             {media?.title || media?.name || "Watch Party"}
           </span>
-          <span className="hidden xs:inline-block px-1.5 py-0.5 rounded border border-white/[0.08] bg-white/[0.02] text-[9px] sm:text-[10px] font-mono text-zinc-400 flex-shrink-0">
+          <span className="hidden xs:inline-block px-1.5 py-0.5 rounded border border-white/[0.08] bg-white/[0.02] text-[9px] sm:text-[10px] text-zinc-400 flex-shrink-0">
             #{roomId}
           </span>
         </div>
@@ -55,7 +55,7 @@ export default function PartyHeader({
         {isHost ? (
           <button
             onClick={onToggleHostLock}
-            className={`flex items-center gap-1 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-full border text-[10px] sm:text-xs font-mono transition cursor-pointer ${
+            className={`flex items-center gap-1 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-full border text-[10px] sm:text-xs transition cursor-pointer ${
               isHostOnlyLock 
                 ? 'bg-white text-black font-semibold border-white' 
                 : 'bg-white/[0.04] text-zinc-400 hover:text-white border-white/[0.08]'
@@ -67,7 +67,7 @@ export default function PartyHeader({
           </button>
         ) : isHostOnlyLock ? (
           <div 
-            className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/[0.04] border border-white/10 text-[10px] font-mono text-zinc-400"
+            className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/[0.04] border border-white/10 text-[10px] text-zinc-400"
             title="Host has locked playback controls"
           >
             <Lock className="w-3 h-3 stroke-[1.5] text-zinc-400" />
@@ -94,7 +94,7 @@ export default function PartyHeader({
         {hostTime > 0 && Math.abs(hostTime - currentPlaybackSecs) > 3 && (
           <button
             onClick={onSyncToHost}
-            className="flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-full bg-white/[0.06] border border-white/20 text-white text-[10px] sm:text-xs font-mono transition cursor-pointer hover:bg-white/10"
+            className="flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-full bg-white/[0.06] border border-white/20 text-white text-[10px] sm:text-xs transition cursor-pointer hover:bg-white/10"
             title="Jump to Host's playback position"
           >
             <RotateCw className="w-3 h-3 stroke-[1.5]" />
@@ -104,7 +104,7 @@ export default function PartyHeader({
 
         {/* Server Selector (Tablet / Desktop) */}
         <div className="hidden lg:flex items-center gap-1 bg-[#11131A] p-1 rounded-full border border-white/[0.06] text-xs">
-          <div className="flex items-center gap-1 px-2 text-zinc-500 font-mono text-[10px]">
+          <div className="flex items-center gap-1 px-2 text-zinc-500 text-[10px]">
             <Server className="w-3 h-3 stroke-[1.5] text-zinc-400" />
             <span>Server:</span>
           </div>
@@ -129,7 +129,7 @@ export default function PartyHeader({
         {/* Copy Invite Link */}
         <button
           onClick={onCopyLink}
-          className="flex items-center gap-1 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-[11px] sm:text-xs font-mono text-zinc-300 hover:text-white transition cursor-pointer"
+          className="flex items-center gap-1 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-[11px] sm:text-xs text-zinc-300 hover:text-white transition cursor-pointer"
           title="Copy Invite Link"
         >
           {copied ? <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5 stroke-[1.5] text-white" /> : <Copy className="w-3 h-3 sm:w-3.5 sm:h-3.5 stroke-[1.5]" />}
@@ -148,7 +148,7 @@ export default function PartyHeader({
         {/* Chat Panel Toggle */}
         <button
           onClick={onToggleChat}
-          className={`flex items-center gap-1 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-full border text-[11px] sm:text-xs font-mono transition cursor-pointer ${
+          className={`flex items-center gap-1 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-full border text-[11px] sm:text-xs transition cursor-pointer ${
             chatOpen 
               ? 'bg-white text-black font-semibold border-white' 
               : 'bg-white/[0.04] text-zinc-400 hover:text-white border-white/[0.08]'
