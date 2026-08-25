@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { CONFIG } from '../config/siteConfig';
-import { ArrowLeft, Server, ChevronDown, SkipForward, Layers, X, Play, QrCode, Users2, PictureInPicture2, MoreHorizontal } from 'lucide-react';
+import { ArrowLeft, Server, ChevronDown, SkipForward, Layers, X, Play, QrCode, Users2, PictureInPicture2 } from 'lucide-react';
 import ShareModal from '../components/ShareModal';
 import { usePlayer } from '../context/PlayerContext';
 import { useAuth } from '../context/AuthContext';
@@ -31,7 +31,6 @@ export default function WatchPage() {
   const [mediaTitle, setMediaTitle] = useState('');
   const [selectedPlayerId, setSelectedPlayerId] = useState(CONFIG.players[0].id);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const [epDrawerOpen, setEpDrawerOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [hudVisible, setHudVisible] = useState(true);
@@ -41,7 +40,6 @@ export default function WatchPage() {
   const [selectedDrawerSeason, setSelectedDrawerSeason] = useState(currentSeason);
   
   const menuRef = useRef(null);
-  const moreMenuRef = useRef(null);
   const hudTimeoutRef = useRef(null);
 
   // Scrubber Tracking Refs (prevent 60fps React re-renders)
@@ -117,7 +115,7 @@ export default function WatchPage() {
       setHudVisible(true);
       if (hudTimeoutRef.current) clearTimeout(hudTimeoutRef.current);
       hudTimeoutRef.current = setTimeout(() => {
-        if (!mobileMenuOpen && !moreMenuOpen && !epDrawerOpen) setHudVisible(false);
+        if (!mobileMenuOpen && !epDrawerOpen) setHudVisible(false);
       }, 4000);
     };
     window.addEventListener('mousemove', showHud);
@@ -127,13 +125,12 @@ export default function WatchPage() {
       window.removeEventListener('touchstart', showHud);
       if (hudTimeoutRef.current) clearTimeout(hudTimeoutRef.current);
     };
-  }, [mobileMenuOpen, moreMenuOpen, epDrawerOpen]);
+  }, [mobileMenuOpen, epDrawerOpen]);
 
   // Close menus on outside click
   useEffect(() => {
     function handleClickOutside(event) {
       if (menuRef.current && !menuRef.current.contains(event.target)) setMobileMenuOpen(false);
-      if (moreMenuRef.current && !moreMenuRef.current.contains(event.target)) setMoreMenuOpen(false);
     }
     document.addEventListener('mousedown', handleClickOutside);
     document.addEventListener('touchstart', handleClickOutside);
@@ -292,76 +289,38 @@ export default function WatchPage() {
               </button>
             )}
 
-            {/* Desktop-only extras: PiP, Party, QR */}
+            {/* PiP — icon on mobile, label on lg */}
             <button
               onClick={() => {
                 enterPiP({ type, id, season: currentSeason, episode: currentEpisode, title: mediaTitle, selectedPlayerId, currentTime: lastScrubSecondsRef.current });
                 navigate(`/details/${type}/${id}`);
               }}
-              className={`${pillDark} px-2.5 py-1.5 hidden sm:flex`}
+              className={`${pillDark} px-2.5 py-1.5`}
               title="Mini Player"
             >
               <PictureInPicture2 className="w-3.5 h-3.5 stroke-[1.5]" />
               <span className="hidden lg:inline">Mini Player</span>
             </button>
 
+            {/* Watch Party — icon on mobile, label on lg */}
             <button
               onClick={() => navigate(`/party/${type}/${id}`)}
-              className={`${pillDark} px-2.5 py-1.5 hidden sm:flex`}
+              className={`${pillDark} px-2.5 py-1.5`}
               title="Watch Party"
             >
               <Users2 className="w-3.5 h-3.5 stroke-[1.5]" />
               <span className="hidden lg:inline">Party</span>
             </button>
 
+            {/* QR Phone Sync — icon on mobile, label on lg */}
             <button
               onClick={() => setShareOpen(true)}
-              className={`${pillDark} px-2.5 py-1.5 hidden sm:flex`}
-              title="Phone Sync"
+              className={`${pillDark} px-2.5 py-1.5`}
+              title="Phone Sync (QR)"
             >
               <QrCode className="w-3.5 h-3.5 stroke-[1.5]" />
               <span className="hidden lg:inline">Phone Sync</span>
             </button>
-
-            {/* Mobile "More" menu (PiP, Party, QR collapsed) */}
-            <div className="relative sm:hidden" ref={moreMenuRef}>
-              <button
-                onClick={() => setMoreMenuOpen(!moreMenuOpen)}
-                className={`${pillDark} px-2.5 py-1.5`}
-                aria-label="More options"
-              >
-                <MoreHorizontal className="w-3.5 h-3.5 stroke-[1.5]" />
-              </button>
-              {moreMenuOpen && (
-                <div className="absolute right-0 top-full mt-2 w-44 bg-[#0E1017] border border-white/10 rounded-2xl shadow-2xl backdrop-blur-2xl z-50 overflow-hidden">
-                  <button
-                    onClick={() => {
-                      enterPiP({ type, id, season: currentSeason, episode: currentEpisode, title: mediaTitle, selectedPlayerId, currentTime: lastScrubSecondsRef.current });
-                      navigate(`/details/${type}/${id}`);
-                      setMoreMenuOpen(false);
-                    }}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-xs text-zinc-300 hover:bg-white/10 hover:text-white transition"
-                  >
-                    <PictureInPicture2 className="w-3.5 h-3.5 stroke-[1.5]" />
-                    Mini Player
-                  </button>
-                  <button
-                    onClick={() => { navigate(`/party/${type}/${id}`); setMoreMenuOpen(false); }}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-xs text-zinc-300 hover:bg-white/10 hover:text-white transition"
-                  >
-                    <Users2 className="w-3.5 h-3.5 stroke-[1.5]" />
-                    Watch Party
-                  </button>
-                  <button
-                    onClick={() => { setShareOpen(true); setMoreMenuOpen(false); }}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-xs text-zinc-300 hover:bg-white/10 hover:text-white transition"
-                  >
-                    <QrCode className="w-3.5 h-3.5 stroke-[1.5]" />
-                    Phone Sync (QR)
-                  </button>
-                </div>
-              )}
-            </div>
 
             {/* Server Switcher */}
             <div className="relative" ref={menuRef}>
