@@ -52,46 +52,48 @@ export default function Home() {
   };
 
   useEffect(() => {
-    async function loadAllContent() {
+    let isMounted = true;
+
+    async function loadContent() {
       try {
         if (!selectedNetwork) {
-          const [
-            movies, 
-            shows, 
-            nowPlaying, 
-            upcoming, 
-            topRated, 
-            airingToday,
-            top10Mov,
-            top10Shw
-          ] = await Promise.all([
+          // Phase 1: Critical Above-the-Fold (Immediate Hero & Primary Rows)
+          const [movies, shows] = await Promise.all([
             fetchTrendingMovies(),
             fetchPopularShows(),
+          ]);
+
+          if (!isMounted) return;
+          setTrendingMovies(movies || []);
+          setPopularShows(shows || []);
+          if (movies && movies.length > 0) {
+            setHeroContent(movies[0]);
+          }
+
+          // Phase 2: Secondary Below-the-Fold Rows (Non-blocking background loading)
+          Promise.all([
             fetchNowPlayingMovies(),
             fetchUpcomingMovies(),
             fetchTopRatedMovies(),
             fetchAiringTodayShows(),
             fetchTop10MoviesToday(),
-            fetchTop10ShowsToday()
-          ]);
+            fetchTop10ShowsToday(),
+          ]).then(([nowPlaying, upcoming, topRated, airingToday, top10Mov, top10Shw]) => {
+            if (!isMounted) return;
+            setNowPlayingMovies(nowPlaying || []);
+            setUpcomingMovies(upcoming || []);
+            setTopRatedMovies(topRated || []);
+            setAiringTodayShows(airingToday || []);
+            setTop10Movies(top10Mov || []);
+            setTop10Shows(top10Shw || []);
+          }).catch(err => console.error("Secondary row fetch error:", err));
 
-          setTrendingMovies(movies || []);
-          setPopularShows(shows || []);
-          setNowPlayingMovies(nowPlaying || []);
-          setUpcomingMovies(upcoming || []);
-          setTopRatedMovies(topRated || []);
-          setAiringTodayShows(airingToday || []);
-          setTop10Movies(top10Mov || []);
-          setTop10Shows(top10Shw || []);
-
-          if (movies && movies.length > 0) {
-            setHeroContent(movies[0]);
-          }
         } else {
           const results = selectedNetwork.type === 'provider'
             ? await fetchMediaByProvider(selectedNetwork.code, 'movie')
             : await fetchMediaByCompany(selectedNetwork.code);
           
+          if (!isMounted) return;
           const list = results || [];
           setTrendingMovies(list);
           setPopularShows(list);
@@ -102,7 +104,10 @@ export default function Home() {
       }
     }
 
-    loadAllContent();
+    loadContent();
+    return () => {
+      isMounted = false;
+    };
   }, [selectedNetwork]);
 
   return (

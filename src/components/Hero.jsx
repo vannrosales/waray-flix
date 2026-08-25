@@ -31,6 +31,9 @@ export default function Hero({ content, items = [] }) {
 
     async function loadTrailer() {
       if (!activeContent?.id) return;
+      // On mobile viewports, avoid loading heavy background YouTube iframes to maximize PageSpeed and battery
+      if (typeof window !== 'undefined' && window.innerWidth < 768) return;
+
       try {
         const videos = await fetchMediaVideos(activeContent.id, itemType);
         const trailer = (videos || []).find(v => v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser'));
@@ -38,7 +41,7 @@ export default function Hero({ content, items = [] }) {
           setTrailerKey(trailer.key);
           const timer = setTimeout(() => {
             if (isMounted) setShowVideo(true);
-          }, 800);
+          }, 1500);
           return () => clearTimeout(timer);
         }
       } catch (err) {
