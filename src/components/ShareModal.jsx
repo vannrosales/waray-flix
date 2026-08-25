@@ -7,7 +7,7 @@ export default function ShareModal({ isOpen, onClose, title, url }) {
   if (!isOpen) return null;
 
   const shareUrl = url || window.location.href;
-  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(shareUrl)}&bgcolor=11131A&color=FFFFFF&margin=12`;
+  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(shareUrl)}&bgcolor=18181C&color=FFFFFF&margin=12`;
 
   const handleCopy = async () => {
     try {
@@ -25,13 +25,13 @@ export default function ShareModal({ isOpen, onClose, title, url }) {
       onClick={onClose}
     >
       <div 
-        className="relative w-full max-w-sm bg-[#0E1017] border border-white/[0.08] rounded-2xl overflow-hidden shadow-2xl animate-slide-up p-6 space-y-5 text-center"
+        className="relative w-full max-w-sm bg-[#18181C] border border-white/[0.12] rounded-3xl overflow-hidden shadow-2xl animate-slide-up p-6 space-y-5 text-center"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Outlined Close */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-1.5 rounded-full bg-black/60 hover:bg-black text-zinc-400 hover:text-white border border-white/10 transition cursor-pointer"
+          className="absolute top-4 right-4 p-1.5 rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-zinc-400 hover:text-white border border-white/10 transition cursor-pointer"
           aria-label="Close"
         >
           <X className="w-4 h-4 stroke-[1.5]" />
@@ -49,7 +49,7 @@ export default function ShareModal({ isOpen, onClose, title, url }) {
         </div>
 
         {/* QR Code Container */}
-        <div className="p-3 bg-[#11131A] rounded-2xl border border-white/10 w-fit mx-auto shadow-inner">
+        <div className="p-3 bg-[#141416] rounded-2xl border border-white/10 w-fit mx-auto shadow-inner">
           <img 
             src={qrCodeUrl} 
             alt="Scan QR code to open on mobile" 
@@ -62,7 +62,7 @@ export default function ShareModal({ isOpen, onClose, title, url }) {
         </p>
 
         {/* Copy Link Input Bar */}
-        <div className="flex items-center gap-2 bg-[#141822] p-1.5 rounded-xl border border-white/[0.06]">
+        <div className="flex items-center gap-2 bg-[#141416] p-1.5 rounded-xl border border-white/[0.06]">
           <input
             type="text"
             readOnly

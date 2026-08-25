@@ -78,17 +78,17 @@ export default function WatchlistPage() {
   const tvCount = watchlist.filter(i => i.media_type === 'tv' || Boolean(i.first_air_date)).length;
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] text-[#09090B] pt-24 sm:pt-28 pb-20 px-6 md:px-12 max-w-[1440px] mx-auto space-y-12 select-none">
+    <div className="min-h-screen bg-[#0F0F12] text-[#F4F4F5] pt-24 sm:pt-28 pb-20 px-6 md:px-12 max-w-[1440px] mx-auto space-y-12 select-none">
       {/* Header Banner */}
-      <div className="border-b border-black/[0.08] pb-8 space-y-2">
-        <div className="flex items-center gap-2 text-xs font-mono text-[#52525B] uppercase tracking-widest font-semibold">
-          <Bookmark className="w-3.5 h-3.5 stroke-[2] text-[#2563EB]" />
+      <div className="border-b border-white/[0.08] pb-8 space-y-2">
+        <div className="flex items-center gap-2 text-xs font-mono text-zinc-400 uppercase tracking-widest font-semibold">
+          <Bookmark className="w-3.5 h-3.5 stroke-[2] text-white" />
           <span>PERSONAL CINEMA LIBRARY</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#09090B] font-['Outfit'] tracking-tight">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white font-['Outfit'] tracking-tight">
           Watchlist & History
         </h1>
-        <p className="text-xs sm:text-sm text-[#52525B] font-normal max-w-xl">
+        <p className="text-xs sm:text-sm text-zinc-400 font-normal max-w-xl">
           Your saved titles and resume points, synchronized across your devices. Click any title to view details or resume.
         </p>
       </div>
@@ -123,7 +123,7 @@ export default function WatchlistPage() {
             ))}
           </div>
         ) : (
-          <div className="border border-black/[0.06] rounded-3xl bg-white shadow-sm overflow-hidden">
+          <div className="border border-white/[0.06] rounded-3xl bg-[#18181C] shadow-sm overflow-hidden">
             <EmptyState
               icon={Bookmark}
               title={searchQuery ? 'No matching titles found' : 'Your Watchlist is Empty'}

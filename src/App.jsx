@@ -26,7 +26,7 @@ const LegalPage = lazy(() => import('./pages/LegalPage'));
 
 function Layout() {
   return (
-    <div className="min-h-screen bg-[#FAFAFA] text-[#09090B] font-sans selection:bg-[#2563EB] selection:text-white flex flex-col justify-between">
+    <div className="min-h-screen bg-[#0F0F12] text-[#F4F4F5] font-sans selection:bg-white selection:text-black flex flex-col justify-between">
       <Sidebar />
       <div className="md:pl-64 flex flex-col flex-grow w-full min-w-0 transition-all duration-300">
         <main className="flex-grow">

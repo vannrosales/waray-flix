@@ -8,9 +8,9 @@ export default function DetailCastSection({ castList }) {
   if (!castList || castList.length === 0) return null;
 
   return (
-    <div className="space-y-3 pt-4 border-t border-black/[0.08]">
-      <div className="flex items-center gap-2 text-xs font-mono text-[#52525B] uppercase tracking-wider font-semibold">
-        <Users className="w-3.5 h-3.5 stroke-[1.5] text-[#2563EB]" />
+    <div className="space-y-3 pt-4 border-t border-white/[0.08]">
+      <div className="flex items-center gap-2 text-xs font-mono text-zinc-400 uppercase tracking-wider font-semibold">
+        <Users className="w-3.5 h-3.5 stroke-[1.5] text-white" />
         <span>Cast & Crew</span>
       </div>
       
@@ -23,7 +23,7 @@ export default function DetailCastSection({ castList }) {
               onClick={() => navigate(`/person/${actor.id}`)}
               className="w-20 sm:w-24 flex-shrink-0 space-y-1.5 text-center group cursor-pointer"
             >
-              <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full overflow-hidden bg-zinc-100 border border-black/10 group-hover:border-[#2563EB]/40 transition shadow-sm relative flex items-center justify-center">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full overflow-hidden bg-zinc-900 border border-white/10 group-hover:border-white/40 transition shadow-sm relative flex items-center justify-center">
                 {profileImg ? (
                   <img 
                     src={profileImg} 
@@ -33,16 +33,16 @@ export default function DetailCastSection({ castList }) {
                     className="w-full h-full object-cover group-hover:scale-105 transition" 
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-zinc-400 font-mono text-[9px]">
+                  <div className="w-full h-full flex items-center justify-center text-zinc-500 font-mono text-[9px]">
                     CAST
                   </div>
                 )}
               </div>
               <div>
-                <h4 className="text-[11px] font-semibold text-[#09090B] group-hover:text-[#2563EB] truncate transition-colors">
+                <h4 className="text-[11px] font-semibold text-white group-hover:text-zinc-300 truncate transition-colors">
                   {actor.name}
                 </h4>
-                <p className="text-[9px] text-[#52525B] font-mono truncate">
+                <p className="text-[9px] text-zinc-400 font-mono truncate">
                   {actor.character}
                 </p>
               </div>
@@ -53,4 +53,3 @@ export default function DetailCastSection({ castList }) {
     </div>
   );
 }
-

@@ -155,7 +155,7 @@ export default function TimelinePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] text-[#09090B] font-sans selection:bg-[#2563EB] selection:text-white pb-24 select-none">
+    <div className="min-h-screen bg-[#0F0F12] text-[#F4F4F5] font-sans selection:bg-white selection:text-black pb-24 select-none">
       <TimelineHero
         currentTimeline={currentTimeline}
         activeBackdrop={activeBackdrop}

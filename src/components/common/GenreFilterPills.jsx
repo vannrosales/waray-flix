@@ -1,13 +1,5 @@
 import React from 'react';
 
-/**
- * Reusable horizontal genre / category filter pills component.
- * 
- * Props:
- * - genres: Array<{ id: string | number, name: string }>
- * - activeGenre: string | number
- * - onSelect: (id: string | number) => void
- */
 export default function GenreFilterPills({
   genres = [],
   activeGenre = 'all',
@@ -26,8 +18,8 @@ export default function GenreFilterPills({
             onClick={() => onSelect(g.id)}
             className={`px-3 py-1 rounded-full text-xs font-medium transition-all flex-shrink-0 cursor-pointer ${
               isSelected
-                ? 'bg-[#09090B] text-white font-bold shadow-sm'
-                : 'bg-black/[0.04] text-[#52525B] hover:text-[#09090B] hover:bg-black/[0.08]'
+                ? 'bg-white text-black font-bold shadow-sm'
+                : 'bg-white/[0.06] text-zinc-400 hover:text-white hover:bg-white/[0.12] border border-white/[0.08]'
             }`}
           >
             {g.name}
@@ -37,4 +29,3 @@ export default function GenreFilterPills({
     </div>
   );
 }
-

@@ -10,7 +10,7 @@ export default function NetworkSelector() {
     <section className="space-y-3.5 px-6 md:px-12 my-10 max-w-[1440px] mx-auto content-auto select-none">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-lg sm:text-xl font-bold tracking-tight text-[#09090B] font-['Outfit']">
+        <h2 className="text-lg sm:text-xl font-bold tracking-tight text-white font-['Outfit']">
           Channels & Studios
         </h2>
       </div>
@@ -24,12 +24,12 @@ export default function NetworkSelector() {
             <button
               key={studio.id}
               onClick={() => navigate(`/network/${networkSlug}/${studio.code}`)}
-              className="h-24 sm:h-28 rounded-2xl border border-black/[0.08] hover:border-black/30 bg-white hover:bg-zinc-50 p-4 flex flex-col items-center justify-center transition-all duration-200 group cursor-pointer shadow-sm hover:shadow-md hover:scale-[1.03] text-[#09090B]"
+              className="h-24 sm:h-28 rounded-2xl border border-white/[0.08] hover:border-white/30 bg-[#18181C] hover:bg-[#222228] p-4 flex flex-col items-center justify-center transition-all duration-200 group cursor-pointer shadow-sm hover:shadow-md hover:scale-[1.03] text-white"
               title={`Explore ${studio.name} Library`}
             >
               {/* Studio Look-Alike Brand Logo */}
-              <div className="flex items-center justify-center text-[#09090B] group-hover:scale-105 transition-transform duration-200 w-full h-full">
-                <StudioLogo name={studio.name} />
+              <div className="flex items-center justify-center text-white group-hover:scale-105 transition-transform duration-200 w-full h-full">
+                <StudioLogo name={studio.name} active={false} />
               </div>
             </button>
           );

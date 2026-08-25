@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchPersonDetails, getImageUrl } from '../services/tmdb';
-import { ArrowLeft, Film, Star, Calendar, MapPin, SlidersHorizontal, Tv } from 'lucide-react';
+import { ArrowLeft, Film, Star, Calendar, MapPin, SlidersHorizontal } from 'lucide-react';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 import QuickViewModal from '../components/QuickViewModal';
 
@@ -33,7 +33,7 @@ export default function PersonPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center text-[#52525B] font-mono text-xs">
+      <div className="min-h-screen bg-[#0F0F12] flex items-center justify-center text-zinc-400 font-mono text-xs">
         LOADING_CREATIVE_PROFILE...
       </div>
     );
@@ -74,27 +74,27 @@ export default function PersonPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] text-[#09090B] pb-24 pt-24 sm:pt-28 px-6 md:px-12 select-none">
+    <div className="min-h-screen bg-[#0F0F12] text-[#F4F4F5] pb-24 pt-24 sm:pt-28 px-6 md:px-12 select-none">
       <div className="max-w-[1440px] mx-auto space-y-10">
         
         {/* Back Button */}
         <div>
           <button 
             onClick={() => navigate(-1)}
-            className="inline-flex items-center gap-2 text-xs font-mono text-[#52525B] hover:text-[#09090B] bg-white hover:bg-zinc-50 px-3.5 py-1.5 rounded-full border border-black/10 transition cursor-pointer shadow-sm"
+            className="inline-flex items-center gap-2 text-xs font-mono text-zinc-400 hover:text-white bg-[#18181C] hover:bg-[#222228] px-3.5 py-1.5 rounded-full border border-white/10 transition cursor-pointer shadow-sm"
           >
             <ArrowLeft className="w-3.5 h-3.5 stroke-[1.5]" /> Back
           </button>
         </div>
 
         {/* Profile Header Hero */}
-        <div className="flex flex-col md:flex-row gap-8 items-start pb-8 border-b border-black/[0.08]">
+        <div className="flex flex-col md:flex-row gap-8 items-start pb-8 border-b border-white/[0.08]">
           {/* Avatar Photo */}
-          <div className="w-36 sm:w-48 aspect-[2/3] rounded-3xl overflow-hidden bg-white border border-black/10 flex-shrink-0 shadow-xl relative">
+          <div className="w-36 sm:w-48 aspect-[2/3] rounded-3xl overflow-hidden bg-[#18181C] border border-white/10 flex-shrink-0 shadow-xl relative">
             {profileImg ? (
               <img src={profileImg} alt={person.name} className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-zinc-400 bg-zinc-100 font-mono text-xs">
+              <div className="w-full h-full flex items-center justify-center text-zinc-500 bg-[#18181C] font-mono text-xs">
                 NO PHOTO
               </div>
             )}
@@ -103,16 +103,16 @@ export default function PersonPage() {
           {/* Details */}
           <div className="flex-1 space-y-4">
             <div className="space-y-1">
-              <span className="text-[10px] font-mono text-[#2563EB] font-bold uppercase tracking-widest block">
+              <span className="text-[10px] font-mono text-white font-bold uppercase tracking-widest block">
                 {person.known_for_department || 'Acting & Directing'}
               </span>
-              <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-[#09090B] font-['Outfit']">
+              <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-white font-['Outfit']">
                 {person.name}
               </h1>
             </div>
 
             {/* Quick Metadata Chips */}
-            <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-[#52525B]">
+            <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-zinc-400">
               {person.birthday && (
                 <span className="flex items-center gap-1.5">
                   <Calendar className="w-3.5 h-3.5 stroke-[1.5]" />
@@ -130,8 +130,8 @@ export default function PersonPage() {
             {/* Biography */}
             {person.biography && (
               <div className="space-y-1 pt-1">
-                <span className="text-[10px] font-mono text-[#52525B] uppercase font-bold tracking-wider block">Biography</span>
-                <p className="text-[#52525B] text-xs sm:text-sm leading-relaxed max-w-3xl line-clamp-4 font-normal">
+                <span className="text-[10px] font-mono text-zinc-400 uppercase font-bold tracking-wider block">Biography</span>
+                <p className="text-zinc-300 text-xs sm:text-sm leading-relaxed max-w-3xl line-clamp-4 font-normal">
                   {person.biography}
                 </p>
               </div>
@@ -144,26 +144,26 @@ export default function PersonPage() {
           {/* Controls Bar */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <Film className="w-4 h-4 text-[#2563EB] stroke-[1.5]" />
-              <h2 className="text-lg sm:text-xl font-bold text-[#09090B] font-['Outfit']">
+              <Film className="w-4 h-4 text-white stroke-[1.5]" />
+              <h2 className="text-lg sm:text-xl font-bold text-white font-['Outfit']">
                 Filmography ({filteredCredits.length})
               </h2>
             </div>
 
             <div className="flex items-center gap-3">
               {/* Filter Tabs */}
-              <div className="flex items-center gap-1 bg-black/[0.04] p-1 rounded-full border border-black/[0.06] text-xs font-mono">
-                {['all', 'movie', 'tv'].map((type) => (
+              <div className="flex items-center gap-1 bg-[#18181C] p-1 rounded-full border border-white/[0.06] text-xs font-mono">
+                {['all', 'movie', 'tv'].map((t) => (
                   <button
-                    key={type}
-                    onClick={() => setActiveFilter(type)}
+                    key={t}
+                    onClick={() => setActiveFilter(t)}
                     className={`px-3 py-1 rounded-full transition cursor-pointer capitalize ${
-                      activeFilter === type
-                        ? 'bg-[#09090B] text-white font-bold shadow-sm'
-                        : 'text-[#52525B] hover:text-[#09090B]'
+                      activeFilter === t
+                        ? 'bg-white text-black font-bold shadow-sm'
+                        : 'text-zinc-400 hover:text-white'
                     }`}
                   >
-                    {type === 'all' ? 'All' : type === 'movie' ? 'Movies' : 'Series'}
+                    {t === 'all' ? 'All' : t === 'movie' ? 'Movies' : 'Series'}
                   </button>
                 ))}
               </div>
@@ -173,13 +173,13 @@ export default function PersonPage() {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="appearance-none bg-white hover:bg-zinc-50 border border-black/10 text-[#09090B] text-xs font-mono py-1.5 pl-3 pr-8 rounded-full focus:outline-none focus:border-[#2563EB] transition cursor-pointer shadow-sm"
+                  className="appearance-none bg-[#18181C] hover:bg-[#222228] border border-white/10 text-white text-xs font-mono py-1.5 pl-3 pr-8 rounded-full focus:outline-none focus:border-white/40 transition cursor-pointer shadow-sm"
                 >
-                  <option value="popularity" className="bg-white text-[#09090B]">Most Popular</option>
-                  <option value="rating" className="bg-white text-[#09090B]">Top Rated</option>
-                  <option value="date" className="bg-white text-[#09090B]">Release Date</option>
+                  <option value="popularity" className="bg-[#18181C] text-white">Most Popular</option>
+                  <option value="rating" className="bg-[#18181C] text-white">Top Rated</option>
+                  <option value="date" className="bg-[#18181C] text-white">Release Date</option>
                 </select>
-                <SlidersHorizontal className="w-3 h-3 text-[#52525B] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <SlidersHorizontal className="w-3 h-3 text-zinc-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               </div>
             </div>
           </div>
@@ -198,7 +198,7 @@ export default function PersonPage() {
                   className="cursor-pointer group/item flex flex-col gap-2 flex-shrink-0 transition-all duration-200"
                 >
                   {/* Poster Card */}
-                  <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden bg-white border border-black/[0.06] group-hover/item:border-[#2563EB]/40 transition-all duration-200 group-hover/item:scale-[1.02] shadow-sm hover:shadow-md">
+                  <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden bg-[#18181C] border border-white/[0.06] group-hover/item:border-white/40 transition-all duration-200 group-hover/item:scale-[1.02] shadow-sm hover:shadow-md">
                     {poster ? (
                       <img 
                         src={poster} 
@@ -207,29 +207,29 @@ export default function PersonPage() {
                         className="w-full h-full object-cover transition duration-300 group-hover/item:brightness-105" 
                       />
                     ) : (
-                      <div className="w-full h-full flex flex-col items-center justify-center p-3 text-center text-zinc-400 bg-zinc-100 text-xs">
+                      <div className="w-full h-full flex flex-col items-center justify-center p-3 text-center text-zinc-500 bg-[#18181C] text-xs">
                         <Film className="w-6 h-6 opacity-30 stroke-[1.5]" />
                       </div>
                     )}
 
                     {/* Rating Badge */}
                     {item.vote_average > 0 && (
-                      <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-md px-2 py-0.5 rounded-md flex items-center gap-1 border border-black/10 z-20 shadow-sm">
-                        <Star className="w-2.5 h-2.5 text-[#2563EB] fill-[#2563EB] stroke-[1.5]" />
-                        <span className="text-[10px] font-mono font-bold text-[#09090B]">{item.vote_average.toFixed(1)}</span>
+                      <div className="absolute top-2 right-2 bg-black/80 backdrop-blur-md px-2 py-0.5 rounded-md flex items-center gap-1 border border-white/20 z-20 shadow-sm text-white">
+                        <Star className="w-2.5 h-2.5 text-white fill-white stroke-[1.5]" />
+                        <span className="text-[10px] font-mono font-bold text-white">{item.vote_average.toFixed(1)}</span>
                       </div>
                     )}
                   </div>
 
                   {/* Title & Role */}
                   <div className="space-y-0.5 px-0.5">
-                    <h3 className="text-xs font-semibold text-[#09090B] line-clamp-1 group-hover/item:text-[#2563EB] transition">
+                    <h3 className="text-xs font-semibold text-white line-clamp-1 group-hover/item:text-zinc-300 transition">
                       {item.title || item.name}
                     </h3>
-                    <div className="flex items-center justify-between text-[10px] text-[#52525B] font-mono">
+                    <div className="flex items-center justify-between text-[10px] text-zinc-400 font-mono">
                       <span>{releaseYear || '—'}</span>
                       {item.character && (
-                        <span className="text-[#52525B] truncate max-w-[90px]" title={item.character}>
+                        <span className="text-zinc-400 truncate max-w-[90px]" title={item.character}>
                           as {item.character}
                         </span>
                       )}

@@ -96,7 +96,7 @@ export default function AnimePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] text-[#09090B] pb-24 select-none">
+    <div className="min-h-screen bg-[#0F0F12] text-[#F4F4F5] pb-24 select-none">
       
       {/* Featured Header Hero */}
       {heroContent && <Hero content={heroContent} />}
@@ -105,11 +105,11 @@ export default function AnimePage() {
       <div className="max-w-[1440px] mx-auto px-6 md:px-12 mt-8 space-y-6">
         
         {/* Filter & Sort Bar */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-black/[0.08] pb-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/[0.08] pb-4">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-[#2563EB] stroke-[2]" />
-              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#09090B] font-['Outfit']">
+              <Sparkles className="w-5 h-5 text-white stroke-[2]" />
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white font-['Outfit']">
                 Anime Central
               </h1>
             </div>
@@ -144,7 +144,7 @@ export default function AnimePage() {
             <button
               onClick={loadMoreAnime}
               disabled={loadingMore}
-              className="px-6 py-2.5 rounded-full bg-[#09090B] hover:bg-black text-white text-xs font-mono tracking-wider uppercase transition flex items-center gap-2 cursor-pointer disabled:opacity-50 shadow-md hover:scale-105"
+              className="px-6 py-2.5 rounded-full bg-white hover:bg-zinc-200 text-black text-xs font-mono tracking-wider uppercase transition flex items-center gap-2 cursor-pointer disabled:opacity-50 shadow-md hover:scale-105"
             >
               <span>{loadingMore ? 'LOADING...' : 'LOAD MORE'}</span>
               {!loadingMore && <ChevronDown className="w-3.5 h-3.5 stroke-[1.5]" />}
@@ -164,4 +164,4 @@ export default function AnimePage() {
       )}
     </div>
   );
-}
+}

@@ -115,7 +115,7 @@ export default function DetailPage() {
   const recommendations = media?.recommendations?.results || media?.similar?.results || [];
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] text-[#09090B] pb-24 select-none">
+    <div className="min-h-screen bg-[#0F0F12] text-[#F4F4F5] pb-24 select-none">
       <DetailHeroVisual
         backdrop={backdrop}
         trailerKey={trailerKey}
@@ -155,7 +155,7 @@ export default function DetailPage() {
         )}
 
         {recommendations.length > 0 && (
-          <div className="border-t border-black/[0.08] pt-8">
+          <div className="border-t border-white/[0.08] pt-8">
             <MediaRow 
               title="Similar Titles" 
               items={recommendations} 

@@ -23,8 +23,8 @@ export default function TimelineCard({
       className="cursor-pointer group/item flex flex-col gap-2 flex-shrink-0 transition-all duration-200"
     >
       {/* Poster Canvas */}
-      <div className={`relative aspect-[2/3] w-full rounded-2xl overflow-hidden bg-white border border-black/[0.06] group-hover/item:border-[#2563EB]/40 transition-all duration-200 group-hover/item:scale-[1.02] shadow-sm hover:shadow-md ${
-        isChecked ? 'ring-2 ring-[#2563EB]/30' : ''
+      <div className={`relative aspect-[2/3] w-full rounded-2xl overflow-hidden bg-[#18181C] border border-white/[0.08] group-hover/item:border-white/40 transition-all duration-200 group-hover/item:scale-[1.02] shadow-sm hover:shadow-md ${
+        isChecked ? 'ring-2 ring-white/30' : ''
       }`}>
         {posterUrl ? (
           <img 
@@ -33,19 +33,19 @@ export default function TimelineCard({
             loading="lazy"
             decoding="async"
             className={`absolute inset-0 w-full h-full object-cover transition duration-300 group-hover/item:brightness-105 ${
-              isChecked ? 'brightness-95' : ''
+              isChecked ? 'brightness-90' : ''
             }`}
           />
         ) : (
-          <div className="absolute inset-0 flex flex-col items-center justify-center p-3 text-center text-zinc-400 bg-zinc-100">
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-3 text-center text-zinc-500 bg-[#18181C]">
             <Film className="w-6 h-6 mb-1 opacity-30 stroke-[1.5]" />
-            <span className="text-[9px] font-mono text-[#52525B] line-clamp-2">{item.title}</span>
+            <span className="text-[9px] font-mono text-zinc-500 line-clamp-2">{item.title}</span>
           </div>
         )}
 
         {/* Top Left: Chronological Number Badge */}
         <div className="absolute top-2 left-2 z-20 pointer-events-none">
-          <span className="bg-[#09090B]/90 text-white text-[9px] font-mono font-bold px-2 py-0.5 rounded-md shadow-xs">
+          <span className="bg-black/90 text-white text-[9px] font-mono font-bold px-2 py-0.5 rounded-md shadow-xs border border-white/10">
             #{item.order}
           </span>
         </div>
@@ -56,8 +56,8 @@ export default function TimelineCard({
             onClick={(e) => onToggleCheck(item.id, e)}
             className={`px-2 py-0.5 rounded-md text-[9px] font-mono font-bold flex items-center gap-1 transition cursor-pointer shadow-xs ${
               isChecked
-                ? 'bg-[#2563EB] text-white'
-                : 'bg-white/90 backdrop-blur-md text-[#09090B] border border-black/10 hover:bg-white'
+                ? 'bg-white text-black'
+                : 'bg-black/80 backdrop-blur-md text-white border border-white/20 hover:bg-black'
             }`}
             title={isChecked ? 'Mark as unwatched' : 'Mark as watched'}
           >
@@ -73,7 +73,7 @@ export default function TimelineCard({
         </div>
 
         {/* Hover Quick Action Deck */}
-        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-2 z-30 p-2 pointer-events-none">
+        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-2 z-30 p-2 pointer-events-none">
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -83,10 +83,10 @@ export default function TimelineCard({
                 navigate(`/watch/movie/${item.id}`);
               }
             }}
-            className="pointer-events-auto w-9 h-9 rounded-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white flex items-center justify-center transition cursor-pointer shadow-md hover:scale-105"
+            className="pointer-events-auto w-9 h-9 rounded-full bg-white text-black flex items-center justify-center transition cursor-pointer shadow-md hover:scale-105 hover:bg-zinc-200"
             title="Watch Now"
           >
-            <Play className="w-3.5 h-3.5 stroke-[2] fill-white text-white" />
+            <Play className="w-3.5 h-3.5 stroke-[2] fill-black text-black" />
           </button>
 
           <button
@@ -94,7 +94,7 @@ export default function TimelineCard({
               e.stopPropagation();
               onQuickView({ ...item, media_type: item.mediaType });
             }}
-            className="pointer-events-auto w-8 h-8 rounded-full bg-white/90 hover:bg-white text-[#09090B] backdrop-blur-md flex items-center justify-center border border-black/10 transition cursor-pointer shadow-xs hover:scale-105"
+            className="pointer-events-auto w-8 h-8 rounded-full bg-white/15 hover:bg-white/25 text-white backdrop-blur-md flex items-center justify-center border border-white/20 transition cursor-pointer shadow-xs hover:scale-105"
             title="Quick Preview"
           >
             <Eye className="w-3.5 h-3.5 stroke-[1.5]" />
@@ -104,19 +104,19 @@ export default function TimelineCard({
 
       {/* Title & Metadata */}
       <div className="space-y-0.5 px-0.5">
-        <h3 className={`text-xs font-semibold line-clamp-1 transition group-hover/item:text-[#2563EB] ${
-          isChecked ? 'text-zinc-500 line-through' : 'text-[#09090B]'
+        <h3 className={`text-xs font-semibold line-clamp-1 transition group-hover/item:text-zinc-300 ${
+          isChecked ? 'text-zinc-500 line-through' : 'text-white'
         }`}>
           {item.title}
         </h3>
-        <div className="flex items-center gap-1.5 text-[10px] text-[#52525B] font-mono">
+        <div className="flex items-center gap-1.5 text-[10px] text-zinc-400 font-mono">
           <span>{item.year}</span>
           <span>·</span>
           <span className="uppercase font-medium">{item.mediaType}</span>
           {item.importanceLabel && (
             <>
               <span>·</span>
-              <span className="text-[#2563EB] font-bold">{item.importanceLabel}</span>
+              <span className="text-white font-bold">{item.importanceLabel}</span>
             </>
           )}
         </div>
@@ -124,4 +124,3 @@ export default function TimelineCard({
     </div>
   );
 }
-

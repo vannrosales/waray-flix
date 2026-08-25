@@ -57,17 +57,17 @@ export default function AuthModal() {
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-md animate-fade-in select-none"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in select-none"
       onClick={closeAuthModal}
     >
       <div 
-        className="relative w-full max-w-sm bg-white border border-black/10 rounded-3xl p-6 sm:p-7 space-y-5 shadow-2xl animate-slide-up"
+        className="relative w-full max-w-sm bg-[#18181C] border border-white/[0.12] rounded-3xl p-6 sm:p-7 space-y-5 shadow-2xl animate-slide-up"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
         <button
           onClick={closeAuthModal}
-          className="absolute top-4 right-4 p-1.5 rounded-full bg-black/[0.04] hover:bg-black/[0.08] text-[#52525B] hover:text-[#09090B] border border-black/10 transition cursor-pointer"
+          className="absolute top-4 right-4 p-1.5 rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-zinc-400 hover:text-white border border-white/10 transition cursor-pointer"
           aria-label="Close modal"
         >
           <X className="w-4 h-4 stroke-[1.5]" />
@@ -75,13 +75,13 @@ export default function AuthModal() {
 
         {/* Modal Header */}
         <div className="space-y-1">
-          <span className="text-[10px] font-mono text-[#2563EB] font-bold uppercase tracking-widest block">
+          <span className="text-[10px] font-mono text-zinc-400 font-bold uppercase tracking-widest block">
             ACCOUNT ACCESS
           </span>
-          <h3 className="text-xl font-bold text-[#09090B] font-['Outfit']">
+          <h3 className="text-xl font-bold text-white font-['Outfit']">
             {mode === 'signin' ? 'Welcome Back' : 'Create Free Account'}
           </h3>
-          <p className="text-xs text-[#52525B] font-normal">
+          <p className="text-xs text-zinc-400 font-normal">
             {mode === 'signin' 
               ? 'Sign in to access your cloud watchlist and sync progress.' 
               : 'Create an account to save movies and join watch party rooms.'}
@@ -91,7 +91,7 @@ export default function AuthModal() {
         {/* 1-Click Google OAuth */}
         <button
           onClick={handleGoogleAuth}
-          className="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-zinc-50 border border-black/10 text-xs font-mono font-medium text-[#09090B] flex items-center justify-center gap-2.5 transition cursor-pointer shadow-sm"
+          className="w-full py-2.5 px-4 rounded-xl bg-[#141416] hover:bg-[#222228] border border-white/10 text-xs font-mono font-medium text-white flex items-center justify-center gap-2.5 transition cursor-pointer shadow-sm"
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -104,49 +104,49 @@ export default function AuthModal() {
 
         {/* Divider */}
         <div className="flex items-center gap-2">
-          <div className="flex-1 h-px bg-black/[0.08]" />
-          <span className="text-[10px] font-mono text-[#52525B] uppercase">OR EMAIL</span>
-          <div className="flex-1 h-px bg-black/[0.08]" />
+          <div className="flex-1 h-px bg-white/[0.08]" />
+          <span className="text-[10px] font-mono text-zinc-400 uppercase">OR EMAIL</span>
+          <div className="flex-1 h-px bg-white/[0.08]" />
         </div>
 
         {/* Email & Password Form */}
         <form onSubmit={handleSubmit} className="space-y-3">
           {mode === 'signup' && (
             <div className="space-y-1">
-              <label className="text-[10px] font-mono text-[#52525B] block uppercase font-medium">Display Name</label>
+              <label className="text-[10px] font-mono text-zinc-400 block uppercase font-medium">Display Name</label>
               <div className="relative flex items-center">
-                <User className="absolute left-3 w-3.5 h-3.5 text-[#52525B] stroke-[1.5]" />
+                <User className="absolute left-3 w-3.5 h-3.5 text-zinc-400 stroke-[1.5]" />
                 <input
                   type="text"
                   required
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
                   placeholder="e.g. CinemaLover"
-                  className="w-full bg-zinc-50 border border-black/10 rounded-xl pl-9 pr-3 py-2 text-xs text-[#09090B] placeholder-zinc-400 focus:outline-none focus:border-[#2563EB]"
+                  className="w-full bg-[#141416] border border-white/10 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-white/40"
                 />
               </div>
             </div>
           )}
 
           <div className="space-y-1">
-            <label className="text-[10px] font-mono text-[#52525B] block uppercase font-medium">Email Address</label>
+            <label className="text-[10px] font-mono text-zinc-400 block uppercase font-medium">Email Address</label>
             <div className="relative flex items-center">
-              <Mail className="absolute left-3 w-3.5 h-3.5 text-[#52525B] stroke-[1.5]" />
+              <Mail className="absolute left-3 w-3.5 h-3.5 text-zinc-400 stroke-[1.5]" />
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="w-full bg-zinc-50 border border-black/10 rounded-xl pl-9 pr-3 py-2 text-xs text-[#09090B] placeholder-zinc-400 focus:outline-none focus:border-[#2563EB]"
+                className="w-full bg-[#141416] border border-white/10 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-white/40"
               />
             </div>
           </div>
 
           <div className="space-y-1">
-            <label className="text-[10px] font-mono text-[#52525B] block uppercase font-medium">Password</label>
+            <label className="text-[10px] font-mono text-zinc-400 block uppercase font-medium">Password</label>
             <div className="relative flex items-center">
-              <Lock className="absolute left-3 w-3.5 h-3.5 text-[#52525B] stroke-[1.5]" />
+              <Lock className="absolute left-3 w-3.5 h-3.5 text-zinc-400 stroke-[1.5]" />
               <input
                 type="password"
                 required
@@ -154,19 +154,19 @@ export default function AuthModal() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full bg-zinc-50 border border-black/10 rounded-xl pl-9 pr-3 py-2 text-xs text-[#09090B] placeholder-zinc-400 focus:outline-none focus:border-[#2563EB]"
+                className="w-full bg-[#141416] border border-white/10 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-white/40"
               />
             </div>
           </div>
 
           {/* Feedback messages */}
           {errorMsg && (
-            <div className="p-2.5 rounded-xl bg-red-50 border border-red-200 text-red-600 text-[11px] font-mono leading-tight">
+            <div className="p-2.5 rounded-xl bg-zinc-900 border border-white/20 text-zinc-200 text-[11px] font-mono leading-tight">
               {errorMsg}
             </div>
           )}
           {successMsg && (
-            <div className="p-2.5 rounded-xl bg-blue-50 border border-blue-200 text-[#2563EB] text-[11px] font-mono leading-tight">
+            <div className="p-2.5 rounded-xl bg-zinc-900 border border-white/20 text-white text-[11px] font-mono leading-tight">
               {successMsg}
             </div>
           )}
@@ -175,7 +175,7 @@ export default function AuthModal() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition cursor-pointer disabled:opacity-50 mt-2 shadow-md"
+            className="w-full py-2.5 rounded-xl bg-white hover:bg-zinc-200 text-black font-semibold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 transition cursor-pointer disabled:opacity-50 mt-2 shadow-md hover:scale-[1.02]"
           >
             {loading ? (
               <Loader2 className="w-4 h-4 animate-spin stroke-[2]" />
@@ -189,7 +189,7 @@ export default function AuthModal() {
         </form>
 
         {/* Toggle Mode */}
-        <div className="pt-2 border-t border-black/[0.08] text-center text-xs font-mono text-[#52525B]">
+        <div className="pt-2 border-t border-white/[0.08] text-center text-xs font-mono text-zinc-400">
           {mode === 'signin' ? (
             <span>
               Don't have an account?{' '}
@@ -199,7 +199,7 @@ export default function AuthModal() {
                   setMode('signup');
                   setErrorMsg('');
                 }}
-                className="text-[#2563EB] hover:underline cursor-pointer font-bold"
+                className="text-white hover:underline cursor-pointer font-bold"
               >
                 Sign Up
               </button>
@@ -213,7 +213,7 @@ export default function AuthModal() {
                   setMode('signin');
                   setErrorMsg('');
                 }}
-                className="text-[#2563EB] hover:underline cursor-pointer font-bold"
+                className="text-white hover:underline cursor-pointer font-bold"
               >
                 Sign In
               </button>
@@ -223,8 +223,8 @@ export default function AuthModal() {
 
         {/* Setup notice if keys not configured yet */}
         {!isConfigured && (
-          <div className="flex items-center gap-2 p-2 rounded-xl bg-blue-50 border border-blue-100 text-[10px] font-mono text-[#2563EB]">
-            <ShieldCheck className="w-3.5 h-3.5 stroke-[1.5] flex-shrink-0" />
+          <div className="flex items-center gap-2 p-2 rounded-xl bg-[#141416] border border-white/10 text-[10px] font-mono text-zinc-400">
+            <ShieldCheck className="w-3.5 h-3.5 stroke-[1.5] flex-shrink-0 text-white" />
             <span>Supabase Cloud Mode active with instant local login fallback.</span>
           </div>
         )}

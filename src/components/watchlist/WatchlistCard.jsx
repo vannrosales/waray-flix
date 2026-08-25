@@ -17,7 +17,7 @@ export default function WatchlistCard({ item, onRemove }) {
       className="group relative flex flex-col space-y-2 select-none cursor-pointer transition-all duration-200"
     >
       {/* Poster Card */}
-      <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden bg-white border border-black/[0.08] group-hover:border-[#2563EB]/40 transition-all duration-300 shadow-sm hover:shadow-md">
+      <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden bg-[#18181C] border border-white/[0.08] group-hover:border-white/40 transition-all duration-300 shadow-sm hover:shadow-md">
         {poster ? (
           <img
             src={poster}
@@ -26,7 +26,7 @@ export default function WatchlistCard({ item, onRemove }) {
             loading="lazy"
           />
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center text-zinc-400 gap-2 bg-zinc-100">
+          <div className="w-full h-full flex flex-col items-center justify-center text-zinc-500 gap-2 bg-[#18181C]">
             <Film className="w-8 h-8 opacity-30 stroke-[1.5]" />
             <span className="text-[9px] font-mono">NO POSTER</span>
           </div>
@@ -34,7 +34,7 @@ export default function WatchlistCard({ item, onRemove }) {
 
         {/* Media Type Chip */}
         <div className="absolute top-2.5 left-2.5 z-20">
-          <span className="px-2 py-0.5 rounded bg-[#09090B] text-white text-[9px] font-mono uppercase tracking-wider font-semibold shadow-sm">
+          <span className="px-2 py-0.5 rounded bg-black/90 text-white text-[9px] font-mono uppercase tracking-wider font-semibold shadow-sm border border-white/10">
             {itemType}
           </span>
         </div>
@@ -42,7 +42,7 @@ export default function WatchlistCard({ item, onRemove }) {
         {/* Rating Badge */}
         {item.vote_average > 0 && (
           <div className="absolute top-2.5 right-2.5 bg-black/80 backdrop-blur-md px-2 py-0.5 rounded flex items-center gap-1 border border-white/20 z-20 shadow-sm text-white">
-            <Star className="w-2.5 h-2.5 text-white stroke-[1.5]" />
+            <Star className="w-2.5 h-2.5 text-white fill-white stroke-[1.5]" />
             <span className="text-[10px] font-mono font-bold text-white">{item.vote_average.toFixed(1)}</span>
           </div>
         )}
@@ -54,7 +54,7 @@ export default function WatchlistCard({ item, onRemove }) {
           <div className="flex justify-end pt-8">
             <button
               onClick={(e) => onRemove(e, item)}
-              className="p-1.5 rounded-full bg-black/80 hover:bg-red-600 text-white transition cursor-pointer backdrop-blur-md shadow-md hover:scale-110"
+              className="p-1.5 rounded-full bg-black/80 hover:bg-white hover:text-black text-zinc-300 transition cursor-pointer backdrop-blur-md shadow-md hover:scale-110 border border-white/10"
               title="Remove from Watchlist"
             >
               <Trash2 className="w-3.5 h-3.5 stroke-[1.5]" />
@@ -72,9 +72,9 @@ export default function WatchlistCard({ item, onRemove }) {
                   navigate(`/watch/movie/${item.id}`);
                 }
               }}
-              className="w-full py-2 rounded-xl bg-[#2563EB] text-white font-semibold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-lg hover:bg-[#1D4ED8] transition cursor-pointer"
+              className="w-full py-2 rounded-xl bg-white text-black font-semibold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-lg hover:bg-zinc-200 transition cursor-pointer hover:scale-[1.02]"
             >
-              <Play className="w-3.5 h-3.5 stroke-[2] fill-white text-white" />
+              <Play className="w-3.5 h-3.5 stroke-[2] fill-black text-black" />
               <span>Watch Now</span>
             </button>
 
@@ -94,16 +94,16 @@ export default function WatchlistCard({ item, onRemove }) {
 
       {/* Title & Metadata */}
       <div className="space-y-0.5 px-0.5">
-        <h3 className="text-xs sm:text-sm font-semibold text-[#09090B] truncate font-['Outfit'] group-hover:text-[#2563EB] transition">
+        <h3 className="text-xs sm:text-sm font-semibold text-white truncate font-['Outfit'] group-hover:text-zinc-300 transition">
           {item.title || item.name}
         </h3>
-        <div className="flex items-center gap-2 text-[10px] font-mono text-[#52525B]">
+        <div className="flex items-center gap-2 text-[10px] font-mono text-zinc-400">
           {releaseYear && <span>{releaseYear}</span>}
           {item.vote_average > 0 && (
             <>
               <span>·</span>
-              <span className="flex items-center gap-0.5 text-[#09090B] font-bold">
-                <Star className="w-2.5 h-2.5 text-[#2563EB] fill-[#2563EB] stroke-[1.5]" />
+              <span className="flex items-center gap-0.5 text-white font-bold">
+                <Star className="w-2.5 h-2.5 text-white fill-white stroke-[1.5]" />
                 {item.vote_average.toFixed(1)}
               </span>
             </>
@@ -113,4 +113,3 @@ export default function WatchlistCard({ item, onRemove }) {
     </div>
   );
 }
-

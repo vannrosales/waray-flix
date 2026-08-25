@@ -1,17 +1,6 @@
 import React from 'react';
 import MediaCard from './MediaCard';
 
-/**
- * Reusable responsive MediaGrid component with built-in loading skeletons.
- * 
- * Props:
- * - items: array of media objects
- * - loading: boolean
- * - skeletonCount: number (default: 10)
- * - mediaType: 'movie' | 'tv' (fallback type)
- * - onQuickView: optional callback for quick view
- * - emptyMessage: string (default: "No titles found.")
- */
 export default function MediaGrid({
   items = [],
   loading = false,
@@ -26,9 +15,9 @@ export default function MediaGrid({
       <div className={className}>
         {[...Array(skeletonCount)].map((_, i) => (
           <div key={i} className="flex flex-col gap-2">
-            <div className="aspect-[2/3] rounded-2xl shimmer-skeleton-light" />
-            <div className="h-3 w-3/4 bg-black/[0.06] rounded-md animate-pulse" />
-            <div className="h-2.5 w-1/2 bg-black/[0.04] rounded-md animate-pulse" />
+            <div className="aspect-[2/3] rounded-2xl shimmer-skeleton-grey" />
+            <div className="h-3 w-3/4 bg-white/[0.08] rounded-md animate-pulse" />
+            <div className="h-2.5 w-1/2 bg-white/[0.04] rounded-md animate-pulse" />
           </div>
         ))}
       </div>
@@ -37,7 +26,7 @@ export default function MediaGrid({
 
   if (!items || items.length === 0) {
     return (
-      <div className="py-16 text-center text-xs font-mono text-[#52525B]">
+      <div className="py-16 text-center text-xs font-mono text-zinc-400">
         {emptyMessage}
       </div>
     );
@@ -56,4 +45,3 @@ export default function MediaGrid({
     </div>
   );
 }
-

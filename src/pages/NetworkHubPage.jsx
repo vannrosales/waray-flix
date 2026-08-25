@@ -93,14 +93,14 @@ export default function NetworkHubPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] text-[#09090B] pb-24 pt-24 sm:pt-28 px-6 md:px-12 select-none">
+    <div className="min-h-screen bg-[#0F0F12] text-[#F4F4F5] pb-24 pt-24 sm:pt-28 px-6 md:px-12 select-none">
       <div className="max-w-[1440px] mx-auto space-y-6">
         
         {/* Back Button */}
         <div>
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white hover:bg-zinc-50 text-xs font-mono text-[#09090B] border border-black/10 transition cursor-pointer shadow-sm"
+            className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#18181C] hover:bg-[#222228] text-xs font-mono text-white border border-white/10 transition cursor-pointer shadow-sm"
           >
             <ArrowLeft className="w-3.5 h-3.5 stroke-[1.5]" />
             <span>BACK</span>
@@ -119,8 +119,8 @@ export default function NetworkHubPage() {
                 onClick={() => navigate(`/network/${studioSlug}/${studio.code}`)}
                 className={`h-10 px-4 rounded-full whitespace-nowrap transition-all duration-200 cursor-pointer flex items-center justify-center gap-2 border flex-shrink-0 ${
                   isActive
-                    ? 'bg-[#09090B] text-white border-transparent shadow-md scale-[1.02]'
-                    : 'bg-white hover:bg-zinc-50 text-[#09090B] border-black/[0.08] shadow-sm hover:border-black/20'
+                    ? 'bg-white text-black border-transparent shadow-md scale-[1.02]'
+                    : 'bg-[#18181C] hover:bg-[#222228] text-white border-white/[0.08] shadow-sm hover:border-white/20'
                 }`}
                 title={studio.name}
               >
@@ -131,45 +131,41 @@ export default function NetworkHubPage() {
         </div>
 
         {/* Studio Banner Header */}
-        <div className="relative rounded-3xl overflow-hidden p-8 sm:p-10 border border-black/[0.08] shadow-md bg-white flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="relative rounded-3xl overflow-hidden p-8 sm:p-10 border border-white/[0.08] shadow-md bg-[#18181C] flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="space-y-3 text-center md:text-left z-10">
-            <span className="text-[10px] font-mono text-[#52525B] uppercase tracking-widest font-semibold block">
+            <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest font-semibold block">
               OFFICIAL HUB & ARCHIVES
             </span>
             <div className="flex items-center justify-center md:justify-start gap-3">
-              <StudioLogo name={displayName} />
-              <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-[#09090B] font-['Outfit']">
-                {displayName}
-              </h1>
+              <StudioLogo name={displayName} active={false} />
             </div>
-            <p className="text-xs sm:text-sm text-[#52525B] max-w-xl font-normal">
-              {currentStudio?.description || `Explore movies and television series distributed by ${displayName}.`}
+            <p className="text-xs sm:text-sm text-zinc-400 font-normal max-w-xl leading-relaxed">
+              Explore the complete catalog of premier cinema productions, series releases, and original broadcasts from {displayName}.
             </p>
           </div>
 
-          <div className="flex-shrink-0 z-10">
-            <div className="px-5 py-3 rounded-2xl bg-black/[0.04] border border-black/[0.08] text-center font-mono">
-              <span className="text-xl sm:text-3xl font-bold text-[#09090B] block">{items.length}+</span>
-              <span className="text-[10px] text-[#52525B] uppercase font-semibold">Streamable Titles</span>
+          <div className="flex items-center gap-3 z-10">
+            <div className="px-4 py-2 rounded-2xl bg-white/[0.06] border border-white/10 text-xs font-mono text-zinc-300">
+              {items.length}+ Titles Available
             </div>
           </div>
         </div>
 
-        {/* Filter Navigation Tabs */}
-        <div className="flex items-center gap-2 border-b border-black/[0.08] pb-4 overflow-x-auto">
+        {/* Filter Tabs */}
+        <div className="flex items-center gap-2 border-b border-white/[0.08] pb-4 overflow-x-auto scrollbar-none">
           {[
-            { id: 'all', label: `All Titles (${items.length})` },
+            { id: 'all', label: `All Releases (${items.length})` },
             { id: 'movie', label: 'Feature Films' },
-            { id: 'tv', label: 'Series & Shows' },
-            { id: 'top_rated', label: '★ Highly Rated' }
-          ].map(tab => (
+            { id: 'tv', label: 'TV & Series' },
+            { id: 'top_rated', label: 'Top Rated ★' },
+          ].map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`px-4 py-1.5 rounded-full text-xs font-medium transition cursor-pointer flex-shrink-0 ${
                 activeTab === tab.id
-                  ? 'bg-[#09090B] text-white font-bold shadow-sm'
-                  : 'bg-black/[0.04] text-[#52525B] hover:text-[#09090B] hover:bg-black/[0.08]'
+                  ? 'bg-white text-black font-bold shadow-sm'
+                  : 'bg-white/[0.06] text-zinc-400 hover:text-white hover:bg-white/[0.12] border border-white/[0.08]'
               }`}
             >
               {tab.label}
@@ -177,40 +173,40 @@ export default function NetworkHubPage() {
           ))}
         </div>
 
-        {/* Studio Catalog Grid */}
-        {loading || filteredItems.length > 0 ? (
-          <div className="space-y-6">
-            <MediaGrid
-              items={filteredItems}
-              loading={loading}
-              skeletonCount={15}
-              onQuickView={setQuickMedia}
-              emptyMessage="No titles found for this category."
-            />
-
-            {/* Load More Button */}
-            <div className="flex justify-center pt-6">
-              <button
-                onClick={loadMoreItems}
-                disabled={loadingMore}
-                className="px-8 py-3 rounded-full bg-[#09090B] hover:bg-black text-white text-xs font-mono font-bold tracking-wider uppercase transition flex items-center gap-2 cursor-pointer disabled:opacity-50 shadow-md hover:scale-105"
-              >
-                {loadingMore ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin stroke-[1.5]" />
-                    <span>Loading Titles...</span>
-                  </>
-                ) : (
-                  <span>Load More Titles</span>
-                )}
-              </button>
-            </div>
-          </div>
+        {/* Media Grid */}
+        {filteredItems.length > 0 || loading ? (
+          <MediaGrid
+            items={filteredItems}
+            loading={loading}
+            onQuickView={setQuickMedia}
+            skeletonCount={12}
+            emptyMessage={`No titles available for this filter.`}
+          />
         ) : (
           <EmptyState
             title="No Titles Found"
-            description="No movies or series currently matched this studio filter."
+            description={`No media found in the ${displayName} catalog for this filter.`}
           />
+        )}
+
+        {/* Load More Button */}
+        {items.length > 0 && (
+          <div className="flex justify-center pt-8">
+            <button
+              onClick={loadMoreItems}
+              disabled={loadingMore}
+              className="px-6 py-2.5 rounded-full bg-white hover:bg-zinc-200 text-black text-xs font-mono tracking-wider uppercase transition flex items-center gap-2 cursor-pointer disabled:opacity-50 shadow-md hover:scale-105"
+            >
+              {loadingMore ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin stroke-[2]" />
+                  <span>LOADING...</span>
+                </>
+              ) : (
+                <span>LOAD MORE TITLES</span>
+              )}
+            </button>
+          </div>
         )}
 
       </div>

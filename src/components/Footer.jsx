@@ -4,42 +4,42 @@ import { Clapperboard } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="w-full bg-[#FAFAFA] border-t border-black/[0.08] py-12 px-6 md:px-12 text-[#52525B] text-xs select-none">
+    <footer className="w-full bg-[#0F0F12] border-t border-white/[0.08] py-12 px-6 md:px-12 text-zinc-400 text-xs select-none">
       <div className="max-w-[1440px] mx-auto space-y-8">
         
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-6 border-b border-black/[0.08]">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-6 border-b border-white/[0.08]">
           {/* Logo & Node */}
           <div className="space-y-1.5">
             <Link to="/" className="flex items-center gap-2.5 group select-none">
-              <div className="w-7 h-7 rounded-lg bg-[#09090B] text-white flex items-center justify-center shadow-sm">
+              <div className="w-7 h-7 rounded-lg bg-white text-black flex items-center justify-center shadow-sm">
                 <Clapperboard className="w-3.5 h-3.5 stroke-[2]" />
               </div>
-              <span className="text-sm font-bold tracking-widest text-[#09090B] font-['Outfit']">
-                WARAY<span className="text-[#2563EB] font-bold ml-1">FLIX</span>
+              <span className="text-sm font-bold tracking-widest text-white font-['Outfit']">
+                WARAY<span className="text-zinc-400 font-bold ml-1">FLIX</span>
               </span>
             </Link>
-            <p className="text-[10px] text-[#52525B] font-mono">
+            <p className="text-[10px] text-zinc-500 font-mono">
               High-Precision Cinema Index
             </p>
           </div>
 
           {/* Quick Links */}
-          <div className="flex flex-wrap items-center gap-6 font-mono text-[11px] text-[#52525B]">
-            <Link to="/" className="hover:text-[#2563EB] transition">Discover</Link>
-            <Link to="/movies" className="hover:text-[#2563EB] transition">Movies</Link>
-            <Link to="/tv" className="hover:text-[#2563EB] transition">Series</Link>
-            <Link to="/watchlist" className="hover:text-[#2563EB] transition">Watchlist</Link>
-            <Link to="/category/anime" className="hover:text-[#2563EB] transition">Anime</Link>
-            <Link to="/legal" className="hover:text-[#2563EB] transition font-semibold text-[#09090B]">Legal / DMCA</Link>
+          <div className="flex flex-wrap items-center gap-6 font-mono text-[11px] text-zinc-400">
+            <Link to="/" className="hover:text-white transition">Discover</Link>
+            <Link to="/movies" className="hover:text-white transition">Movies</Link>
+            <Link to="/tv" className="hover:text-white transition">Series</Link>
+            <Link to="/watchlist" className="hover:text-white transition">Watchlist</Link>
+            <Link to="/category/anime" className="hover:text-white transition">Anime</Link>
+            <Link to="/legal" className="hover:text-white transition font-semibold text-white">Legal / DMCA</Link>
           </div>
         </div>
 
         {/* Disclaimer */}
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-[10px] text-[#52525B] font-mono leading-relaxed">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-[10px] text-zinc-500 font-mono leading-relaxed">
           <p className="max-w-3xl">
             WarayFlix does not store or host video media on its servers. All metadata is indexed via public APIs.
           </p>
-          <div className="text-[#52525B]">
+          <div className="text-zinc-500">
             © {new Date().getFullYear()} WarayFlix.
           </div>
         </div>

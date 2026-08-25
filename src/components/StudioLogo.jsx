@@ -14,8 +14,10 @@ export default function StudioLogo({ name, studio, active = false }) {
 
     case 'disney':
       return (
-        <span className="font-serif italic font-extrabold tracking-wider text-sm sm:text-base select-none leading-none text-[#0063E5]">
-          Disney<span className="font-sans font-bold not-italic text-xs ml-0.5 text-[#0063E5]">+</span>
+        <span className={`font-serif italic font-extrabold tracking-wider text-sm sm:text-base select-none leading-none ${
+          active ? 'text-[#0063E5]' : 'text-white sm:text-[#60A5FA]'
+        }`}>
+          Disney<span className="font-sans font-bold not-italic text-xs ml-0.5">+</span>
         </span>
       );
 
@@ -33,7 +35,7 @@ export default function StudioLogo({ name, studio, active = false }) {
     case 'appletv':
       return (
         <div className={`flex items-center gap-1 font-sans font-semibold tracking-tight text-xs sm:text-sm select-none leading-none ${
-          active ? 'text-white' : 'text-[#09090B]'
+          active ? 'text-black' : 'text-white'
         }`}>
           {/* Apple Icon */}
           <svg viewBox="0 0 170 170" fill="currentColor" className="w-3.5 h-3.5">
@@ -45,9 +47,9 @@ export default function StudioLogo({ name, studio, active = false }) {
 
     case 'hbomax':
       return (
-        <div className="flex items-center gap-1 font-sans select-none leading-none text-[#5822B4]">
-          <span className="font-black text-sm sm:text-base tracking-wider text-[#5822B4]">HBO</span>
-          <span className="font-extrabold text-xs sm:text-sm tracking-tight lowercase text-[#5822B4]">max</span>
+        <div className="flex items-center gap-1 font-sans select-none leading-none">
+          <span className={`font-black text-sm sm:text-base tracking-wider ${active ? 'text-[#5822B4]' : 'text-white'}`}>HBO</span>
+          <span className="font-extrabold text-xs sm:text-sm tracking-tight lowercase text-[#9333EA]">max</span>
         </div>
       );
 
@@ -67,15 +69,17 @@ export default function StudioLogo({ name, studio, active = false }) {
 
     case 'paramount':
       return (
-        <span className="font-serif italic font-bold tracking-wide text-xs sm:text-sm select-none leading-none text-[#0064FF]">
-          Paramount<span className="font-sans font-extrabold not-italic text-xs ml-0.5 text-[#0064FF]">+</span>
+        <span className={`font-serif italic font-bold tracking-wide text-xs sm:text-sm select-none leading-none ${
+          active ? 'text-[#0064FF]' : 'text-white sm:text-[#60A5FA]'
+        }`}>
+          Paramount<span className="font-sans font-extrabold not-italic text-xs ml-0.5">+</span>
         </span>
       );
 
     case 'a24':
       return (
         <span className={`font-mono font-black text-sm sm:text-base tracking-[0.3em] uppercase select-none leading-none ${
-          active ? 'text-white' : 'text-[#09090B]'
+          active ? 'text-black' : 'text-white'
         }`}>
           A24
         </span>
@@ -85,7 +89,7 @@ export default function StudioLogo({ name, studio, active = false }) {
       return (
         <div className="flex items-center gap-1.5 font-bold tracking-tight text-xs sm:text-sm font-sans uppercase select-none leading-none">
           <span className="w-2 h-2 rounded-full bg-[#00A3E0]" />
-          <span className={active ? 'text-white' : 'text-[#09090B]'}>PEACOCK</span>
+          <span className={active ? 'text-black' : 'text-white'}>PEACOCK</span>
         </div>
       );
 
@@ -109,7 +113,7 @@ export default function StudioLogo({ name, studio, active = false }) {
     default:
       return (
         <span className={`font-bold text-xs sm:text-sm tracking-wider uppercase font-['Outfit'] select-none leading-none ${
-          active ? 'text-white' : 'text-[#09090B]'
+          active ? 'text-black' : 'text-white'
         }`}>
           {name}
         </span>

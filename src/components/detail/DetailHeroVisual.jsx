@@ -54,7 +54,7 @@ export default function DetailHeroVisual({
 
         {/* Cinema Vignette Overlays */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 pointer-events-none" />
-        <div className="absolute bottom-0 inset-x-0 h-28 bg-gradient-to-t from-[#FAFAFA] via-[#FAFAFA]/70 to-transparent pointer-events-none" />
+        <div className="absolute bottom-0 inset-x-0 h-28 bg-gradient-to-t from-[#0F0F12] via-[#0F0F12]/70 to-transparent pointer-events-none" />
 
         {/* Sound toggle button */}
         {showVideo && trailerKey && (
@@ -72,4 +72,3 @@ export default function DetailHeroVisual({
     </>
   );
 }
-

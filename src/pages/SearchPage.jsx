@@ -40,16 +40,16 @@ export default function SearchPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] text-[#09090B] pt-24 sm:pt-28 px-6 md:px-12 pb-24 select-none">
+    <div className="min-h-screen bg-[#0F0F12] text-[#F4F4F5] pt-24 sm:pt-28 px-6 md:px-12 pb-24 select-none">
       <div className="max-w-[1440px] mx-auto space-y-6">
         
         {/* Header */}
         <div className="space-y-3">
-          <div className="flex items-center gap-2 text-xs font-mono text-[#52525B] font-semibold">
-            <Search className="w-3.5 h-3.5 stroke-[1.5] text-[#2563EB]" />
+          <div className="flex items-center gap-2 text-xs font-mono text-zinc-400 font-semibold">
+            <Search className="w-3.5 h-3.5 stroke-[1.5] text-white" />
             <span>Search</span>
           </div>
-          <h1 className="text-2xl sm:text-4xl font-bold text-[#09090B] font-['Outfit']">
+          <h1 className="text-2xl sm:text-4xl font-bold text-white font-['Outfit']">
             {query ? `Results for "${query}"` : "Search Library"}
           </h1>
 
@@ -65,8 +65,8 @@ export default function SearchPage() {
                 onClick={() => setActiveFilter(tab.id)}
                 className={`px-3.5 py-1 rounded-full text-xs font-medium transition cursor-pointer ${
                   activeFilter === tab.id
-                    ? 'bg-[#09090B] text-white font-bold shadow-sm'
-                    : 'bg-black/[0.04] text-[#52525B] hover:text-[#09090B] hover:bg-black/[0.08]'
+                    ? 'bg-white text-black font-bold shadow-sm'
+                    : 'bg-white/[0.06] text-zinc-400 hover:text-white hover:bg-white/[0.12] border border-white/[0.08]'
                 }`}
               >
                 {tab.label}
@@ -108,4 +108,4 @@ export default function SearchPage() {
       )}
     </div>
   );
-}
+}
