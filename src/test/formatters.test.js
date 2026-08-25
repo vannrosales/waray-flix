@@ -7,6 +7,8 @@ import {
   formatPlaybackTime,
   calculateProgress,
   normalizeMedia,
+  isAdultContent,
+  filterSafeMedia,
 } from '../utils/formatters';
 
 describe('formatters.js utility functions', () => {
@@ -131,6 +133,31 @@ describe('formatters.js utility functions', () => {
 
       expect(normalized.media_type).toBe('tv');
       expect(normalized.title).toBe('Severance');
+    });
+  });
+
+  describe('isAdultContent & filterSafeMedia', () => {
+    it('detects adult flag correctly', () => {
+      expect(isAdultContent({ title: 'Test Anime', adult: true })).toBe(true);
+      expect(isAdultContent({ title: 'Jujutsu Kaisen', adult: false })).toBe(false);
+    });
+
+    it('detects explicit adult anime keywords in title or overview', () => {
+      expect(isAdultContent({ name: 'Secret Hentai Collection' })).toBe(true);
+      expect(isAdultContent({ title: 'Some Show', overview: 'An uncensored hentai OVA series' })).toBe(true);
+    });
+
+    it('filters out 18+ content from media arrays', () => {
+      const mediaList = [
+        { id: 1, name: 'Attack on Titan', adult: false },
+        { id: 2, name: 'NSFW Hentai OVA', adult: true },
+        { id: 3, name: 'Demon Slayer', adult: false },
+        { id: 4, name: 'Explicit Erotica', overview: '18+ only uncensored hentai' },
+      ];
+
+      const safe = filterSafeMedia(mediaList);
+      expect(safe.length).toBe(2);
+      expect(safe.map(s => s.id)).toEqual([1, 3]);
     });
   });
 });

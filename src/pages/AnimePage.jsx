@@ -7,9 +7,11 @@ import SortDropdown from '../components/common/SortDropdown';
 import MediaGrid from '../components/common/MediaGrid';
 import { Sparkles, ChevronDown } from 'lucide-react';
 import useDocumentTitle from '../hooks/useDocumentTitle';
+import { filterSafeMedia } from '../utils/formatters';
 
 const BASE_URL = 'https://api.themoviedb.org/3';
 const API_KEY = CONFIG.tmdbApiKey;
+const ADULT_EXCLUSION = '&include_adult=false&without_keywords=208298,228965,190370,180540,158718,274154,240303,9799,232598&vote_count.gte=30';
 
 const ANIME_GENRES = [
   { id: 'all', name: 'All' },
@@ -43,20 +45,22 @@ export default function AnimePage() {
       try {
         setLoading(true);
         const genreQuery = activeGenre === 'all' ? '&with_genres=16' : `&with_genres=16,${activeGenre}`;
-        const res = await fetch(`${BASE_URL}/discover/tv?api_key=${API_KEY}&with_keywords=210024|287501|284000${genreQuery}&sort_by=${sortBy}&page=1`);
+        const res = await fetch(`${BASE_URL}/discover/tv?api_key=${API_KEY}&with_keywords=210024|287501|284000${genreQuery}&sort_by=${sortBy}&page=1${ADULT_EXCLUSION}`);
         const data = await res.json();
-        const results = data.results || [];
+        const results = filterSafeMedia(data.results || []);
         
         setTotalPages(data.total_pages || 1);
         if (results.length > 0) {
-          setHeroContent(results[0]);
+          const heroCandidate = results.find(item => item.backdrop_path && (item.vote_count >= 100 || item.vote_average >= 7.0)) || results[0];
+          setHeroContent(heroCandidate);
           setAnimeList(results);
         } else {
-          const fallbackRes = await fetch(`${BASE_URL}/discover/tv?api_key=${API_KEY}&with_genres=16${activeGenre !== 'all' ? `,${activeGenre}` : ''}&with_original_language=ja&sort_by=${sortBy}&page=1`);
+          const fallbackRes = await fetch(`${BASE_URL}/discover/tv?api_key=${API_KEY}&with_genres=16${activeGenre !== 'all' ? `,${activeGenre}` : ''}&with_original_language=ja&sort_by=${sortBy}&page=1${ADULT_EXCLUSION}`);
           const fallbackData = await fallbackRes.json();
-          const fallbackResults = fallbackData.results || [];
+          const fallbackResults = filterSafeMedia(fallbackData.results || []);
           if (fallbackResults.length > 0) {
-            setHeroContent(fallbackResults[0]);
+            const heroCandidate = fallbackResults.find(item => item.backdrop_path && (item.vote_count >= 100 || item.vote_average >= 7.0)) || fallbackResults[0];
+            setHeroContent(heroCandidate);
             setAnimeList(fallbackResults);
           } else {
             setAnimeList([]);
@@ -78,10 +82,11 @@ export default function AnimePage() {
       setLoadingMore(true);
       const nextPage = page + 1;
       const genreQuery = activeGenre === 'all' ? '&with_genres=16' : `&with_genres=16,${activeGenre}`;
-      const res = await fetch(`${BASE_URL}/discover/tv?api_key=${API_KEY}&with_keywords=210024|287501|284000${genreQuery}&sort_by=${sortBy}&page=${nextPage}`);
+      const res = await fetch(`${BASE_URL}/discover/tv?api_key=${API_KEY}&with_keywords=210024|287501|284000${genreQuery}&sort_by=${sortBy}&page=${nextPage}${ADULT_EXCLUSION}`);
       const data = await res.json();
+      const safeNewItems = filterSafeMedia(data.results || []);
       
-      setAnimeList(prev => [...prev, ...(data.results || [])]);
+      setAnimeList(prev => [...prev, ...safeNewItems]);
       setPage(nextPage);
     } catch (err) {
       console.error("Load more anime error:", err);

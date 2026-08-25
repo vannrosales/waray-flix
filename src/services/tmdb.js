@@ -29,6 +29,7 @@ const CACHE_TTL_MS = 1000 * 60 * 10; // 10 minutes cache
 export async function fetchFromTMDB(endpoint, params = {}) {
   const urlParams = new URLSearchParams({
     api_key: CONFIG.tmdbApiKey,
+    include_adult: 'false',
     ...params
   });
   const fullUrl = `${BASE_URL}${endpoint}?${urlParams.toString()}`;
@@ -45,7 +46,11 @@ export async function fetchFromTMDB(endpoint, params = {}) {
     const res = await fetch(fullUrl);
     if (!res.ok) throw new Error(`TMDB HTTP error: ${res.status}`);
     const data = await res.json();
-    const result = data.results !== undefined ? data.results : data;
+    let result = data.results !== undefined ? data.results : data;
+
+    if (Array.isArray(result)) {
+      result = result.filter(item => item && !item.adult);
+    }
 
     // Save to memory cache
     memoryCache.set(cacheKey, {
@@ -116,8 +121,13 @@ export async function fetchMediaDetails(id, type = 'movie') {
 
 export async function searchMultiMedia(query) {
   if (!query || !query.trim()) return [];
-  const data = await fetchFromTMDB('/search/multi', { query: query.trim() });
-  return (data || []).filter(item => (item.media_type === 'movie' || item.media_type === 'tv') && (item.poster_path || item.backdrop_path));
+  const data = await fetchFromTMDB('/search/multi', { query: query.trim(), include_adult: 'false' });
+  return (data || []).filter(
+    item =>
+      (item.media_type === 'movie' || item.media_type === 'tv') &&
+      (item.poster_path || item.backdrop_path) &&
+      !item.adult
+  );
 }
 
 export async function fetchSeasonDetails(seriesId, seasonNumber) {

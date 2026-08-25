@@ -93,3 +93,62 @@ export function normalizeMedia(media, fallbackType = 'movie') {
   };
 }
 
+/**
+ * Check if a media item is flagged as adult / 18+ / NSFW (e.g. hentai, adult animation, erotica, ComicFesta).
+ */
+export function isAdultContent(media) {
+  if (!media) return false;
+  if (media.adult === true) return true;
+
+  const title = (media.title || media.name || media.original_title || media.original_name || '').toLowerCase();
+  const overview = (media.overview || '').toLowerCase();
+
+  const adultKeywords = [
+    'hentai',
+    'uncensored hentai',
+    'erotic anime',
+    'adult animation (18+)',
+    'r-18',
+    '18+ only',
+    'eromanga',
+    'ecchi',
+    'comicfesta',
+    'animefesta',
+    'shikiyoku',
+    'souryo to majiwaru',
+    'overflow',
+    'kiss x sis',
+    'yosuga no sora',
+    'valkyrie drive',
+    'seikon no qwaser',
+    'ishuzoku reviewers',
+    'interspecies reviewers',
+    'peter grill',
+    'harem camp',
+    'smut',
+    'erotica',
+    'sexual desire',
+    'carnal desire',
+    'erotic encounter',
+    'lustful',
+    'sexually explicit',
+  ];
+
+  for (const keyword of adultKeywords) {
+    if (title.includes(keyword) || overview.includes(keyword)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Filter out adult and 18+ content from an array of media items.
+ */
+export function filterSafeMedia(items) {
+  if (!Array.isArray(items)) return [];
+  return items.filter(item => item && !isAdultContent(item));
+}
+
+
