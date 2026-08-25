@@ -131,7 +131,7 @@ describe('WatchPage — Guest (not signed in)', () => {
     expect(mockOpenAuthModal).toHaveBeenCalledOnce();
   });
 
-  it('Watch Party button prompts sign-in for guests', async () => {
+  it('Watch Party button requires sign-in for guests', async () => {
     renderWatchPage({ user: null, openAuthModal: mockOpenAuthModal });
     const partyBtn = await waitFor(() =>
       screen.getByTitle(/sign in to start a watch party/i)

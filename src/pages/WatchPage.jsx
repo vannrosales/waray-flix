@@ -347,14 +347,14 @@ export default function WatchPage() {
               <span className="hidden lg:inline">Mini Player</span>
             </button>
 
-            {/* Watch Party — gated: prompts sign-in if guest */}
+            {/* Watch Party — requires sign-in */}
             <button
               onClick={() => user ? navigate(`/party/${type}/${id}`) : openAuthModal()}
               className={`${pillDark} px-2.5 py-1.5`}
               title={user ? 'Watch Party' : 'Sign in to start a Watch Party'}
             >
-              {user ? <Users2 className="w-3.5 h-3.5 stroke-[1.5]" /> : <LogIn className="w-3.5 h-3.5 stroke-[1.5]" />}
-              <span className="hidden lg:inline">{user ? 'Party' : 'Sign In'}</span>
+              <Users2 className="w-3.5 h-3.5 stroke-[1.5]" />
+              <span className="hidden lg:inline">Party</span>
             </button>
 
             {/* QR Phone Sync — icon on mobile, label on lg */}

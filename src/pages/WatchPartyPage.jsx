@@ -14,13 +14,21 @@ export default function WatchPartyPage() {
   const { type, id, season, episode } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { username: authUser } = useAuth();
+  const { username: authUser, user, openAuthModal } = useAuth();
 
   const currentSeason = season ? parseInt(season) : 1;
   const currentEpisode = episode ? parseInt(episode) : 1;
   
   const [roomId] = useState(() => searchParams.get('room') || `PARTY-${id}-${Math.floor(1000 + Math.random() * 9000)}`);
   const [username] = useState(() => authUser || `Viewer-${Math.floor(100 + Math.random() * 900)}`);
+
+  // Auth guard — redirect unauthenticated users back and prompt sign-in
+  useEffect(() => {
+    if (user === null) {
+      navigate(`/details/${type}/${id}`, { replace: true });
+      openAuthModal();
+    }
+  }, [user, type, id, navigate, openAuthModal]);
 
   // Ensure address bar always has ?room= parameter for 1-click sharing
   useEffect(() => {
