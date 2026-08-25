@@ -5,6 +5,7 @@ import { fetchMediaDetails } from '../services/tmdb';
 import { useWatchParty } from '../hooks/useWatchParty';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 import { useAuth } from '../context/AuthContext';
+import { storageService } from '../services/storageService';
 import PartyHeader from '../components/party/PartyHeader';
 import PartyChatDrawer from '../components/party/PartyChatDrawer';
 import PartyReactionsOverlay from '../components/party/PartyReactionsOverlay';
@@ -71,18 +72,95 @@ export default function WatchPartyPage() {
 
   useDocumentTitle(media ? `Watch Party: ${media.title || media.name} — WarayFlix` : 'Watch Party');
 
-  // Load Media Details
+  // Load Media Details and sync initial history / room state
   useEffect(() => {
     async function loadData() {
       try {
         const data = await fetchMediaDetails(id, type || 'movie');
         setMedia(data);
+
+        // Initial progress record
+        if (data) {
+          const title = data.title || data.name || '';
+          const estimatedDuration = type === 'movie' ? 7200 : 2700;
+          await storageService.saveHistoryProgress(user?.id, {
+            id: data.id,
+            title,
+            poster_path: data.poster_path,
+            backdrop_path: data.backdrop_path,
+            overview: data.overview,
+            vote_average: data.vote_average,
+            release_date: data.release_date || data.first_air_date,
+            media_type: type,
+            season: type === 'tv' ? currentSeason : 1,
+            episode: type === 'tv' ? currentEpisode : 1,
+            lastWatchedSeconds: currentPlaybackSecs || 0,
+            totalSeconds: estimatedDuration,
+            durationSeconds: estimatedDuration,
+            updatedAt: Date.now()
+          });
+
+          // Sync active room to Supabase
+          await storageService.saveWatchPartyRoom(user?.id, {
+            roomId,
+            id: data.id,
+            type,
+            title,
+            posterPath: data.poster_path,
+            season: currentSeason,
+            episode: currentEpisode,
+            currentTime: currentPlaybackSecs || 0,
+            selectedPlayerId,
+            isHostOnlyLock
+          });
+        }
       } catch (err) {
         console.error("WatchParty load error:", err);
       }
     }
     loadData();
-  }, [id, type]);
+  }, [id, type, currentSeason, currentEpisode, roomId, user?.id]);
+
+  // Periodic watch progress save to Supabase / local storage during party playback
+  useEffect(() => {
+    if (!media || currentPlaybackSecs <= 0) return;
+    const saveTimer = setTimeout(() => {
+      const estimatedDuration = type === 'movie' ? 7200 : 2700;
+      storageService.saveHistoryProgress(user?.id, {
+        id: media.id,
+        title: media.title || media.name,
+        poster_path: media.poster_path,
+        backdrop_path: media.backdrop_path,
+        overview: media.overview,
+        vote_average: media.vote_average,
+        release_date: media.release_date || media.first_air_date,
+        media_type: type,
+        season: type === 'tv' ? currentSeason : 1,
+        episode: type === 'tv' ? currentEpisode : 1,
+        lastWatchedSeconds: currentPlaybackSecs,
+        totalSeconds: estimatedDuration,
+        durationSeconds: estimatedDuration,
+        updatedAt: Date.now()
+      });
+
+      if (isHost) {
+        storageService.saveWatchPartyRoom(user?.id, {
+          roomId,
+          id: media.id,
+          type,
+          title: media.title || media.name,
+          posterPath: media.poster_path,
+          season: currentSeason,
+          episode: currentEpisode,
+          currentTime: currentPlaybackSecs,
+          selectedPlayerId,
+          isHostOnlyLock
+        });
+      }
+    }, 5000);
+
+    return () => clearTimeout(saveTimer);
+  }, [currentPlaybackSecs, media, user?.id, type, currentSeason, currentEpisode, isHost, roomId, selectedPlayerId, isHostOnlyLock]);
 
   const shareUrl = `${window.location.origin}/party/${type}/${id}?room=${roomId}`;
 

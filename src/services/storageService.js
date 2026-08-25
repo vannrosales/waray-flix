@@ -16,12 +16,13 @@ export const storageService = {
 
   // Async cloud sync from Supabase
   fetchCloudPlaylist: async (userId = null) => {
-    if (isSupabaseConfigured && supabase && userId) {
+    const effectiveUserId = await storageService.resolveUserId(userId);
+    if (isSupabaseConfigured && supabase && effectiveUserId) {
       try {
         const { data, error } = await supabase
           .from('user_watchlist')
           .select('*')
-          .eq('user_id', userId)
+          .eq('user_id', effectiveUserId)
           .order('created_at', { ascending: false });
 
         if (!error && Array.isArray(data)) {
@@ -69,20 +70,21 @@ export const storageService = {
     localStorage.setItem(PLAYLIST_KEY, JSON.stringify(updatedList));
     window.dispatchEvent(new Event('playlistUpdated'));
 
+    const effectiveUserId = await storageService.resolveUserId(userId);
     // Direct Supabase Cloud Operation
-    if (isSupabaseConfigured && supabase && userId) {
+    if (isSupabaseConfigured && supabase && effectiveUserId) {
       try {
         if (exists) {
           await supabase
             .from('user_watchlist')
             .delete()
-            .eq('user_id', userId)
+            .eq('user_id', effectiveUserId)
             .eq('media_id', mediaIdStr);
         } else {
           await supabase
             .from('user_watchlist')
             .upsert({
-              user_id: userId,
+              user_id: effectiveUserId,
               media_id: mediaIdStr,
               media_type: normalizedItem.media_type,
               title: normalizedItem.title,
@@ -118,12 +120,13 @@ export const storageService = {
 
   // Async cloud sync for Watch History
   fetchCloudHistory: async (userId = null) => {
-    if (isSupabaseConfigured && supabase && userId) {
+    const effectiveUserId = await storageService.resolveUserId(userId);
+    if (isSupabaseConfigured && supabase && effectiveUserId) {
       try {
         const { data, error } = await supabase
           .from('user_history')
           .select('*')
-          .eq('user_id', userId)
+          .eq('user_id', effectiveUserId)
           .order('updated_at', { ascending: false });
 
         if (!error && Array.isArray(data)) {
@@ -143,6 +146,20 @@ export const storageService = {
       }
     }
     return storageService.getHistory();
+  },
+
+  // Resolve user id from parameter or active Supabase session
+  resolveUserId: async (userId = null) => {
+    if (userId) return userId;
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data } = await supabase.auth.getSession();
+        if (data?.session?.user?.id) return data.session.user.id;
+      } catch {
+        // ignore
+      }
+    }
+    return null;
   },
 
   // Save / Update Watch Progress (with safe merging)
@@ -181,12 +198,13 @@ export const storageService = {
     localStorage.setItem(HISTORY_KEY, JSON.stringify(localList.slice(0, 30)));
     window.dispatchEvent(new Event('historyUpdated'));
 
-    if (isSupabaseConfigured && supabase && userId) {
+    const effectiveUserId = await storageService.resolveUserId(userId);
+    if (isSupabaseConfigured && supabase && effectiveUserId) {
       try {
         await supabase
           .from('user_history')
           .upsert({
-            user_id: userId,
+            user_id: effectiveUserId,
             media_id: mediaIdStr,
             media_type: record.media_type,
             title: record.title,
@@ -211,12 +229,13 @@ export const storageService = {
     localStorage.setItem(HISTORY_KEY, JSON.stringify(filtered));
     window.dispatchEvent(new Event('historyUpdated'));
 
-    if (isSupabaseConfigured && supabase && userId) {
+    const effectiveUserId = await storageService.resolveUserId(userId);
+    if (isSupabaseConfigured && supabase && effectiveUserId) {
       try {
         await supabase
           .from('user_history')
           .delete()
-          .eq('user_id', userId)
+          .eq('user_id', effectiveUserId)
           .eq('media_id', mediaIdStr);
       } catch (err) {
         console.warn('Supabase remove history error:', err);
@@ -231,15 +250,69 @@ export const storageService = {
     localStorage.removeItem(HISTORY_KEY);
     window.dispatchEvent(new Event('historyUpdated'));
 
-    if (isSupabaseConfigured && supabase && userId) {
+    const effectiveUserId = await storageService.resolveUserId(userId);
+    if (isSupabaseConfigured && supabase && effectiveUserId) {
       try {
         await supabase
           .from('user_history')
           .delete()
-          .eq('user_id', userId);
+          .eq('user_id', effectiveUserId);
       } catch (err) {
         console.warn('Supabase clear history error:', err);
       }
     }
+  },
+
+  // Save or update Watch Party Room details to Supabase
+  saveWatchPartyRoom: async (userId, roomData) => {
+    if (!roomData || !roomData.roomId) return null;
+    const effectiveUserId = await storageService.resolveUserId(userId);
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const payload = {
+          room_id: String(roomData.roomId),
+          host_user_id: effectiveUserId || null,
+          media_id: String(roomData.mediaId || roomData.id || ''),
+          media_type: roomData.mediaType || roomData.type || 'movie',
+          media_title: roomData.title || roomData.name || '',
+          poster_path: roomData.posterPath || roomData.poster_path || '',
+          season: Number(roomData.season) || 1,
+          episode: Number(roomData.episode) || 1,
+          current_time: Number(roomData.currentTime || roomData.currentPlaybackSecs) || 0,
+          selected_player_id: roomData.selectedPlayerId || 'server1',
+          is_host_locked: Boolean(roomData.isHostOnlyLock),
+          updated_at: new Date().toISOString()
+        };
+
+        const { data, error } = await supabase
+          .from('watch_party_rooms')
+          .upsert(payload, { onConflict: 'room_id' })
+          .select();
+
+        if (!error && data) return data[0];
+      } catch (err) {
+        console.warn('Supabase saveWatchPartyRoom notice (non-fatal):', err);
+      }
+    }
+    return null;
+  },
+
+  // Fetch active Watch Party Room details from Supabase
+  fetchWatchPartyRoom: async (roomId) => {
+    if (!roomId) return null;
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('watch_party_rooms')
+          .select('*')
+          .eq('room_id', String(roomId))
+          .maybeSingle();
+
+        if (!error && data) return data;
+      } catch (err) {
+        console.warn('Supabase fetchWatchPartyRoom notice:', err);
+      }
+    }
+    return null;
   }
 };

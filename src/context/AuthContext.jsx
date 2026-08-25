@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../services/supabase';
+import { storageService } from '../services/storageService';
 
 const AuthContext = createContext(null);
 
@@ -27,15 +28,27 @@ export function AuthProvider({ children }) {
     // Get current active session
     supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
       setSession(currentSession);
-      setUser(currentSession?.user ?? null);
+      const currentUser = currentSession?.user ?? null;
+      setUser(currentUser);
       setLoading(false);
+
+      if (currentUser?.id) {
+        storageService.fetchCloudPlaylist(currentUser.id);
+        storageService.fetchCloudHistory(currentUser.id);
+      }
     });
 
     // Listen for auth changes (sign in, sign out, token refresh)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, currentSession) => {
       setSession(currentSession);
-      setUser(currentSession?.user ?? null);
+      const currentUser = currentSession?.user ?? null;
+      setUser(currentUser);
       setLoading(false);
+
+      if (currentUser?.id) {
+        storageService.fetchCloudPlaylist(currentUser.id);
+        storageService.fetchCloudHistory(currentUser.id);
+      }
     });
 
     return () => {

@@ -176,3 +176,48 @@ describe('storageService — Watch History & Resume', () => {
   });
 });
 
+// ─────────────────────────────────────────────────────────────────────────────
+// WATCH PARTY ROOM PERSISTENCE TESTS
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('storageService — Watch Party Room Persistence', () => {
+  it('saveWatchPartyRoom() returns null gracefully when Supabase is not configured', async () => {
+    const res = await storageService.saveWatchPartyRoom('user-1', {
+      roomId: 'PARTY-123-9999',
+      mediaId: '123',
+      mediaType: 'movie',
+      title: 'Inception',
+      posterPath: '/poster.jpg',
+      currentTime: 120,
+      selectedPlayerId: 'server1',
+      isHostOnlyLock: false
+    });
+    expect(res).toBeNull();
+  });
+
+  it('saveWatchPartyRoom() returns null if no roomId is provided', async () => {
+    const res = await storageService.saveWatchPartyRoom('user-1', {});
+    expect(res).toBeNull();
+  });
+
+  it('fetchWatchPartyRoom() returns null gracefully when Supabase is not configured', async () => {
+    const res = await storageService.fetchWatchPartyRoom('PARTY-123-9999');
+    expect(res).toBeNull();
+  });
+
+  it('fetchWatchPartyRoom() returns null if no roomId is passed', async () => {
+    const res = await storageService.fetchWatchPartyRoom('');
+    expect(res).toBeNull();
+  });
+
+  it('resolveUserId() returns the passed userId', async () => {
+    const id = await storageService.resolveUserId('user-custom-123');
+    expect(id).toBe('user-custom-123');
+  });
+
+  it('resolveUserId() returns null when no user is passed and Supabase is not active', async () => {
+    const id = await storageService.resolveUserId(null);
+    expect(id).toBeNull();
+  });
+});
+
