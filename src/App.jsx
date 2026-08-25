@@ -22,6 +22,7 @@ const TrailersPage = lazy(() => import('./pages/TrailersPage'));
 const CollectionPage = lazy(() => import('./pages/CollectionPage'));
 const WatchPartyPage = lazy(() => import('./pages/WatchPartyPage'));
 const WatchlistPage = lazy(() => import('./pages/WatchlistPage'));
+const TimelinePage = lazy(() => import('./pages/TimelinePage'));
 
 function Layout() {
   return (
@@ -53,6 +54,8 @@ export default function App() {
                 <Route path="/details/:type/:id" element={<DetailPage />} />
                 <Route path="/person/:id" element={<PersonPage />} />
                 <Route path="/collection/:id" element={<CollectionPage />} />
+                <Route path="/timeline" element={<TimelinePage />} />
+                <Route path="/timeline/:sagaId" element={<TimelinePage />} />
                 <Route path="/search" element={<SearchPage />} />
                 <Route path="/network/:networkName/:id" element={<NetworkHubPage />} />
                 <Route path="/category/anime" element={<AnimePage />} />

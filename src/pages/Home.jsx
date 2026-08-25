@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { Sparkles, ArrowRight } from 'lucide-react';
 import { 
   fetchTrendingMovies, 
   fetchPopularShows, 
@@ -124,6 +126,43 @@ export default function Home() {
         selectedId={selectedNetwork?.code || null} 
         onSelect={(net) => setSelectedNetwork(net)} 
       />
+
+      {/* ─── Road to Avengers: Doomsday Interactive Roadmap Banner (Prominently Placed Above the Fold) ─── */}
+      {!selectedNetwork && (
+        <div className="px-6 md:px-12 my-6 max-w-[1440px] mx-auto">
+          <Link
+            to="/timeline/mcu-doomsday"
+            className="group block relative rounded-3xl overflow-hidden p-6 sm:p-8 border border-black/[0.08] bg-white hover:border-[#2563EB]/40 shadow-sm hover:shadow-md transition-all duration-300"
+          >
+            {/* Subtle Ambient Background Gradient */}
+            <div className="absolute top-0 right-0 w-96 h-full bg-gradient-to-l from-blue-50/80 via-indigo-50/20 to-transparent pointer-events-none" />
+
+            <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+              <div className="space-y-2 max-w-2xl">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-[#2563EB] text-[10px] font-mono uppercase tracking-widest font-bold border border-blue-100/80">
+                  <Sparkles className="w-3.5 h-3.5 stroke-[2]" />
+                  <span>CHRONOLOGICAL STORYLINE ROADMAP</span>
+                </div>
+
+                <h3 className="text-xl sm:text-2xl md:text-3xl font-bold font-['Outfit'] tracking-tight text-[#09090B] group-hover:text-[#2563EB] transition">
+                  Road to Avengers: Doomsday
+                </h3>
+
+                <p className="text-xs sm:text-sm text-[#52525B] font-normal leading-relaxed">
+                  The complete 15-chapter prep guide from Mutant Genesis to Multiversal Incursions. Check off watched titles, stream trailers, and prepare for the main event.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3 flex-shrink-0 self-start md:self-center">
+                <div className="px-6 py-3 rounded-full bg-[#2563EB] group-hover:bg-[#1D4ED8] text-white text-xs font-semibold uppercase tracking-wider transition flex items-center gap-2 shadow-sm group-hover:scale-105">
+                  <span>Open Roadmap</span>
+                  <ArrowRight className="w-3.5 h-3.5 stroke-[2]" />
+                </div>
+              </div>
+            </div>
+          </Link>
+        </div>
+      )}
 
       {/* Main Content Rows */}
       <div className="space-y-2">

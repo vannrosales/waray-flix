@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Clapperboard, Search, Menu, X, Compass, Film, Tv, Sparkles, Dices, PlaySquare, User, LogOut, Bookmark, ChevronDown } from 'lucide-react';
+import { Clapperboard, Search, Menu, X, Compass, Film, Tv, Sparkles, Dices, PlaySquare, User, LogOut, Bookmark, ChevronDown, Flame } from 'lucide-react';
 import SearchModal from './SearchModal';
 import SurpriseModal from './SurpriseModal';
 import InstallPrompt from './InstallPrompt';
@@ -66,6 +66,7 @@ export default function Navbar() {
     { name: 'Discover', path: '/', icon: Compass },
     { name: 'Movies', path: '/movies', icon: Film },
     { name: 'Series', path: '/tv', icon: Tv },
+    { name: 'Timeline', path: '/timeline', icon: Flame, badge: 'Doomsday' },
     { name: 'Watchlist', path: '/watchlist', icon: Bookmark },
     { name: 'Trailers', path: '/trailers', icon: PlaySquare },
     { name: 'Anime', path: '/category/anime', icon: Sparkles },
