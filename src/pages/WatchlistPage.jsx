@@ -123,7 +123,7 @@ export default function WatchlistPage() {
             ))}
           </div>
         ) : (
-          <div className="border border-white/[0.06] rounded-3xl bg-[#18181C] shadow-sm overflow-hidden">
+          <div className="border border-white/[0.06] rounded-xl bg-[#121212] shadow-sm overflow-hidden">
             <EmptyState
               icon={Bookmark}
               title={searchQuery ? 'No matching titles found' : 'Your Watchlist is Empty'}

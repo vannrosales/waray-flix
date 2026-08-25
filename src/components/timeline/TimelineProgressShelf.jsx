@@ -9,7 +9,7 @@ export default function TimelineProgressShelf({
   onReset
 }) {
   return (
-    <div className="bg-[#18181C] border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
+    <div className="bg-[#121212] er-white/[0.08] rounded-xl p-6 sm:p-8 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
       {/* Left: Lore & Timeline Scope */}
       <div className="space-y-1 text-center md:text-left">
         <div className="flex items-center justify-center md:justify-start gap-2 text-xs text-white font-bold uppercase tracking-wider">

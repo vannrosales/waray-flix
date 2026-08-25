@@ -9,7 +9,7 @@ export default function TimelinePhaseFilter({ phases, activePhase, onSelectPhase
         <button
           key={phase.id}
           onClick={() => onSelectPhase(phase.id)}
-          className={`px-4 py-1.5 rounded-full text-xs font-medium transition cursor-pointer flex-shrink-0 ${
+          className={`px-4 py-1.5 rounded-xl text-xs font-medium transition cursor-pointer flex-shrink-0 ${
             activePhase === phase.id
               ? 'bg-white text-black font-bold shadow-xs'
               : 'bg-white/[0.06] text-zinc-400 hover:text-white hover:bg-white/[0.12] border border-white/[0.08]'

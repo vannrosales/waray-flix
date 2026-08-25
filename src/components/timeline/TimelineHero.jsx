@@ -45,7 +45,7 @@ export default function TimelineHero({
           <div className="absolute top-24 right-6 md:right-12 z-30 flex items-center gap-2">
             <button
               onClick={onToggleMute}
-              className="w-10 h-10 rounded-full bg-black/70 hover:bg-black text-white border border-white/20 backdrop-blur-md flex items-center justify-center transition cursor-pointer shadow-xl hover:scale-105"
+              className="w-10 h-10 rounded-xl bg-black/70 hover:bg-black text-white border border-white/20 backdrop-blur-md flex items-center justify-center transition cursor-pointer shadow-xl hover:scale-105"
               title={isMuted ? "Unmute Preview" : "Mute Preview"}
             >
               {isMuted ? <VolumeX className="w-4 h-4 stroke-[1.5]" /> : <Volume2 className="w-4 h-4 stroke-[1.5]" />}
@@ -53,7 +53,7 @@ export default function TimelineHero({
 
             <button
               onClick={onCloseVideo}
-              className="px-3 py-2 rounded-full bg-black/70 hover:bg-black text-white border border-white/20 backdrop-blur-md text-xs flex items-center gap-1.5 transition cursor-pointer shadow-xl"
+              className="px-3 py-2 rounded-xl bg-black/70 hover:bg-black text-white border border-white/20 backdrop-blur-md text-xs flex items-center gap-1.5 transition cursor-pointer shadow-xl"
               title="Exit Special Look"
             >
               <X className="w-4 h-4" />
@@ -71,7 +71,7 @@ export default function TimelineHero({
       {/* Hero Content Section */}
       <div className="relative z-20 max-w-[1440px] w-full mx-auto px-6 md:px-12 pb-14 space-y-4">
         <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-300">
-          <span className="px-2.5 py-0.5 rounded-full border border-white/20 bg-white/10 backdrop-blur-md text-white font-bold text-[10px] tracking-wider uppercase shadow-sm">
+          <span className="px-2.5 py-0.5 rounded-xl border border-white/20 bg-white/10 backdrop-blur-md text-white font-bold text-[10px] tracking-wider uppercase shadow-sm">
             {currentTimeline.universe}
           </span>
           <span className="text-white font-semibold">15 CHAPTERS</span>
@@ -92,7 +92,7 @@ export default function TimelineHero({
         <div className="pt-2 flex flex-wrap items-center gap-3.5">
           <button
             onClick={onStartWatching}
-            className="px-7 py-2.5 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-xs tracking-wider uppercase flex items-center gap-2 transition cursor-pointer shadow-xl hover:scale-105"
+            className="px-7 py-2.5 rounded-xl bg-white hover:bg-zinc-200 text-black font-semibold text-xs tracking-wider uppercase flex items-center gap-2 transition cursor-pointer shadow-xl hover:scale-105"
           >
             <Play className="w-3.5 h-3.5 stroke-[2] fill-black text-black" />
             <span>{watchedCount === 0 ? 'Start Timeline' : 'Continue Watching'}</span>
@@ -101,7 +101,7 @@ export default function TimelineHero({
           {activeTrailerKey && (
             <button
               onClick={onOpenVideo}
-              className="px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium text-xs tracking-wider uppercase border border-white/20 backdrop-blur-md flex items-center gap-2 transition cursor-pointer shadow-md hover:scale-105"
+              className="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-medium text-xs tracking-wider uppercase border border-white/20 backdrop-blur-md flex items-center gap-2 transition cursor-pointer shadow-md hover:scale-105"
             >
               <Film className="w-3.5 h-3.5 stroke-[1.5] text-white" />
               <span>Watch Special Look Trailer</span>

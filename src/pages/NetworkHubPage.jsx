@@ -100,7 +100,7 @@ export default function NetworkHubPage() {
         <div>
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#18181C] hover:bg-[#222228] text-xs text-white border border-white/10 transition cursor-pointer shadow-sm"
+            className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#18181C] hover:bg-[#222228] text-xs text-white border border-white/10 transition cursor-pointer shadow-sm"
           >
             <ArrowLeft className="w-3.5 h-3.5 stroke-[1.5]" />
             <span>BACK</span>
@@ -117,7 +117,7 @@ export default function NetworkHubPage() {
               <button
                 key={studio.id}
                 onClick={() => navigate(`/network/${studioSlug}/${studio.code}`)}
-                className={`h-10 px-4 rounded-full whitespace-nowrap transition-all duration-200 cursor-pointer flex items-center justify-center gap-2 border flex-shrink-0 ${
+                className={`h-10 px-4 rounded-xl whitespace-nowrap transition-all duration-200 cursor-pointer flex items-center justify-center gap-2 border flex-shrink-0 ${
                   isActive
                     ? 'bg-white text-black border-transparent shadow-md scale-[1.02]'
                     : 'bg-[#18181C] hover:bg-[#222228] text-white border-white/[0.08] shadow-sm hover:border-white/20'
@@ -131,7 +131,7 @@ export default function NetworkHubPage() {
         </div>
 
         {/* Studio Banner Header */}
-        <div className="relative rounded-3xl overflow-hidden p-8 sm:p-10 border border-white/[0.08] shadow-md bg-[#18181C] flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="relative rounded-xl overflow-hidden p-8 sm:p-10 border border-white/[0.08] shadow-md bg-[#121212] flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="space-y-3 text-center md:text-left z-10">
             <span className="text-[10px] text-zinc-400 uppercase tracking-widest font-semibold block">
               OFFICIAL HUB & ARCHIVES
@@ -162,7 +162,7 @@ export default function NetworkHubPage() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-1.5 rounded-full text-xs font-medium transition cursor-pointer flex-shrink-0 ${
+              className={`px-4 py-1.5 rounded-xl text-xs font-medium transition cursor-pointer flex-shrink-0 ${
                 activeTab === tab.id
                   ? 'bg-white text-black font-bold shadow-sm'
                   : 'bg-white/[0.06] text-zinc-400 hover:text-white hover:bg-white/[0.12] border border-white/[0.08]'
@@ -195,7 +195,7 @@ export default function NetworkHubPage() {
             <button
               onClick={loadMoreItems}
               disabled={loadingMore}
-              className="px-6 py-2.5 rounded-full bg-white hover:bg-zinc-200 text-black text-xs tracking-wider uppercase transition flex items-center gap-2 cursor-pointer disabled:opacity-50 shadow-md hover:scale-105"
+              className="px-6 py-2.5 rounded-xl bg-white hover:bg-zinc-200 text-black text-xs tracking-wider uppercase transition flex items-center gap-2 cursor-pointer disabled:opacity-50 shadow-md hover:scale-105"
             >
               {loadingMore ? (
                 <>
