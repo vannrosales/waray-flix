@@ -107,14 +107,40 @@ export default function NetworkHubPage() {
           </button>
         </div>
 
+        {/* Studio Switcher Ribbon */}
+        <div className="flex gap-2.5 overflow-x-auto scrollbar-none py-1 -mx-6 px-6 md:-mx-12 md:px-12 items-center">
+          {STUDIOS_LIST.map((studio) => {
+            const isActive = String(studio.code) === String(id) || studio.name.toLowerCase().replace(/[^a-z0-9]/g, '') === networkName?.toLowerCase();
+            const studioSlug = studio.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+            return (
+              <button
+                key={studio.id}
+                onClick={() => navigate(`/network/${studioSlug}/${studio.code}`)}
+                className={`h-10 px-4 rounded-full whitespace-nowrap transition-all duration-200 cursor-pointer flex items-center justify-center gap-2 border flex-shrink-0 ${
+                  isActive
+                    ? 'bg-[#09090B] text-white border-transparent shadow-md scale-[1.02]'
+                    : 'bg-white hover:bg-zinc-50 text-[#09090B] border-black/[0.08] shadow-sm hover:border-black/20'
+                }`}
+                title={studio.name}
+              >
+                <StudioLogo name={studio.name} active={isActive} />
+              </button>
+            );
+          })}
+        </div>
+
         {/* Studio Banner Header */}
-        <div className="relative rounded-3xl overflow-hidden p-8 sm:p-12 border border-black/[0.08] shadow-md bg-white flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="relative rounded-3xl overflow-hidden p-8 sm:p-10 border border-black/[0.08] shadow-md bg-white flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="space-y-3 text-center md:text-left z-10">
             <span className="text-[10px] font-mono text-[#52525B] uppercase tracking-widest font-semibold block">
               OFFICIAL HUB & ARCHIVES
             </span>
-            <div className="h-10 sm:h-12 flex items-center justify-center md:justify-start">
-              <StudioLogo studio={currentStudio?.name || displayName} className="h-8 sm:h-10 w-auto" />
+            <div className="flex items-center justify-center md:justify-start gap-3">
+              <StudioLogo name={displayName} />
+              <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-[#09090B] font-['Outfit']">
+                {displayName}
+              </h1>
             </div>
             <p className="text-xs sm:text-sm text-[#52525B] max-w-xl font-normal">
               {currentStudio?.description || `Explore movies and television series distributed by ${displayName}.`}
@@ -122,9 +148,9 @@ export default function NetworkHubPage() {
           </div>
 
           <div className="flex-shrink-0 z-10">
-            <div className="px-4 py-2 rounded-2xl bg-black/[0.04] border border-black/[0.08] text-center font-mono">
-              <span className="text-xl sm:text-2xl font-bold text-[#09090B] block">{items.length}+</span>
-              <span className="text-[10px] text-[#52525B] uppercase">Streamable Titles</span>
+            <div className="px-5 py-3 rounded-2xl bg-black/[0.04] border border-black/[0.08] text-center font-mono">
+              <span className="text-xl sm:text-3xl font-bold text-[#09090B] block">{items.length}+</span>
+              <span className="text-[10px] text-[#52525B] uppercase font-semibold">Streamable Titles</span>
             </div>
           </div>
         </div>

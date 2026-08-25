@@ -1,7 +1,8 @@
 import React from 'react';
 
-export default function StudioLogo({ name, active = false }) {
-  const normalized = (name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+export default function StudioLogo({ name, studio, active = false }) {
+  const targetName = name || studio || '';
+  const normalized = targetName.toLowerCase().replace(/[^a-z0-9]/g, '');
 
   switch (normalized) {
     case 'netflix':
