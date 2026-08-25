@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { CONFIG } from '../config/siteConfig';
-import { ArrowLeft, Server, ChevronDown, SkipForward, Layers, X, Play, QrCode, Users2, PictureInPicture2 } from 'lucide-react';
+import { ArrowLeft, Server, ChevronDown, SkipForward, Layers, X, Play, QrCode, Users2, PictureInPicture2, Bookmark, BookmarkCheck, LogIn } from 'lucide-react';
 import ShareModal from '../components/ShareModal';
 import { usePlayer } from '../context/PlayerContext';
 import { useAuth } from '../context/AuthContext';
@@ -12,7 +12,7 @@ export default function WatchPage() {
   const { type, id, season, episode } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, openAuthModal } = useAuth();
 
   const startParam = searchParams.get('startAt') || searchParams.get('t') || searchParams.get('time');
   const currentSeason = season ? parseInt(season) : 1;
@@ -38,6 +38,8 @@ export default function WatchPage() {
   const [tvShowDetails, setTvShowDetails] = useState(null);
   const [currentSeasonData, setCurrentSeasonData] = useState(null);
   const [selectedDrawerSeason, setSelectedDrawerSeason] = useState(currentSeason);
+  const [inWatchlist, setInWatchlist] = useState(false);
+  const mediaDataRef = useRef(null);
   
   const menuRef = useRef(null);
   const hudTimeoutRef = useRef(null);
@@ -198,6 +200,27 @@ export default function WatchPage() {
         const title = data.title || data.name;
         setMediaTitle(title);
         mediaTitleRef.current = title;
+
+        // Store full media data for watchlist toggle
+        const normalized = {
+          id: data.id,
+          media_id: String(data.id),
+          title,
+          name: title,
+          poster_path: data.poster_path,
+          backdrop_path: data.backdrop_path,
+          overview: data.overview,
+          vote_average: data.vote_average,
+          release_date: data.release_date,
+          first_air_date: data.first_air_date,
+          media_type: type,
+        };
+        mediaDataRef.current = normalized;
+
+        // Check local watchlist state
+        const playlist = storageService.getPlaylist();
+        setInWatchlist(playlist.some(item => String(item.id || item.media_id) === String(data.id)));
+
         const estimatedDuration = type === 'movie' ? 7200 : 2700;
         await storageService.saveHistoryProgress(user?.id, {
           id: data.id, title, poster_path: data.poster_path, backdrop_path: data.backdrop_path,
@@ -212,6 +235,14 @@ export default function WatchPage() {
     updateWatchHistory();
     return () => { isMounted = false; };
   }, [type, id, currentSeason, currentEpisode, user?.id, parsedSeconds]);
+
+  // Quick Watchlist Toggle (signed-in users only)
+  const handleToggleWatchlist = useCallback(async () => {
+    if (!user) { openAuthModal(); return; }
+    if (!mediaDataRef.current) return;
+    const updated = await storageService.togglePlaylistItem(mediaDataRef.current, user.id);
+    setInWatchlist(Array.isArray(updated) && updated.some(item => String(item.id || item.media_id) === String(id)));
+  }, [user, id, openAuthModal]);
 
   // Pill button style helpers
   const pillBase = 'flex items-center gap-1.5 rounded-full backdrop-blur-xl border border-white/10 shadow-lg transition cursor-pointer text-xs font-mono';
@@ -289,6 +320,20 @@ export default function WatchPage() {
               </button>
             )}
 
+            {/* ── SIGNED-IN PRIORITY FEATURES ── */}
+
+            {/* Quick Watchlist Toggle — prompts sign-in for guests */}
+            <button
+              onClick={handleToggleWatchlist}
+              className={`${inWatchlist ? 'flex items-center gap-1.5 rounded-full backdrop-blur-xl shadow-lg transition cursor-pointer text-xs font-mono px-2.5 py-1.5 bg-white text-black border border-white/20' : `${pillDark} px-2.5 py-1.5`}`}
+              title={user ? (inWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist') : 'Sign in to save to Watchlist'}
+            >
+              {inWatchlist
+                ? <BookmarkCheck className="w-3.5 h-3.5 stroke-[2]" />
+                : <Bookmark className="w-3.5 h-3.5 stroke-[1.5]" />}
+              <span className="hidden lg:inline">{inWatchlist ? 'Saved' : 'Watchlist'}</span>
+            </button>
+
             {/* PiP — icon on mobile, label on lg */}
             <button
               onClick={() => {
@@ -302,14 +347,14 @@ export default function WatchPage() {
               <span className="hidden lg:inline">Mini Player</span>
             </button>
 
-            {/* Watch Party — icon on mobile, label on lg */}
+            {/* Watch Party — gated: prompts sign-in if guest */}
             <button
-              onClick={() => navigate(`/party/${type}/${id}`)}
+              onClick={() => user ? navigate(`/party/${type}/${id}`) : openAuthModal()}
               className={`${pillDark} px-2.5 py-1.5`}
-              title="Watch Party"
+              title={user ? 'Watch Party' : 'Sign in to start a Watch Party'}
             >
-              <Users2 className="w-3.5 h-3.5 stroke-[1.5]" />
-              <span className="hidden lg:inline">Party</span>
+              {user ? <Users2 className="w-3.5 h-3.5 stroke-[1.5]" /> : <LogIn className="w-3.5 h-3.5 stroke-[1.5]" />}
+              <span className="hidden lg:inline">{user ? 'Party' : 'Sign In'}</span>
             </button>
 
             {/* QR Phone Sync — icon on mobile, label on lg */}
@@ -450,7 +495,25 @@ export default function WatchPage() {
           season={currentSeason}
           episode={currentEpisode}
         />
+      )}\n
+      {/* ── GUEST SIGN-IN NUDGE (bottom strip, only for unauthenticated users) ── */}
+      {!user && (
+        <div className={`absolute bottom-0 left-0 right-0 z-30 pointer-events-none transition-all duration-300 ${hudVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
+          <div className="bg-gradient-to-t from-black/70 to-transparent px-4 py-3 flex items-center justify-between gap-3 pointer-events-auto">
+            <p className="text-xs text-zinc-400">
+              <span className="text-white font-semibold">Sign in</span> to save progress, sync your watchlist, and start Watch Parties
+            </p>
+            <button
+              onClick={openAuthModal}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white text-black text-xs font-semibold hover:bg-zinc-100 transition cursor-pointer flex-shrink-0 shadow-lg"
+            >
+              <LogIn className="w-3 h-3 stroke-[2]" />
+              Sign In
+            </button>
+          </div>
+        </div>
       )}
+
     </div>
   );
 }

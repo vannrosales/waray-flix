@@ -161,7 +161,11 @@ export const storageService = {
       type: historyItem.type || historyItem.media_type || existing.type || 'movie',
       title: historyItem.title || historyItem.name || existing.title || existing.name || '',
       poster_path: historyItem.poster_path || existing.poster_path || '',
-      lastWatchedSeconds: Math.floor(historyItem.lastWatchedSeconds !== undefined ? historyItem.lastWatchedSeconds : (existing.lastWatchedSeconds || 0)),
+      lastWatchedSeconds: Math.floor(
+        (historyItem.lastWatchedSeconds !== undefined && (historyItem.lastWatchedSeconds > 0 || !existing.lastWatchedSeconds))
+          ? historyItem.lastWatchedSeconds
+          : (existing.lastWatchedSeconds || 0)
+      ),
       totalSeconds: Math.floor(historyItem.totalSeconds || existing.totalSeconds || (historyItem.type === 'tv' ? 2700 : 7200)),
       durationSeconds: Math.floor(historyItem.durationSeconds || existing.durationSeconds || (historyItem.type === 'tv' ? 2700 : 7200)),
       season: Number(historyItem.season || existing.season) || 1,
