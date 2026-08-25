@@ -78,7 +78,7 @@ export default function AuthModal() {
           <span className="text-[10px] font-mono text-zinc-400 font-bold uppercase tracking-widest block">
             ACCOUNT ACCESS
           </span>
-          <h3 className="text-xl font-bold text-white font-['Outfit']">
+          <h3 className="text-xl font-bold text-white">
             {mode === 'signin' ? 'Welcome Back' : 'Create Free Account'}
           </h3>
           <p className="text-xs text-zinc-400 font-normal">

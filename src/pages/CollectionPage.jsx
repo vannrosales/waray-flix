@@ -53,7 +53,7 @@ export default function CollectionPage() {
     : null;
 
   return (
-    <div className="min-h-screen bg-[#0F0F12] text-[#F4F4F5] pb-24 select-none">
+    <div className="min-h-screen bg-[#000000] text-[#FFFFFF] pb-24 select-none">
       
       {/* Return Back Button */}
       <div className="fixed top-20 sm:top-24 left-6 z-40">
@@ -114,7 +114,7 @@ export default function CollectionPage() {
                 )}
               </div>
 
-              <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-white font-['Outfit'] leading-[1.05]">
+              <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-white leading-[1.05]">
                 {collection.name}
               </h1>
             </div>
@@ -148,7 +148,7 @@ export default function CollectionPage() {
         <div className="space-y-6">
           <div className="flex items-center gap-2">
             <Layers className="w-4 h-4 text-white stroke-[1.5]" />
-            <h2 className="text-lg sm:text-xl font-bold text-white font-['Outfit']">
+            <h2 className="text-lg sm:text-xl font-bold text-white">
               Chronological Release Sequence ({parts.length})
             </h2>
           </div>

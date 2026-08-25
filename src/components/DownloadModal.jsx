@@ -62,7 +62,7 @@ export default function DownloadModal({
             <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest block">
               OFFLINE DOWNLOAD
             </span>
-            <h3 className="text-base sm:text-lg font-bold text-white font-['Outfit'] truncate leading-tight">
+            <h3 className="text-base sm:text-lg font-bold text-white truncate leading-tight">
               {media.title || media.name}
             </h3>
             <div className="flex items-center gap-2 text-[11px] font-mono text-zinc-400">

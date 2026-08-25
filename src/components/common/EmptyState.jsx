@@ -15,7 +15,7 @@ export default function EmptyState({
         <Icon className="w-7 h-7 stroke-[1.5] opacity-80" />
       </div>
       <div className="space-y-1.5">
-        <h3 className="text-base font-bold text-white font-['Outfit']">{title}</h3>
+        <h3 className="text-base font-bold text-white">{title}</h3>
         <p className="text-xs text-zinc-400 font-normal leading-relaxed">{description}</p>
       </div>
       {actionText && onAction && (

@@ -74,7 +74,7 @@ export default function Hero({ content, items = [] }) {
 
   if (!activeContent) {
     return (
-      <div className="w-full h-[72vh] sm:h-[82vh] bg-[#0F0F12] shimmer-skeleton flex items-center justify-center text-zinc-400 font-mono text-xs">
+      <div className="w-full h-[72vh] sm:h-[82vh] bg-[#000000] shimmer-skeleton flex items-center justify-center text-zinc-400 font-mono text-xs">
         LOADING_SELECTION...
       </div>
     );
@@ -127,10 +127,10 @@ export default function Hero({ content, items = [] }) {
         </div>
       )}
       
-      {/* Cinema Vignette */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0F0F12] via-black/40 to-black/30 pointer-events-none" />
-      <div className="absolute inset-y-0 left-0 w-full md:w-3/5 bg-gradient-to-r from-[#0F0F12]/95 via-black/60 to-transparent pointer-events-none" />
-      <div className="absolute bottom-0 inset-x-0 h-14 bg-gradient-to-t from-[#0F0F12] to-transparent pointer-events-none" />
+      {/* Cinema Vignette fading into #000000 */}
+      <div className="absolute inset-0 bg-gradient-to-t from-[#000000] via-black/40 to-black/30 pointer-events-none" />
+      <div className="absolute inset-y-0 left-0 w-full md:w-3/5 bg-gradient-to-r from-[#000000]/95 via-black/60 to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 inset-x-0 h-14 bg-gradient-to-t from-[#000000] to-transparent pointer-events-none" />
 
       {/* Sound Toggle Button */}
       {showVideo && trailerKey && (
@@ -147,63 +147,61 @@ export default function Hero({ content, items = [] }) {
 
       {/* Hero Content Section */}
       <div className="relative z-20 max-w-[1440px] w-full mx-auto px-6 md:px-12 pb-14 space-y-4">
-        {/* Minimalist Metadata Line */}
-        <div className="flex flex-wrap items-center gap-3 text-xs font-mono text-zinc-300">
-          <span className="px-2.5 py-0.5 rounded-full border border-white/20 bg-white/10 backdrop-blur-md text-white font-bold text-[10px] tracking-wider uppercase shadow-sm">
-            {itemType}
+        {/* Minimalist Metadata Line matching Image 1 */}
+        <div className="flex flex-wrap items-center gap-2.5 text-xs font-mono">
+          <span className="px-2.5 py-0.5 rounded bg-[#252525] border border-white/10 text-white font-bold text-[10px] tracking-wider uppercase shadow-xs">
+            {itemType === 'tv' ? 'TV SERIES' : 'MOVIE'}
           </span>
-          <span className="text-white font-semibold">{releaseYear}</span>
-          <span>·</span>
+          <span className="text-zinc-300 font-semibold px-1">{releaseYear}</span>
           {activeContent.vote_average > 0 && (
-            <>
-              <span className="flex items-center gap-1 text-white font-bold">
-                <Star className="w-3 h-3 text-white fill-white stroke-[1.5]" />
-                <span>{activeContent.vote_average.toFixed(1)}</span>
-              </span>
-              <span>·</span>
-            </>
+            <span className="flex items-center gap-1 text-white font-bold px-1">
+              <Star className="w-3 h-3 text-white fill-white stroke-[1.5]" />
+              <span>{activeContent.vote_average.toFixed(1)}</span>
+            </span>
           )}
-          <span className="text-zinc-300 text-[11px] font-semibold">4K ULTRA HD</span>
+          <span className="px-2.5 py-0.5 rounded bg-[#252525] border border-white/10 text-white font-bold text-[10px] tracking-wider uppercase shadow-xs">
+            4K ULTRA HD
+          </span>
         </div>
 
-        {/* Clean Typography Title */}
-        <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white font-['Outfit'] max-w-3xl leading-[1.05] drop-shadow-lg">
+        {/* Clean Headline Title */}
+        <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight text-white max-w-3xl leading-none drop-shadow-md">
           {activeContent.title || activeContent.name}
         </h1>
 
         {/* Overview Synopsis */}
-        <p className="text-zinc-300 text-xs sm:text-sm line-clamp-2 max-w-2xl font-normal leading-relaxed drop-shadow-md">
+        <p className="text-zinc-300 text-xs sm:text-sm line-clamp-3 max-w-2xl font-normal leading-relaxed drop-shadow-md">
           {activeContent.overview || "Stream this title now in high definition."}
         </p>
 
         {/* Action Button Deck & Slide Carousel Controls */}
         <div className="pt-2 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            {/* Primary Watch Button (Pure Crisp White) */}
+            {/* Primary Watch Button (Solid Crisp White) */}
             <button
               onClick={handlePlayNow}
-              className="px-7 py-2.5 rounded-full bg-white hover:bg-zinc-200 text-black font-semibold text-xs tracking-wider uppercase flex items-center gap-2 transition-all cursor-pointer shadow-xl hover:scale-105"
+              className="px-6 py-3 rounded-xl bg-white hover:bg-zinc-200 text-black font-bold text-xs tracking-wider uppercase flex items-center gap-2 transition cursor-pointer shadow-lg hover:scale-105"
             >
               <Play className="w-3.5 h-3.5 stroke-[2] fill-black text-black" />
               <span>Watch Now</span>
             </button>
 
-            {/* Quick Preview Button */}
+            {/* Quick Preview Button (Dark Tertiary #252525) */}
             <button
               onClick={() => setQuickViewOpen(true)}
-              className="px-4 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium text-xs tracking-wider uppercase border border-white/20 backdrop-blur-md flex items-center gap-2 transition cursor-pointer shadow-md hover:scale-105"
+              className="px-5 py-3 rounded-xl bg-[#252525] hover:bg-[#333333] text-white font-bold text-xs tracking-wider uppercase border border-white/10 flex items-center gap-2 transition cursor-pointer shadow-md hover:scale-105"
             >
-              <Info className="w-3.5 h-3.5 stroke-[1.5] text-zinc-300" />
+              <Info className="w-3.5 h-3.5 stroke-[1.5]" />
               <span>Preview</span>
             </button>
 
-            {/* Bookmark Toggle */}
+            {/* Bookmark Toggle (Dark Tertiary #252525) */}
             <button
               onClick={handleToggleBookmark}
-              className={`p-2.5 rounded-full border transition cursor-pointer backdrop-blur-md shadow-md hover:scale-105 ${
+              className={`p-3 rounded-xl border transition cursor-pointer shadow-md hover:scale-105 ${
                 isSaved 
                   ? 'bg-white border-white text-black' 
-                  : 'bg-white/10 border-white/20 text-zinc-300 hover:text-white hover:bg-white/20'
+                  : 'bg-[#252525] border-white/10 text-white hover:bg-[#333333]'
               }`}
               title={isSaved ? "Saved in My List" : "Save to My List"}
             >
@@ -211,26 +209,26 @@ export default function Hero({ content, items = [] }) {
             </button>
           </div>
 
-          {/* Carousel Slide Indicators */}
+          {/* Carousel Slide Indicators (< - • • • >) matching Image 1 */}
           {slides.length > 1 && (
             <div className="hidden sm:flex items-center gap-2">
               <button 
                 onClick={prevSlide} 
-                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white flex items-center justify-center transition cursor-pointer shadow-md hover:scale-105"
+                className="w-8 h-8 rounded-lg bg-[#252525] hover:bg-[#333333] border border-white/10 text-white flex items-center justify-center transition cursor-pointer shadow-sm hover:scale-105"
                 aria-label="Previous slide"
               >
                 <ChevronLeft className="w-3.5 h-3.5 stroke-[1.5]" />
               </button>
               
-              <div className="flex items-center gap-1.5 px-1.5">
+              <div className="flex items-center gap-1.5 px-2">
                 {slides.map((_, idx) => (
                   <button
                     key={idx}
                     onClick={() => setCurrentIndex(idx)}
-                    className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                    className={`rounded-full transition-all duration-300 cursor-pointer ${
                       currentIndex === idx 
-                        ? 'w-6 bg-white' 
-                        : 'w-1.5 bg-white/40 hover:bg-white/70'
+                        ? 'w-6 h-1.5 bg-white' 
+                        : 'w-1.5 h-1.5 bg-white/30 hover:bg-white/60'
                     }`}
                   />
                 ))}
@@ -238,7 +236,7 @@ export default function Hero({ content, items = [] }) {
 
               <button 
                 onClick={nextSlide} 
-                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white flex items-center justify-center transition cursor-pointer shadow-md hover:scale-105"
+                className="w-8 h-8 rounded-lg bg-[#252525] hover:bg-[#333333] border border-white/10 text-white flex items-center justify-center transition cursor-pointer shadow-sm hover:scale-105"
                 aria-label="Next slide"
               >
                 <ChevronRight className="w-3.5 h-3.5 stroke-[1.5]" />

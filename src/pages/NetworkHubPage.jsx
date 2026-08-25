@@ -93,7 +93,7 @@ export default function NetworkHubPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#0F0F12] text-[#F4F4F5] pb-24 pt-24 sm:pt-28 px-6 md:px-12 select-none">
+    <div className="min-h-screen bg-[#000000] text-[#FFFFFF] pb-24 pt-24 sm:pt-28 px-6 md:px-12 select-none">
       <div className="max-w-[1440px] mx-auto space-y-6">
         
         {/* Back Button */}

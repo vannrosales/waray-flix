@@ -58,7 +58,7 @@ export default function DetailInfoSection({
             <span className="text-zinc-400 text-[11px] font-bold">4K ULTRA HD</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight text-white font-['Outfit'] leading-[1.05]">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight text-white leading-[1.05]">
             {media.title || media.name}
           </h1>
 

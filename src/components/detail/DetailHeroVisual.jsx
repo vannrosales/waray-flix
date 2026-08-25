@@ -52,17 +52,17 @@ export default function DetailHeroVisual({
           </div>
         )}
 
-        {/* Cinema Vignette Overlays */}
+        {/* Cinema Vignette Overlays fading into #000000 */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 pointer-events-none" />
-        <div className="absolute bottom-0 inset-x-0 h-28 bg-gradient-to-t from-[#0F0F12] via-[#0F0F12]/70 to-transparent pointer-events-none" />
+        <div className="absolute bottom-0 inset-x-0 h-28 bg-gradient-to-t from-[#000000] via-[#000000]/70 to-transparent pointer-events-none" />
 
         {/* Sound toggle button */}
         {showVideo && trailerKey && (
-          <div className="absolute bottom-12 right-8 z-30">
+          <div className="absolute bottom-6 right-6 md:right-12 z-30 animate-fade-in">
             <button
               onClick={onToggleMute}
-              className="w-10 h-10 rounded-full bg-black/70 hover:bg-black text-white border border-white/20 backdrop-blur-xl flex items-center justify-center transition cursor-pointer shadow-xl hover:scale-105"
-              title={isMuted ? "Unmute Trailer" : "Mute Trailer"}
+              className="w-10 h-10 rounded-full bg-black/70 hover:bg-black text-white border border-white/20 backdrop-blur-md flex items-center justify-center transition cursor-pointer shadow-xl hover:scale-105"
+              title={isMuted ? "Unmute Preview" : "Mute Preview"}
             >
               {isMuted ? <VolumeX className="w-4 h-4 stroke-[1.5]" /> : <Volume2 className="w-4 h-4 stroke-[1.5]" />}
             </button>

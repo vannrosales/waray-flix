@@ -87,7 +87,7 @@ export default function Movies() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0F0F12] text-[#F4F4F5] pb-24 select-none">
+    <div className="min-h-screen bg-[#000000] text-[#FFFFFF] pb-24 select-none">
       
       {/* Featured Header Hero */}
       {heroContent && <Hero content={heroContent} />}
@@ -98,7 +98,7 @@ export default function Movies() {
         {/* Filter & Sort Bar */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/[0.08] pb-4">
           <div className="flex items-center gap-4">
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white font-['Outfit']">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
               Feature Films
             </h1>
             <SortDropdown

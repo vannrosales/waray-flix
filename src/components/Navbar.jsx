@@ -86,10 +86,10 @@ export default function Navbar() {
               <Clapperboard className="w-4 h-4 stroke-[2]" />
             </div>
             <div className="flex items-center tracking-tight">
-              <span className="text-sm font-bold tracking-widest text-[#09090B] font-['Outfit']">
+              <span className="text-sm font-bold tracking-widest text-[#09090B]">
                 WARAY
               </span>
-              <span className="text-sm font-bold tracking-widest text-[#2563EB] font-['Outfit'] ml-1">
+              <span className="text-sm font-bold tracking-widest text-[#2563EB] ml-1">
                 FLIX
               </span>
             </div>

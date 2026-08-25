@@ -74,7 +74,7 @@ export default function PersonPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#0F0F12] text-[#F4F4F5] pb-24 pt-24 sm:pt-28 px-6 md:px-12 select-none">
+    <div className="min-h-screen bg-[#000000] text-[#FFFFFF] pb-24 pt-24 sm:pt-28 px-6 md:px-12 select-none">
       <div className="max-w-[1440px] mx-auto space-y-10">
         
         {/* Back Button */}
@@ -106,7 +106,7 @@ export default function PersonPage() {
               <span className="text-[10px] font-mono text-white font-bold uppercase tracking-widest block">
                 {person.known_for_department || 'Acting & Directing'}
               </span>
-              <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-white font-['Outfit']">
+              <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-white">
                 {person.name}
               </h1>
             </div>
@@ -145,7 +145,7 @@ export default function PersonPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <Film className="w-4 h-4 text-white stroke-[1.5]" />
-              <h2 className="text-lg sm:text-xl font-bold text-white font-['Outfit']">
+              <h2 className="text-lg sm:text-xl font-bold text-white">
                 Filmography ({filteredCredits.length})
               </h2>
             </div>

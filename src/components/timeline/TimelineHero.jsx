@@ -63,10 +63,10 @@ export default function TimelineHero({
         </div>
       )}
 
-      {/* Cinema Vignettes */}
+      {/* Cinema Vignettes fading into #000000 */}
       <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/30 pointer-events-none" />
-      <div className="absolute inset-y-0 left-0 w-full md:w-3/5 bg-gradient-to-r from-[#0F0F12]/95 via-black/60 to-transparent pointer-events-none" />
-      <div className="absolute bottom-0 inset-x-0 h-14 bg-gradient-to-t from-[#0F0F12] to-transparent pointer-events-none" />
+      <div className="absolute inset-y-0 left-0 w-full md:w-3/5 bg-gradient-to-r from-[#000000]/95 via-black/60 to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 inset-x-0 h-14 bg-gradient-to-t from-[#000000] to-transparent pointer-events-none" />
 
       {/* Hero Content Section */}
       <div className="relative z-20 max-w-[1440px] w-full mx-auto px-6 md:px-12 pb-14 space-y-4">
@@ -81,7 +81,7 @@ export default function TimelineHero({
           <span className="text-white font-bold">ROAD TO DOOMSDAY</span>
         </div>
 
-        <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white font-['Outfit'] max-w-3xl leading-[1.05] drop-shadow-lg">
+        <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white max-w-3xl leading-[1.05] drop-shadow-lg">
           {currentTimeline.title}
         </h1>
 

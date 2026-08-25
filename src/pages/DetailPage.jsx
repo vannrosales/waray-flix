@@ -115,7 +115,7 @@ export default function DetailPage() {
   const recommendations = media?.recommendations?.results || media?.similar?.results || [];
 
   return (
-    <div className="min-h-screen bg-[#0F0F12] text-[#F4F4F5] pb-24 select-none">
+    <div className="min-h-screen bg-[#000000] text-[#FFFFFF] pb-24 select-none">
       <DetailHeroVisual
         backdrop={backdrop}
         trailerKey={trailerKey}

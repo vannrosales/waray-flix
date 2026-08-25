@@ -41,14 +41,14 @@ export default function LegalPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0F0F12] text-[#F4F4F5] pt-24 sm:pt-28 pb-20 px-6 md:px-12 max-w-[1440px] mx-auto space-y-10 select-none">
+    <div className="min-h-screen bg-[#000000] text-[#FFFFFF] pt-24 sm:pt-28 pb-20 px-6 md:px-12 max-w-[1440px] mx-auto space-y-10 select-none">
       {/* Page Header */}
       <div className="border-b border-white/[0.08] pb-8 space-y-3">
         <div className="flex items-center gap-2 text-xs font-mono text-zinc-400 uppercase tracking-widest font-semibold">
           <ShieldCheck className="w-4 h-4 stroke-[2] text-white" />
           <span>COMPLIANCE & LEGAL NOTICE</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white font-['Outfit'] tracking-tight">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">
           Legal Information
         </h1>
         <p className="text-xs sm:text-sm text-zinc-400 font-normal max-w-2xl leading-relaxed">
@@ -69,7 +69,7 @@ export default function LegalPage() {
                 <div className="w-10 h-10 rounded-2xl bg-white/[0.06] border border-white/[0.08] flex items-center justify-center text-white">
                   <Icon className="w-5 h-5 stroke-[1.75]" />
                 </div>
-                <h2 className="text-base sm:text-lg font-bold text-white font-['Outfit']">
+                <h2 className="text-base sm:text-lg font-bold text-white">
                   {section.title}
                 </h2>
               </div>
@@ -87,7 +87,7 @@ export default function LegalPage() {
           <div className="w-10 h-10 rounded-2xl bg-white/[0.06] border border-white/[0.08] flex items-center justify-center text-white">
             <Mail className="w-5 h-5 stroke-[1.75]" />
           </div>
-          <h2 className="text-base sm:text-lg font-bold text-white font-['Outfit']">
+          <h2 className="text-base sm:text-lg font-bold text-white">
             Contact Information
           </h2>
         </div>

@@ -29,7 +29,7 @@ export default function MediaRow({ title, items, type = 'movie', subtitle }) {
       {/* Row Header */}
       <div className="flex items-end justify-between">
         <div>
-          <h2 className="text-lg sm:text-xl font-bold tracking-tight text-white font-['Outfit']">
+          <h2 className="text-lg sm:text-xl font-bold tracking-tight text-white">
             {title}
           </h2>
           {subtitle && (

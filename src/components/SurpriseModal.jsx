@@ -163,7 +163,7 @@ export default function SurpriseModal({ isOpen, onClose }) {
                     )}
                   </div>
 
-                  <h3 className="text-lg sm:text-xl font-bold text-white font-['Outfit'] leading-tight">
+                  <h3 className="text-lg sm:text-xl font-bold text-white leading-tight">
                     {pickedMedia.title || pickedMedia.name}
                   </h3>
 

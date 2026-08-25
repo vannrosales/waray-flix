@@ -173,7 +173,7 @@ export default function QuickViewModal({ media, type = 'movie', isOpen, onClose 
               )}
             </div>
 
-            <h2 className="text-2xl sm:text-3xl font-bold text-white font-['Outfit'] tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
               {currentData.title || currentData.name}
             </h2>
 

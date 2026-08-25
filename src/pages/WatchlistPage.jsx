@@ -78,14 +78,14 @@ export default function WatchlistPage() {
   const tvCount = watchlist.filter(i => i.media_type === 'tv' || Boolean(i.first_air_date)).length;
 
   return (
-    <div className="min-h-screen bg-[#0F0F12] text-[#F4F4F5] pt-24 sm:pt-28 pb-20 px-6 md:px-12 max-w-[1440px] mx-auto space-y-12 select-none">
+    <div className="min-h-screen bg-[#000000] text-[#FFFFFF] pt-24 sm:pt-28 pb-20 px-6 md:px-12 max-w-[1440px] mx-auto space-y-12 select-none">
       {/* Header Banner */}
       <div className="border-b border-white/[0.08] pb-8 space-y-2">
         <div className="flex items-center gap-2 text-xs font-mono text-zinc-400 uppercase tracking-widest font-semibold">
           <Bookmark className="w-3.5 h-3.5 stroke-[2] text-white" />
           <span>PERSONAL CINEMA LIBRARY</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white font-['Outfit'] tracking-tight">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">
           Watchlist & History
         </h1>
         <p className="text-xs sm:text-sm text-zinc-400 font-normal max-w-xl">

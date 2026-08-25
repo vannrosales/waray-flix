@@ -12,7 +12,7 @@ export default function WatchlistHistorySection({ history, onClearHistory, onRem
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Clock className="w-4 h-4 text-white stroke-[2]" />
-          <h2 className="text-base sm:text-lg font-bold text-white font-['Outfit']">
+          <h2 className="text-base sm:text-lg font-bold text-white">
             Continue Watching ({history.length})
           </h2>
         </div>
@@ -60,7 +60,7 @@ export default function WatchlistHistorySection({ history, onClearHistory, onRem
                     <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider block font-semibold">
                       {item.type === 'tv' ? `S${item.season || 1} E${item.episode || 1}` : 'MOVIE'}
                     </span>
-                    <h3 className="text-sm font-semibold text-white truncate font-['Outfit'] leading-tight group-hover:text-zinc-300 transition">
+                    <h3 className="text-sm font-semibold text-white truncate leading-tight group-hover:text-zinc-300 transition">
                       {item.title || item.name || 'Untitled Stream'}
                     </h3>
                   </div>

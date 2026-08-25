@@ -94,7 +94,7 @@ export default function WatchlistCard({ item, onRemove }) {
 
       {/* Title & Metadata */}
       <div className="space-y-0.5 px-0.5">
-        <h3 className="text-xs sm:text-sm font-semibold text-white truncate font-['Outfit'] group-hover:text-zinc-300 transition">
+        <h3 className="text-xs sm:text-sm font-semibold text-white truncate group-hover:text-zinc-300 transition">
           {item.title || item.name}
         </h3>
         <div className="flex items-center gap-2 text-[10px] font-mono text-zinc-400">

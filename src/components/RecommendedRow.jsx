@@ -58,7 +58,7 @@ export default function RecommendedRow() {
       {/* Row Header */}
       <div className="flex items-end justify-between">
         <div>
-          <h2 className="text-lg sm:text-xl font-bold tracking-tight text-white font-['Outfit']">
+          <h2 className="text-lg sm:text-xl font-bold tracking-tight text-white">
             Recommended For You
           </h2>
           <p className="text-[11px] text-zinc-400 font-mono tracking-wide mt-0.5">

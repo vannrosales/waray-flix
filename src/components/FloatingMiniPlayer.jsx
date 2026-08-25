@@ -32,7 +32,7 @@ export default function FloatingMiniPlayer() {
           ) : (
             <Film className="w-3.5 h-3.5 text-zinc-400 stroke-[1.5] flex-shrink-0" />
           )}
-          <span className="text-[11px] font-medium text-white truncate font-['Outfit']">
+          <span className="text-[11px] font-medium text-white truncate">
             {title || 'Now Playing'}
           </span>
           {type === 'tv' && (

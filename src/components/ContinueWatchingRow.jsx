@@ -21,7 +21,7 @@ export default function ContinueWatchingRow({ items, onRemove }) {
     <section className="space-y-3 px-6 md:px-12 my-10 max-w-[1440px] mx-auto content-auto select-none">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-lg sm:text-xl font-bold tracking-tight text-white font-['Outfit']">
+        <h2 className="text-lg sm:text-xl font-bold tracking-tight text-white">
           Continue Watching
         </h2>
         

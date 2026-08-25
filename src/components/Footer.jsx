@@ -4,7 +4,7 @@ import { Clapperboard } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="w-full bg-[#0F0F12] border-t border-white/[0.08] py-12 px-6 md:px-12 text-zinc-400 text-xs select-none">
+    <footer className="w-full bg-[#000000] border-t border-white/[0.08] py-12 px-6 md:px-12 text-zinc-400 text-xs select-none">
       <div className="max-w-[1440px] mx-auto space-y-8">
         
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-6 border-b border-white/[0.08]">
@@ -14,7 +14,7 @@ export default function Footer() {
               <div className="w-7 h-7 rounded-lg bg-white text-black flex items-center justify-center shadow-sm">
                 <Clapperboard className="w-3.5 h-3.5 stroke-[2]" />
               </div>
-              <span className="text-sm font-bold tracking-widest text-white font-['Outfit']">
+              <span className="text-sm font-bold tracking-widest text-white">
                 WARAY<span className="text-zinc-400 font-bold ml-1">FLIX</span>
               </span>
             </Link>

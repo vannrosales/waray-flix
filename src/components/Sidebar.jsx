@@ -10,7 +10,7 @@ import {
   Tv, 
   Sparkles, 
   Bookmark, 
-  Flame, 
+  Clock, 
   ShieldCheck 
 } from 'lucide-react';
 import SearchModal from './SearchModal';
@@ -27,11 +27,11 @@ export default function Sidebar() {
   
   const location = useLocation();
 
-  // Global Keyboard Shortcuts (/, ?, D)
+  // Global Keyboard Shortcuts (/, ?, D, Ctrl+K/Cmd+K)
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
-      if (e.key === '/') {
+      if (e.key === '/' || ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k')) {
         e.preventDefault();
         setSearchOpen(true);
       } else if (e.key === '?') {
@@ -46,10 +46,10 @@ export default function Sidebar() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  const primaryLinks = [
+  const menuLinks = [
     { name: 'Home', path: '/', icon: HomeIcon },
-    { name: 'Search', action: () => setSearchOpen(true), icon: Search, shortcut: '/' },
-    { name: 'Timeline', path: '/timeline', icon: Flame, badge: 'Doomsday' },
+    { name: 'Search', action: () => setSearchOpen(true), icon: Search, shortcut: '⌘K' },
+    { name: 'Timeline', path: '/timeline', icon: Clock },
   ];
 
   const mediaLinks = [
@@ -59,7 +59,7 @@ export default function Sidebar() {
     { name: 'Watchlist', path: '/watchlist', icon: Bookmark },
   ];
 
-  const moreLinks = [
+  const infoLinks = [
     { name: 'Legal / DMCA', path: '/legal', icon: ShieldCheck },
   ];
 
@@ -77,14 +77,14 @@ export default function Sidebar() {
                 link.action();
                 setMobileOpen(false);
               }}
-              className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-medium text-zinc-400 hover:text-white hover:bg-white/[0.06] transition cursor-pointer text-left group"
+              className="w-full flex items-center justify-between pl-3.5 pr-3 py-2.5 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white hover:bg-white/[0.05] transition cursor-pointer text-left group"
             >
               <div className="flex items-center gap-3">
-                <Icon className="w-4 h-4 stroke-[1.75] text-zinc-400 group-hover:text-white transition-colors" />
+                <Icon className="w-4 h-4 stroke-[2] text-zinc-400 group-hover:text-white transition-colors" />
                 <span>{link.name}</span>
               </div>
               {link.shortcut && (
-                <span className="text-[10px] font-mono text-zinc-400 bg-white/[0.06] border border-white/[0.08] px-1.5 py-0.5 rounded">
+                <span className="text-[10px] font-mono text-zinc-400 bg-[#252525] border border-white/[0.08] px-1.5 py-0.5 rounded">
                   {link.shortcut}
                 </span>
               )}
@@ -97,19 +97,25 @@ export default function Sidebar() {
             key={link.name}
             to={link.path}
             onClick={() => setMobileOpen(false)}
-            className={`flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-medium transition group ${
+            className={`flex items-center justify-between pl-4 pr-3.5 py-2.5 rounded-xl text-xs font-bold transition group relative select-none ${
               isActive
-                ? 'bg-white text-black font-semibold shadow-sm'
-                : 'text-zinc-400 hover:text-white hover:bg-white/[0.06]'
+                ? 'bg-[#252525] text-white shadow-sm'
+                : 'text-zinc-400 hover:text-white hover:bg-white/[0.05]'
             }`}
           >
+            {/* Active Vertical Left Pill Indicator matching user reference */}
+            {isActive && (
+              <span className="absolute left-0 top-1.5 bottom-1.5 w-[3px] bg-white rounded-r-full" />
+            )}
+            
             <div className="flex items-center gap-3">
-              <Icon className={`w-4 h-4 stroke-[1.75] ${isActive ? 'text-black' : 'text-zinc-400 group-hover:text-white'}`} />
-              <span>{link.name}</span>
+              <Icon className={`w-4 h-4 stroke-[2] ${isActive ? 'text-white' : 'text-zinc-400 group-hover:text-white transition-colors'}`} />
+              <span className="leading-none">{link.name}</span>
             </div>
+
             {link.badge && (
               <span className={`text-[9px] font-mono font-bold uppercase px-2 py-0.5 rounded-full ${
-                isActive ? 'bg-black/15 text-black' : 'bg-white/10 text-white border border-white/10'
+                isActive ? 'bg-white/20 text-white' : 'bg-white/10 text-zinc-300 border border-white/10'
               }`}>
                 {link.badge}
               </span>
@@ -123,20 +129,21 @@ export default function Sidebar() {
   return (
     <>
       {/* ─── Mobile Top App Bar ─── */}
-      <header className="md:hidden fixed top-0 inset-x-0 h-16 bg-[#0F0F12]/95 backdrop-blur-xl border-b border-white/[0.08] z-40 px-4 flex items-center justify-between select-none">
+      <header className="md:hidden fixed top-0 inset-x-0 h-16 bg-[#000000]/95 backdrop-blur-xl border-b border-white/[0.08] z-40 px-4 flex items-center justify-between select-none">
         <Link to="/" className="flex items-center gap-2.5">
           <div className="w-7 h-7 rounded-lg bg-white text-black flex items-center justify-center shadow-sm">
             <Clapperboard className="w-3.5 h-3.5 stroke-[2]" />
           </div>
-          <span className="text-sm font-bold tracking-widest text-white font-['Outfit']">
-            WARAY<span className="text-zinc-400 ml-1">FLIX</span>
-          </span>
+          <div className="flex flex-col font-black leading-none tracking-wider text-white text-xs">
+            <span>WARAY</span>
+            <span className="text-zinc-400">FLIX</span>
+          </div>
         </Link>
 
         <div className="flex items-center gap-2">
           <button
             onClick={() => setSearchOpen(true)}
-            className="p-2 rounded-xl bg-white/[0.06] border border-white/[0.08] text-white hover:bg-white/[0.12]"
+            className="p-2 rounded-xl bg-[#252525] border border-white/[0.08] text-white hover:bg-[#333333]"
             title="Search"
           >
             <Search className="w-4 h-4 stroke-[1.5]" />
@@ -144,7 +151,7 @@ export default function Sidebar() {
 
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="p-2 rounded-xl bg-white/[0.06] border border-white/[0.08] text-white hover:bg-white/[0.12]"
+            className="p-2 rounded-xl bg-[#252525] border border-white/[0.08] text-white hover:bg-[#333333]"
             aria-label="Toggle menu"
           >
             {mobileOpen ? <X className="w-4 h-4 stroke-[1.5]" /> : <Menu className="w-4 h-4 stroke-[1.5]" />}
@@ -160,51 +167,55 @@ export default function Sidebar() {
         />
       )}
 
-      {/* ─── Desktop & Mobile Sliding Sidebar ─── */}
+      {/* ─── Desktop & Mobile Sidebar ─── */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 w-64 bg-[#0F0F12] border-r border-white/[0.08] flex flex-col justify-between p-4 transition-transform duration-300 select-none overflow-y-auto ${
+        className={`fixed top-0 bottom-0 left-0 z-50 w-64 bg-[#0A0A0C] border-r border-white/[0.08] flex flex-col justify-between p-4.5 transition-transform duration-300 select-none overflow-y-auto ${
           mobileOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full md:translate-x-0'
         }`}
       >
         <div className="space-y-6">
-          {/* Brand Logo Header */}
-          <div className="px-2 pt-2 flex items-center justify-between">
-            <Link to="/" onClick={() => setMobileOpen(false)} className="flex items-center gap-2.5 group">
-              <div className="w-8 h-8 rounded-xl bg-white text-black flex items-center justify-center shadow-sm transition-transform group-hover:scale-105">
+          {/* Distinctive Brand Logo Header */}
+          <div className="px-2 pt-1 flex items-center justify-between">
+            <Link to="/" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 group">
+              <div className="w-8 h-8 rounded-xl bg-white text-black flex items-center justify-center shadow-md transition-transform group-hover:scale-105">
                 <Clapperboard className="w-4 h-4 stroke-[2]" />
               </div>
-              <span className="text-base font-bold tracking-wider text-white font-['Outfit']">
-                WARAY<span className="text-zinc-400 ml-1">FLIX</span>
-              </span>
+              <div className="flex flex-col font-black leading-tight tracking-wider text-white text-sm">
+                <span>WARAY</span>
+                <span className="text-white font-black">FLIX</span>
+              </div>
             </Link>
             <button onClick={() => setMobileOpen(false)} className="md:hidden p-1.5 text-zinc-400 hover:text-white">
               <X className="w-4 h-4" />
             </button>
           </div>
 
-          {/* Section 1: Primary Group in Dark Grey Card Box */}
-          <div className="bg-[#18181C] border border-white/[0.08] rounded-3xl p-2 shadow-xs">
-            {renderNavGroup(primaryLinks)}
+          {/* Section 1: MENU */}
+          <div className="space-y-1.5">
+            <span className="text-[10px] uppercase text-zinc-500 px-3 font-bold tracking-widest block">
+              MENU
+            </span>
+            {renderNavGroup(menuLinks)}
           </div>
 
-          {/* Section 2: Media Categories */}
-          <div className="space-y-2 px-1">
-            <span className="text-[10px] font-mono uppercase text-zinc-500 px-3 font-bold tracking-wider block">
-              Media
+          {/* Section 2: MEDIA */}
+          <div className="space-y-1.5">
+            <span className="text-[10px] uppercase text-zinc-500 px-3 font-bold tracking-widest block">
+              MEDIA
             </span>
             {renderNavGroup(mediaLinks)}
           </div>
 
-          {/* Section 3: More / Legal */}
-          <div className="space-y-2 px-1">
-            <span className="text-[10px] font-mono uppercase text-zinc-500 px-3 font-bold tracking-wider block">
-              More
+          {/* Section 3: LEGAL & COMPLIANCE */}
+          <div className="space-y-1.5">
+            <span className="text-[10px] uppercase text-zinc-500 px-3 font-bold tracking-widest block">
+              LEGAL & INFO
             </span>
-            {renderNavGroup(moreLinks)}
+            {renderNavGroup(infoLinks)}
           </div>
         </div>
 
-        {/* Bottom Utility / User Deck */}
+        {/* Bottom Section (RANDOM + SIGN IN / Profile) */}
         <SidebarProfileDeck
           onOpenSurprise={() => setSurpriseOpen(true)}
           onOpenShortcuts={() => setShortcutsOpen(true)}

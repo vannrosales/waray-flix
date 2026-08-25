@@ -112,7 +112,7 @@ export default function StudioLogo({ name, studio, active = false }) {
 
     default:
       return (
-        <span className={`font-bold text-xs sm:text-sm tracking-wider uppercase font-['Outfit'] select-none leading-none ${
+        <span className={`font-bold text-xs sm:text-sm tracking-wider uppercase select-none leading-none ${
           active ? 'text-black' : 'text-white'
         }`}>
           {name}

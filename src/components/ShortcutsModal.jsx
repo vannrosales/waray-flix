@@ -58,7 +58,7 @@ export default function ShortcutsModal({ isOpen, onClose }) {
             <Keyboard className="w-4 h-4 text-white stroke-[2]" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-white font-['Outfit']">
+            <h3 className="text-base font-bold text-white">
               Keyboard Shortcuts
             </h3>
             <p className="text-[11px] text-zinc-400 font-mono">

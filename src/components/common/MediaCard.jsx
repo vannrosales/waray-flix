@@ -33,7 +33,7 @@ export default function MediaCard({
       className={`cursor-pointer group/item flex flex-col gap-2 flex-shrink-0 transition-all duration-200 ${className}`}
     >
       {/* Poster Card Canvas */}
-      <div className={`relative ${aspect} w-full rounded-2xl overflow-hidden bg-[#18181C] border border-white/[0.08] group-hover/item:border-white/40 transition-all duration-200 group-hover/item:scale-[1.02] shadow-sm hover:shadow-md`}>
+      <div className={`relative ${aspect} w-full rounded-2xl overflow-hidden bg-[#121212] border border-white/[0.08] group-hover/item:border-white/40 transition-all duration-200 group-hover/item:scale-[1.02] shadow-sm hover:shadow-md`}>
         {poster ? (
           <img
             src={poster}
@@ -42,7 +42,7 @@ export default function MediaCard({
             className="absolute inset-0 w-full h-full object-cover transition duration-300 group-hover/item:brightness-105"
           />
         ) : (
-          <div className="absolute inset-0 flex flex-col items-center justify-center p-3 text-center text-zinc-500 bg-[#18181C]">
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-3 text-center text-zinc-500 bg-[#121212]">
             <Film className="w-6 h-6 mb-1 opacity-30 stroke-[1.5]" />
             <span className="text-[9px] font-mono text-zinc-500 line-clamp-2">{title}</span>
           </div>

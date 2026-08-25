@@ -39,7 +39,7 @@ export default function PartyHeader({
 
         <div className="flex items-center gap-1.5 min-w-0">
           <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse flex-shrink-0" />
-          <span className="text-xs sm:text-sm font-bold text-white font-['Outfit'] truncate max-w-[100px] xs:max-w-[140px] sm:max-w-xs">
+          <span className="text-xs sm:text-sm font-bold text-white truncate max-w-[100px] xs:max-w-[140px] sm:max-w-xs">
             {media?.title || media?.name || "Watch Party"}
           </span>
           <span className="hidden xs:inline-block px-1.5 py-0.5 rounded border border-white/[0.08] bg-white/[0.02] text-[9px] sm:text-[10px] font-mono text-zinc-400 flex-shrink-0">

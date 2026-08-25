@@ -45,7 +45,7 @@ export default function MyListRow() {
     <section className="space-y-3 px-6 md:px-12 my-10 max-w-[1440px] mx-auto content-auto select-none">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-lg sm:text-xl font-bold tracking-tight text-white font-['Outfit'] flex items-center gap-2">
+        <h2 className="text-lg sm:text-xl font-bold tracking-tight text-white flex items-center gap-2">
           <span>My Watchlist</span>
           <span className="text-xs font-mono text-zinc-400 font-normal">({listItems.length})</span>
         </h2>

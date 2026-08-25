@@ -40,7 +40,7 @@ export default function SearchPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#0F0F12] text-[#F4F4F5] pt-24 sm:pt-28 px-6 md:px-12 pb-24 select-none">
+    <div className="min-h-screen bg-[#000000] text-[#FFFFFF] pt-24 sm:pt-28 px-6 md:px-12 pb-24 select-none">
       <div className="max-w-[1440px] mx-auto space-y-6">
         
         {/* Header */}
@@ -49,7 +49,7 @@ export default function SearchPage() {
             <Search className="w-3.5 h-3.5 stroke-[1.5] text-white" />
             <span>Search</span>
           </div>
-          <h1 className="text-2xl sm:text-4xl font-bold text-white font-['Outfit']">
+          <h1 className="text-2xl sm:text-4xl font-bold text-white">
             {query ? `Results for "${query}"` : "Search Library"}
           </h1>
 

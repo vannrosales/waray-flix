@@ -16,7 +16,7 @@ export default function TimelineProgressShelf({
           <Sparkles className="w-3.5 h-3.5 stroke-[2] text-white" />
           <span>MARVEL CINEMATIC UNIVERSE CANON</span>
         </div>
-        <h2 className="text-xl sm:text-2xl font-bold font-['Outfit'] tracking-tight text-white">
+        <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
           Road to Avengers: Doomsday Checklist
         </h2>
         <p className="text-xs text-zinc-400 font-mono">

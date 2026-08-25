@@ -113,7 +113,7 @@ export default function Home() {
   }, [selectedNetwork]);
 
   return (
-    <div className="min-h-screen bg-[#0F0F12] text-[#F4F4F5] pb-16 select-none">
+    <div className="min-h-screen bg-[#000000] text-[#FFFFFF] pb-16 select-none">
       
       {/* Featured Dynamic Carousel Hero */}
       <Hero 
@@ -132,7 +132,7 @@ export default function Home() {
         <div className="px-6 md:px-12 my-6 max-w-[1440px] mx-auto">
           <Link
             to="/timeline/mcu-doomsday"
-            className="group block relative rounded-3xl overflow-hidden p-6 sm:p-8 border border-white/[0.08] bg-[#18181C] hover:border-white/30 shadow-sm hover:shadow-md transition-all duration-300"
+            className="group block relative rounded-3xl overflow-hidden p-6 sm:p-8 border border-white/[0.08] bg-[#121212] hover:border-white/30 shadow-sm hover:shadow-md transition-all duration-300"
           >
             <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
               <div className="space-y-2 max-w-2xl">
@@ -141,7 +141,7 @@ export default function Home() {
                   <span>CHRONOLOGICAL STORYLINE ROADMAP</span>
                 </div>
 
-                <h3 className="text-xl sm:text-2xl md:text-3xl font-bold font-['Outfit'] tracking-tight text-white group-hover:text-zinc-200 transition">
+                <h3 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-white group-hover:text-zinc-200 transition">
                   Road to Avengers: Doomsday
                 </h3>
 

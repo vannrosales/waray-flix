@@ -43,7 +43,7 @@ export default function ShareModal({ isOpen, onClose, title, url }) {
             <Smartphone className="w-3.5 h-3.5 stroke-[1.5]" />
             <span>Send to Phone / Share</span>
           </div>
-          <h3 className="text-base font-bold text-white font-['Outfit'] truncate px-4">
+          <h3 className="text-base font-bold text-white truncate px-4">
             {title || "Scan to Stream"}
           </h3>
         </div>
