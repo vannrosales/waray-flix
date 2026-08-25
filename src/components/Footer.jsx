@@ -29,8 +29,8 @@ export default function Footer() {
             <Link to="/movies" className="hover:text-[#2563EB] transition">Movies</Link>
             <Link to="/tv" className="hover:text-[#2563EB] transition">Series</Link>
             <Link to="/watchlist" className="hover:text-[#2563EB] transition">Watchlist</Link>
-            <Link to="/trailers" className="hover:text-[#2563EB] transition">Trailers</Link>
             <Link to="/category/anime" className="hover:text-[#2563EB] transition">Anime</Link>
+            <Link to="/legal" className="hover:text-[#2563EB] transition font-semibold text-[#09090B]">Legal / DMCA</Link>
           </div>
         </div>
 

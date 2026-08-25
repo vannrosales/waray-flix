@@ -1,6 +1,6 @@
 import React, { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
-import Navbar from './components/Navbar';
+import Sidebar from './components/Sidebar';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
 import { AuthProvider } from './context/AuthContext';
@@ -18,20 +18,22 @@ const SearchPage = lazy(() => import('./pages/SearchPage'));
 const NetworkHubPage = lazy(() => import('./pages/NetworkHubPage'));
 const AnimePage = lazy(() => import('./pages/AnimePage'));
 const PersonPage = lazy(() => import('./pages/PersonPage'));
-const TrailersPage = lazy(() => import('./pages/TrailersPage'));
 const CollectionPage = lazy(() => import('./pages/CollectionPage'));
 const WatchPartyPage = lazy(() => import('./pages/WatchPartyPage'));
 const WatchlistPage = lazy(() => import('./pages/WatchlistPage'));
 const TimelinePage = lazy(() => import('./pages/TimelinePage'));
+const LegalPage = lazy(() => import('./pages/LegalPage'));
 
 function Layout() {
   return (
     <div className="min-h-screen bg-[#FAFAFA] text-[#09090B] font-sans selection:bg-[#2563EB] selection:text-white flex flex-col justify-between">
-      <Navbar />
-      <main className="flex-grow">
-        <Outlet />
-      </main>
-      <Footer />
+      <Sidebar />
+      <div className="md:pl-64 flex flex-col flex-grow w-full min-w-0 transition-all duration-300">
+        <main className="flex-grow">
+          <Outlet />
+        </main>
+        <Footer />
+      </div>
     </div>
   );
 }
@@ -50,7 +52,6 @@ export default function App() {
                 <Route path="/movies" element={<Movies />} />
                 <Route path="/tv" element={<TVShows />} />
                 <Route path="/watchlist" element={<WatchlistPage />} />
-                <Route path="/trailers" element={<TrailersPage />} />
                 <Route path="/details/:type/:id" element={<DetailPage />} />
                 <Route path="/person/:id" element={<PersonPage />} />
                 <Route path="/collection/:id" element={<CollectionPage />} />
@@ -60,6 +61,8 @@ export default function App() {
                 <Route path="/network/:networkName/:id" element={<NetworkHubPage />} />
                 <Route path="/category/anime" element={<AnimePage />} />
                 <Route path="/anime" element={<AnimePage />} />
+                <Route path="/legal" element={<LegalPage />} />
+                <Route path="/dmca" element={<LegalPage />} />
               </Route>
 
               {/* Dedicated Immersive Fullscreen Watch Player */}

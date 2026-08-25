@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Clapperboard, Search, Menu, X, Compass, Film, Tv, Sparkles, Dices, PlaySquare, User, LogOut, Bookmark, ChevronDown, Flame } from 'lucide-react';
+import { Clapperboard, Search, Menu, X, Compass, Film, Tv, Sparkles, Dices, PlaySquare, User, LogOut, Bookmark, ChevronDown, Flame, ShieldCheck } from 'lucide-react';
 import SearchModal from './SearchModal';
 import SurpriseModal from './SurpriseModal';
 import InstallPrompt from './InstallPrompt';
@@ -68,7 +68,6 @@ export default function Navbar() {
     { name: 'Series', path: '/tv', icon: Tv },
     { name: 'Timeline', path: '/timeline', icon: Flame, badge: 'Doomsday' },
     { name: 'Watchlist', path: '/watchlist', icon: Bookmark },
-    { name: 'Trailers', path: '/trailers', icon: PlaySquare },
     { name: 'Anime', path: '/category/anime', icon: Sparkles },
   ];
 
@@ -249,6 +248,16 @@ export default function Navbar() {
                   </Link>
                 );
               })}
+              <div className="pt-2 border-t border-black/[0.06]">
+                <Link
+                  to="/legal"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-[#52525B] hover:text-[#09090B] hover:bg-black/[0.04] transition"
+                >
+                  <ShieldCheck className="w-4 h-4 stroke-[1.5] text-[#2563EB]" />
+                  <span>Legal / DMCA Policy</span>
+                </Link>
+              </div>
             </div>
           </div>
         )}
