@@ -4,6 +4,8 @@ import { fetchCollectionDetails, getImageUrl } from '../services/tmdb';
 import { ArrowLeft, Play, Star, Film, Layers } from 'lucide-react';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 import QuickViewModal from '../components/QuickViewModal';
+import PageLoader from '../components/common/PageLoader';
+import { getReleaseYear, formatRating } from '../utils/formatters';
 
 export default function CollectionPage() {
   const { id } = useParams();
@@ -30,11 +32,7 @@ export default function CollectionPage() {
   }, [id]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center text-[#52525B] font-mono text-xs">
-        LOADING_FRANCHISE_COLLECTION...
-      </div>
-    );
+    return <PageLoader text="LOADING_FRANCHISE_COLLECTION..." />;
   }
 
   if (!collection) return null;

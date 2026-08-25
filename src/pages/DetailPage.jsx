@@ -8,6 +8,8 @@ import MediaRow from '../components/MediaRow';
 import ShareModal from '../components/ShareModal';
 import { useAuth } from '../context/AuthContext';
 
+import PageLoader from '../components/common/PageLoader';
+
 export default function DetailPage() {
   const { type, id } = useParams();
   const navigate = useNavigate();
@@ -102,11 +104,7 @@ export default function DetailPage() {
   useDocumentTitle(media ? `${media.title || media.name} — WarayFlix` : 'Loading Details');
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center text-[#52525B] font-mono text-xs">
-        LOADING_STREAM_DETAILS...
-      </div>
-    );
+    return <PageLoader text="LOADING_STREAM_DETAILS..." />;
   }
 
   if (!media) return null;
