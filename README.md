@@ -4,25 +4,38 @@ A minimalist, high-end cinematic streaming application built with React, Vite, a
 
 ---
 
-## ✨ Features
+## 📖 Documentation & Architecture
 
-* **Architectural Split-Viewport Design:** Immersive details pages featuring fixed visual panels and fluid, continuous editorial streams.
-* **Dynamic Media Discovery:** Explore trending, popular, and top-rated movies and TV series effortlessly.
-* **Robust Multi-Media Search:** Instant query autocomplete with thumbnail previews and live results dropdown.
-* **Episodic Series Directory:** Season selector tabs and episode lists equipped with high-resolution thumbnail stills and runtime indicators.
-* **Seamless Streaming Integration:** Direct routing to embedded media playback streams for both movies and individual TV series episodes (`/watch/:type/:id/:season/:episode`).
-* **Responsive Mobile Navbar:** Clean hamburger menu overlay with smooth sliding transitions.
-* **Dynamic Page Titles:** Automatic document title updating tailored to whatever movie, show, or catalog section you are browsing.
+* **[HOW_IT_WORKS.md](./HOW_IT_WORKS.md)** — In-depth architectural diagrams, user flowcharts, real-time WebRTC sync, and technical breakdown.
+
+---
+
+## ✨ Core Feature Highlights
+
+* **Multi-Server 4K Playback**: Instant server switcher with automatic fallback.
+* **Exact Scrubber Resume**: Seamlessly resumes from the exact second you left off across devices.
+* **P2P Watch Party**: Synchronized playback with friends via WebRTC & MQTT, featuring Host-Only Lock mode, live chat, and reactions.
+* **Studio Hubs & Vaults**: Official hubs for Netflix, Disney+, Apple TV+, HBO Max, Prime Video, Marvel, A24, Paramount+, and Crunchyroll.
+* **QR Phone Sync**: 1-tap mobile handoff to continue watching on your smartphone.
+* **Floating Mini-Player (PiP)**: Stream in a corner window while browsing catalogs.
+* **TV Binge Drawer & Hotkeys**: Press "N" for Next Episode, "S" to switch servers.
+* **Cloud Watchlist & History**: Real-time cloud persistence powered by Supabase.
 
 ---
 
 ## 🛠️ Tech Stack
 
-* **Frontend:** React, Vite
-* **Styling:** Tailwind CSS, Custom Dark Theme (`#0B0D10`)
-* **Typography:** Outfit (Google Fonts)
-* **Icons:** Lucide React
-* **Routing:** React Router DOM
+* **Frontend:** React 19, Vite 8
+* **Styling:** Tailwind CSS 4, Custom Dark Theme (`#090A0F` / `#FAFAFA`)
+* **Database & Auth:** Supabase
+* **Real-Time:** WebRTC (PeerJS) & MQTT
+* **Testing:** Vitest, React Testing Library, jsdom (53+ tests)
 * **Deployment:** Vercel
 
 ---
+
+## 🌐 Live Application
+
+* **Live URL:** [https://waray-flix.vercel.app](https://waray-flix.vercel.app)
+* **Recommended Browser:** Brave Browser (for ad-free streaming)
+
