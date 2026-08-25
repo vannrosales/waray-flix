@@ -5,6 +5,7 @@ import { storageService } from '../services/storageService';
 import { getImageUrl } from '../services/tmdb';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 import { useAuth } from '../context/AuthContext';
+import EmptyState from '../components/common/EmptyState';
 
 export default function WatchlistPage() {
   useDocumentTitle('My Library & Watchlist — WarayFlix');
@@ -367,29 +368,18 @@ export default function WatchlistPage() {
           </div>
         ) : (
           /* Empty State */
-          <div className="py-20 flex flex-col items-center justify-center text-center space-y-4 border border-black/[0.06] rounded-3xl bg-white p-8 shadow-sm">
-            <div className="w-14 h-14 rounded-2xl bg-black/[0.04] border border-black/[0.08] flex items-center justify-center">
-              <Bookmark className="w-6 h-6 text-[#2563EB] stroke-[2]" />
-            </div>
-            <div className="space-y-1">
-              <h3 className="text-lg font-bold text-[#09090B] font-['Outfit']">
-                {searchQuery ? 'No matching titles found' : 'Your Watchlist is Empty'}
-              </h3>
-              <p className="text-xs text-[#52525B] font-normal max-w-sm">
-                {searchQuery 
+          <div className="border border-black/[0.06] rounded-3xl bg-white shadow-sm overflow-hidden">
+            <EmptyState
+              icon={Bookmark}
+              title={searchQuery ? 'No matching titles found' : 'Your Watchlist is Empty'}
+              description={
+                searchQuery
                   ? `No titles match "${searchQuery}". Try searching for another movie or show.`
-                  : 'Save movies and series you want to watch later and they will appear here.'}
-              </p>
-            </div>
-            {!searchQuery && (
-              <Link
-                to="/movies"
-                className="px-6 py-2.5 rounded-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-xs uppercase tracking-wider flex items-center gap-2 transition shadow-md"
-              >
-                <Compass className="w-3.5 h-3.5 stroke-[2]" />
-                <span>Explore Movies</span>
-              </Link>
-            )}
+                  : 'Save movies and series you want to watch later and they will appear here.'
+              }
+              actionText={!searchQuery ? 'Explore Movies' : null}
+              onAction={!searchQuery ? () => navigate('/movies') : null}
+            />
           </div>
         )}
       </section>

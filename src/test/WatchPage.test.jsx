@@ -283,10 +283,8 @@ describe('WatchPage — TV Episode Mode', () => {
     });
 
     // Close the drawer
-    const closeBtn = screen.getByLabelText
-      ? screen.queryByRole('button', { name: '' })
-      : document.querySelector('button[class*="rounded-full bg-white/10"]');
-    if (closeBtn) fireEvent.click(closeBtn);
+    const closeBtn = screen.getByLabelText('Close episode drawer');
+    fireEvent.click(closeBtn);
 
     await waitFor(() => {
       expect(document.querySelector('span.tracking-widest')).not.toBeInTheDocument();
