@@ -155,8 +155,8 @@ export const FRANCHISE_TIMELINES = [
         posterPath: '/sv1xJUazXeYqALzczSZ3O6nkH75.jpg',
       },
       {
-        id: 823464,
-        mediaId: 823464,
+        id: 822119,
+        mediaId: 822119,
         mediaType: 'movie',
         title: 'Captain America: Brave New World',
         year: '2025',
