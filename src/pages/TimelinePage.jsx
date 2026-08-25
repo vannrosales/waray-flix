@@ -282,36 +282,21 @@ export default function TimelinePage() {
       {/* ─── Main Content Canvas ─── */}
       <div className="max-w-[1440px] mx-auto px-6 md:px-12 space-y-8 mt-6">
         
-        {/* ─── Franchise Selector & Prep Progress Card ─── */}
+        {/* ─── MCU Saga Roadmap & Prep Progress Shelf ─── */}
         <div className="bg-white border border-black/[0.08] rounded-3xl p-6 sm:p-8 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
           
-          {/* Franchise Tabs */}
-          <div className="space-y-3 w-full md:w-auto">
-            <span className="text-[11px] font-mono text-[#52525B] uppercase tracking-wider font-semibold block">
-              Select Franchise Universe
-            </span>
-            <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
-              {FRANCHISE_TIMELINES.map((saga) => {
-                const isActive = saga.id === activeSagaId;
-                return (
-                  <button
-                    key={saga.id}
-                    onClick={() => {
-                      setActiveSagaId(saga.id);
-                      setActivePhase('all');
-                    }}
-                    className={`px-4 py-2 rounded-full text-xs font-mono transition cursor-pointer flex items-center gap-2 flex-shrink-0 border ${
-                      isActive
-                        ? 'bg-[#09090B] text-white border-transparent shadow-sm font-bold scale-[1.02]'
-                        : 'bg-zinc-50 hover:bg-zinc-100 text-[#52525B] hover:text-[#09090B] border-black/[0.08]'
-                    }`}
-                  >
-                    <Sparkles className="w-3.5 h-3.5 stroke-[1.5]" />
-                    <span>{saga.shortTitle}</span>
-                  </button>
-                );
-              })}
+          {/* Left: Lore & Timeline Scope */}
+          <div className="space-y-1 text-center md:text-left">
+            <div className="flex items-center justify-center md:justify-start gap-2 text-xs font-mono text-[#2563EB] font-bold uppercase tracking-wider">
+              <Sparkles className="w-3.5 h-3.5 stroke-[2]" />
+              <span>MARVEL CINEMATIC UNIVERSE CANON</span>
             </div>
+            <h2 className="text-xl sm:text-2xl font-bold font-['Outfit'] tracking-tight text-[#09090B]">
+              Road to Avengers: Doomsday Checklist
+            </h2>
+            <p className="text-xs text-[#52525B] font-mono">
+              15 Essential Titles • Phase 1 to Phase 6 Chronological Sequence
+            </p>
           </div>
 
           {/* Progress Tracker Dial */}
