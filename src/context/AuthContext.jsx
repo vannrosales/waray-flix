@@ -110,6 +110,39 @@ export function AuthProvider({ children }) {
       return { error: null };
     }
 
+    // 1. Try Google Identity Services (GIS) direct popup if VITE_GOOGLE_CLIENT_ID is provided
+    const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+    if (googleClientId && typeof window !== 'undefined' && window.google?.accounts?.id) {
+      try {
+        const idToken = await new Promise((resolve, reject) => {
+          window.google.accounts.id.initialize({
+            client_id: googleClientId,
+            callback: (res) => {
+              if (res.credential) resolve(res.credential);
+              else reject(new Error('No credentials returned from Google prompt.'));
+            },
+            auto_select: false,
+            cancel_on_tap_outside: true,
+          });
+          window.google.accounts.id.prompt((notification) => {
+            if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+              resolve(null);
+            }
+          });
+        });
+
+        if (idToken) {
+          return await supabase.auth.signInWithIdToken({
+            provider: 'google',
+            token: idToken,
+          });
+        }
+      } catch (err) {
+        console.warn('GIS prompt notice, falling back to standard OAuth:', err);
+      }
+    }
+
+    // 2. Standard OAuth Redirect
     return await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
