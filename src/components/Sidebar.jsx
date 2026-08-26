@@ -11,7 +11,8 @@ import {
   Sparkles, 
   Bookmark, 
   Clock, 
-  ShieldCheck 
+  ShieldCheck,
+  HelpCircle 
 } from 'lucide-react';
 import SearchModal from './SearchModal';
 import SurpriseModal from './SurpriseModal';
@@ -60,6 +61,7 @@ export default function Sidebar() {
   ];
 
   const infoLinks = [
+    { name: 'How It Works', path: '/how-it-works', icon: HelpCircle },
     { name: 'Legal / DMCA', path: '/legal', icon: ShieldCheck },
   ];
 

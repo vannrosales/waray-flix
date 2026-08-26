@@ -10,10 +10,9 @@ export const FRANCHISE_TIMELINES = [
     universe: 'Marvel Cinematic Universe',
     tagline: 'The essential Multiverse & Doom roadmap before the battle of the multiverse.',
     targetDate: '2026-05-01T00:00:00Z',
-    targetEventTitle: 'Avengers: Doomsday In Theaters',
-    backdropPath: '/or06FN3Dka5tukK1e9sl16pB3iy.jpg',
-    trailerKey: 'eOrNdBpGMv8',
-    trailerTitle: 'Avengers: Doomsday — Official Special Look & Cast Announcement',
+    backdropPath: '/s4v0UX1anfXm0UvloLsTTJ4v222.jpg',
+    trailerKey: 'irVNGjRFZGk',
+    trailerTitle: 'Avengers: Doomsday — Official Trailer',
     themeColor: '#ED1D24',
     phases: [
       { id: 'all', label: 'All Chronological Titles (15)' },

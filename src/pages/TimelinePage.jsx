@@ -23,18 +23,27 @@ export default function TimelinePage() {
   const [quickMedia, setQuickMedia] = useState(null);
   const [showVideo, setShowVideo] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
-  const [heroData, setHeroData] = useState({ backdrop: null, trailerKey: null });
-
   const currentTimeline = useMemo(() => {
     return FRANCHISE_TIMELINES.find(t => t.id === activeSagaId) || FRANCHISE_TIMELINES[0];
   }, [activeSagaId]);
 
   useDocumentTitle(`${currentTimeline.title} — WarayFlix`);
 
+  const [heroData, setHeroData] = useState(() => ({
+    backdrop: currentTimeline.backdropPath ? getImageUrl(currentTimeline.backdropPath, 'backdrop') : null,
+    trailerKey: currentTimeline.trailerKey || null
+  }));
+
   // Load exact Doomsday movie 1003596 trailer & backdrop
   useEffect(() => {
     let isMounted = true;
     setShowVideo(false);
+
+    // Sync initial state when saga changes
+    setHeroData({
+      backdrop: currentTimeline.backdropPath ? getImageUrl(currentTimeline.backdropPath, 'backdrop') : null,
+      trailerKey: currentTimeline.trailerKey || null
+    });
 
     async function loadHeroTrailer() {
       const destinationId = activeSagaId === 'mcu-doomsday' ? 1003596 : (currentTimeline.items[0]?.id || 1003596);
@@ -48,7 +57,7 @@ export default function TimelinePage() {
         const trailer = (videos || []).find(v => v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser')) || videos?.[0];
         
         setHeroData({
-          backdrop: details?.backdrop_path ? getImageUrl(details.backdrop_path, 'backdrop') : null,
+          backdrop: details?.backdrop_path ? getImageUrl(details.backdrop_path, 'backdrop') : (currentTimeline.backdropPath ? getImageUrl(currentTimeline.backdropPath, 'backdrop') : null),
           trailerKey: trailer?.key || currentTimeline.trailerKey
         });
       } catch (err) {

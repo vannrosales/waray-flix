@@ -6,6 +6,7 @@ import ScrollToTop from './components/ScrollToTop';
 import { AuthProvider } from './context/AuthContext';
 import { PlayerProvider } from './context/PlayerContext';
 import FloatingMiniPlayer from './components/FloatingMiniPlayer';
+import AnnouncementBanner from './components/common/AnnouncementBanner';
 import PageLoader from './components/common/PageLoader';
 import { Analytics } from "@vercel/analytics/react";
 
@@ -24,12 +25,15 @@ const WatchPartyPage = lazy(() => import('./pages/WatchPartyPage'));
 const WatchlistPage = lazy(() => import('./pages/WatchlistPage'));
 const TimelinePage = lazy(() => import('./pages/TimelinePage'));
 const LegalPage = lazy(() => import('./pages/LegalPage'));
+const HowItWorksPage = lazy(() => import('./pages/HowItWorksPage'));
+const AdminPage = lazy(() => import('./pages/AdminPage'));
 
 function Layout() {
   return (
     <div className="min-h-screen bg-[#000000] text-[#FFFFFF] font-sans selection:bg-white selection:text-black flex flex-col justify-between">
       <Sidebar />
       <div className="md:pl-64 flex flex-col flex-grow w-full min-w-0 transition-all duration-300">
+        <AnnouncementBanner />
         <main className="flex-grow">
           <Outlet />
         </main>
@@ -62,8 +66,11 @@ export default function App() {
                 <Route path="/network/:networkName/:id" element={<NetworkHubPage />} />
                 <Route path="/category/anime" element={<AnimePage />} />
                 <Route path="/anime" element={<AnimePage />} />
+                <Route path="/how-it-works" element={<HowItWorksPage />} />
+                <Route path="/guide" element={<HowItWorksPage />} />
                 <Route path="/legal" element={<LegalPage />} />
                 <Route path="/dmca" element={<LegalPage />} />
+                <Route path="/admin" element={<AdminPage />} />
               </Route>
 
               {/* Dedicated Immersive Fullscreen Watch Player */}
