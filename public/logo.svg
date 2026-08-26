@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 512" width="1024" height="512">
+  <defs>
+    <style>
+      .logo-text {
+        font-family: 'Montserrat', 'Arial Black', -apple-system, sans-serif;
+        font-weight: 900;
+        font-size: 130px;
+        letter-spacing: 4px;
+      }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1024" height="512" fill="#0A0A0A"/>
+
+  <!-- Left: White Square Clapperboard Box -->
+  <rect x="110" y="106" width="300" height="300" rx="28" fill="#FFFFFF"/>
+  <g transform="translate(195, 200)" stroke="#000000" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M-6 -5 L120 -32 C125 -33 130 -30 132 -25 L138 2 C139 7 136 12 131 13 L5 40 C0 41 -5 38 -7 33 L-13 6 C-14 1 -11 -4 -6 -5 Z"/>
+    <line x1="32" y1="-2" x2="36" y2="33"/>
+    <line x1="74" y1="-12" x2="78" y2="23"/>
+    <rect x="-10" y="24" width="154" height="96" rx="16"/>
+  </g>
+
+  <!-- Right: WARAY FLIX with 3D Chromatic Aberration -->
+  <g transform="translate(470, 240)">
+    <!-- Cyan Shift (-4px) -->
+    <text x="-6" y="0" class="logo-text" fill="#00C8FF">WARAY</text>
+    <text x="-6" y="140" class="logo-text" fill="#00C8FF">FLIX</text>
+
+    <!-- Orange-Red Shift (+4px) -->
+    <text x="6" y="0" class="logo-text" fill="#FF4500">WARAY</text>
+    <text x="6" y="140" class="logo-text" fill="#FF4500">FLIX</text>
+
+    <!-- Core White Text -->
+    <text x="0" y="0" class="logo-text" fill="#FFFFFF">WARAY</text>
+    <text x="0" y="140" class="logo-text" fill="#FFFFFF">FLIX</text>
+  </g>
+</svg>
