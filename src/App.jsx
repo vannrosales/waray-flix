@@ -7,8 +7,7 @@ import { AuthProvider } from './context/AuthContext';
 import { PlayerProvider } from './context/PlayerContext';
 import FloatingMiniPlayer from './components/FloatingMiniPlayer';
 import PageLoader from './components/common/PageLoader';
-import { Analytics } from "@vercel/analytics/react"
-
+import { Analytics } from "@vercel/analytics/react";
 
 // Dynamic route code-splitting for massive initial bundle reduction on mobile
 const Home = lazy(() => import('./pages/Home'));
@@ -25,7 +24,6 @@ const WatchPartyPage = lazy(() => import('./pages/WatchPartyPage'));
 const WatchlistPage = lazy(() => import('./pages/WatchlistPage'));
 const TimelinePage = lazy(() => import('./pages/TimelinePage'));
 const LegalPage = lazy(() => import('./pages/LegalPage'));
-
 
 function Layout() {
   return (
@@ -51,7 +49,6 @@ export default function App() {
             <Routes>
               {/* Main Application Layout with Floating Header & Footer */}
               <Route element={<Layout />}>
-                <Analytics />
                 <Route path="/" element={<Home />} />
                 <Route path="/movies" element={<Movies />} />
                 <Route path="/tv" element={<TVShows />} />
@@ -79,7 +76,8 @@ export default function App() {
             </Routes>
           </Suspense>
 
-          {/* Global Persistent Floating Picture-in-Picture Mini-Player */}
+          {/* Global Analytics and Floating Picture-in-Picture Mini-Player */}
+          <Analytics />
           <FloatingMiniPlayer />
         </PlayerProvider>
       </AuthProvider>
