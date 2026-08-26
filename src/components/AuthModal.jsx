@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Mail, Lock, User, ShieldCheck, ArrowRight, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { botShield } from '../utils/botShield';
 
 export default function AuthModal() {
   const { authModalOpen, closeAuthModal, signInWithEmail, signUpWithEmail, signInWithGoogle, isConfigured } = useAuth();
@@ -9,6 +10,7 @@ export default function AuthModal() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
+  const [honeypot, setHoneypot] = useState(''); // Anti-bot honeypot field
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
@@ -19,6 +21,17 @@ export default function AuthModal() {
     e.preventDefault();
     setErrorMsg('');
     setSuccessMsg('');
+
+    // Trap automated bots that fill out invisible honeypot input
+    if (botShield.isHoneypotTriggered(honeypot) || botShield.isBotDetected) {
+      setLoading(true);
+      setTimeout(() => {
+        setLoading(false);
+        setErrorMsg('Submission rejected by security shield.');
+      }, 1000);
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -111,6 +124,20 @@ export default function AuthModal() {
 
         {/* Email & Password Form */}
         <form onSubmit={handleSubmit} className="space-y-3">
+          {/* Hidden Honeypot Input for Bot Detection */}
+          <div className="opacity-0 absolute -left-[9999px] h-0 w-0 pointer-events-none overflow-hidden" aria-hidden="true">
+            <label htmlFor="user_secondary_url">Leave empty</label>
+            <input
+              id="user_secondary_url"
+              type="text"
+              name="user_secondary_url"
+              value={honeypot}
+              onChange={(e) => setHoneypot(e.target.value)}
+              tabIndex={-1}
+              autoComplete="off"
+            />
+          </div>
+
           {mode === 'signup' && (
             <div className="space-y-1">
               <label className="text-[10px] text-zinc-400 block uppercase font-medium">Display Name</label>

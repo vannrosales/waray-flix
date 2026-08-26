@@ -1,0 +1,71 @@
+# WarayFlix Bot & Scraper Policy
+# Block aggressive AI scrapers, SEO crawlers, and automated bot networks
+
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: PetalBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: SemrushBot-SA
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: Scrapy
+Disallow: /
+
+User-agent: DataForSeoBot
+Disallow: /
+
+User-agent: BLEXBot
+Disallow: /
+
+User-agent: MegaIndex
+Disallow: /
+
+User-agent: SeekportBot
+Disallow: /
+
+User-agent: Amazonbot
+Disallow: /
+
+# General Bot Restrictions for Streaming & Party endpoints
+User-agent: *
+Disallow: /watch/
+Disallow: /party/
+Disallow: /search
+Disallow: /api/
+Allow: /
+Allow: /movies
+Allow: /tv
+Allow: /timeline
+Allow: /legal
+
+Sitemap: https://warayflix.vercel.app/sitemap.xml
+

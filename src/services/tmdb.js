@@ -1,4 +1,5 @@
 import { CONFIG } from '../config/siteConfig';
+import { botShield } from '../utils/botShield';
 
 const BASE_URL = "https://api.themoviedb.org/3";
 export const IMAGE_BASE_URL = "https://image.tmdb.org/t/p";
@@ -39,6 +40,13 @@ export async function fetchFromTMDB(endpoint, params = {}) {
   const cached = memoryCache.get(cacheKey);
   if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
     return cached.data;
+  }
+
+  // 2. Anti-Bot / Rate-limiting Guard
+  if (!botShield.shouldAllowRequest()) {
+    if (cached) return cached.data;
+    console.warn(`[BotShield] Throttled rapid automated request to ${endpoint}`);
+    return [];
   }
 
   // 2. Fetch from network with deduping
