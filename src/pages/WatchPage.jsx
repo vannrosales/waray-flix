@@ -8,7 +8,6 @@ import { storageService } from '../services/storageService';
 import { fetchMediaDetails, fetchSeasonDetails } from '../services/tmdb';
 import WatchTopHUD from '../components/player/WatchTopHUD';
 import EpisodeDrawer from '../components/player/EpisodeDrawer';
-import GuestNudgeBanner from '../components/player/GuestNudgeBanner';
 import { useWatchHistoryTracker } from '../hooks/useWatchHistoryTracker';
 import { useWatchHUD } from '../hooks/useWatchHUD';
 
@@ -96,7 +95,7 @@ export default function WatchPage() {
   }, [nextEpisodeInfo, id, navigate]);
 
   // HUD & Shortcuts hook
-  const { hudVisible, menuRef } = useWatchHUD({
+  const { menuRef } = useWatchHUD({
     mobileMenuOpen,
     epDrawerOpen,
     type,
@@ -187,9 +186,8 @@ export default function WatchPage() {
         />
       </div>
 
-      {/* ─── TOP HUD ─── */}
+      {/* ─── TOP HUD (Always visible with Server Switcher & Sign In) ─── */}
       <WatchTopHUD
-        hudVisible={hudVisible}
         mediaTitle={mediaTitle}
         type={type}
         currentSeason={currentSeason}
@@ -202,6 +200,7 @@ export default function WatchPage() {
         inWatchlist={inWatchlist}
         onToggleWatchlist={handleToggleWatchlist}
         user={user}
+        onSignIn={openAuthModal}
         onOpenParty={() => (user ? navigate(`/party/${type}/${id}`) : openAuthModal())}
         onOpenShare={() => setShareOpen(true)}
         onEnterPiP={() => {
@@ -253,14 +252,6 @@ export default function WatchPage() {
           id={id}
           season={currentSeason}
           episode={currentEpisode}
-        />
-      )}
-
-      {/* ─── Guest Banner ─── */}
-      {!user && (
-        <GuestNudgeBanner
-          visible={hudVisible}
-          onSignIn={openAuthModal}
         />
       )}
     </div>

@@ -114,12 +114,14 @@ describe('WatchPage — Guest (not signed in)', () => {
     expect(iframe).toBeTruthy();
   });
 
-  it('shows Sign In nudge banner for guests', async () => {
+  it('shows Sign In button in top HUD for guests', async () => {
     renderWatchPage({ user: null, openAuthModal: mockOpenAuthModal });
-    const nudge = await waitFor(() =>
-      screen.getByText(/sync your watchlist/i)
+    const signInBtn = await waitFor(() =>
+      screen.getByRole('button', { name: /sign in/i })
     );
-    expect(nudge).toBeInTheDocument();
+    expect(signInBtn).toBeInTheDocument();
+    fireEvent.click(signInBtn);
+    expect(mockOpenAuthModal).toHaveBeenCalledOnce();
   });
 
   it('shows "Watchlist" button that opens auth modal when guest clicks it', async () => {
