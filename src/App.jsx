@@ -7,7 +7,7 @@ import { AuthProvider } from './context/AuthContext';
 import { PlayerProvider } from './context/PlayerContext';
 import FloatingMiniPlayer from './components/FloatingMiniPlayer';
 import PageLoader from './components/common/PageLoader';
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from "@vercel/analytics/react"
 
 
 // Dynamic route code-splitting for massive initial bundle reduction on mobile
