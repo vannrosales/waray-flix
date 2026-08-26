@@ -8,9 +8,7 @@ import {
   ChevronDown, 
   Lock, 
   FileCheck2,
-  Database,
-  Layers,
-  Cpu
+  UserCheck
 } from 'lucide-react';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 
@@ -20,21 +18,30 @@ export default function LegalPage() {
   const [openFaq, setOpenFaq] = useState(null);
 
   const keyMetrics = [
-    { label: 'MEDIA FILES HOSTED', value: '0 Files', desc: 'Zero local storage' },
-    { label: 'ARCHITECTURE', value: 'Decentralized', desc: 'Client-side aggregation' },
+    { label: 'MEDIA FILES HOSTED', value: '0 Files', desc: 'Zero local media storage' },
+    { label: 'ACCOUNT SECURITY', value: 'OAuth 2.0 / PKCE', desc: 'Encrypted token auth' },
     { label: 'METADATA SOURCE', value: 'TMDb API', desc: 'Open license attribution' },
-    { label: 'USER PRIVACY', value: 'Local-First', desc: 'Zero tracking telemetry' },
+    { label: 'DATA PRIVACY', value: 'Zero Tracking', desc: 'No ad tracking or profiling' },
   ];
 
   const navTabs = [
     { id: 'all', label: 'All Articles' },
+    { id: 'privacy', label: 'User Data & Auth' },
     { id: 'dmca', label: 'DMCA Safe Harbor' },
     { id: 'hosting', label: 'Non-Hosting Policy' },
-    { id: 'privacy', label: 'Data & Privacy' },
     { id: 'faq', label: 'Legal FAQ' },
   ];
 
   const policySections = [
+    {
+      id: 'privacy',
+      tag: 'USER PRIVACY & AUTH',
+      icon: UserCheck,
+      title: 'User Account & Authentication Privacy',
+      subtitle: 'Google OAuth & Cloud Sync Policy',
+      content:
+        'When you create an account or sign in with Google, we collect only your basic profile name and email address to authenticate your session. Passwords and credentials are never stored on our servers. Your cloud watchlist and watch history are stored with Row Level Security (RLS) encryption and are never sold, rented, or shared with third-party advertisers.'
+    },
     {
       id: 'hosting',
       tag: 'ARCHITECTURE',
@@ -42,7 +49,7 @@ export default function LegalPage() {
       title: 'Non-Hosting Aggregator Protocol',
       subtitle: 'Zero Media Storage Policy',
       content:
-        'WarayFlix functions strictly as an indexer and client-side web browser. We do not operate media storage servers, upload digital copies, or transmit video streams. All stream references point to third-party publicly accessible web endpoints that operate independently.'
+        'WarayFlix functions strictly as an indexer and client-side web directory. We do not operate media storage servers, upload digital copies, or transmit video streams. All stream references point to third-party publicly accessible web endpoints that operate independently.'
     },
     {
       id: 'dmca',
@@ -54,7 +61,7 @@ export default function LegalPage() {
         'In compliance with digital copyright frameworks, copyright owners should direct takedown requests directly to the external hosting entities where files are stored. WarayFlix maintains safe harbor compliance by operating solely as an informational directory.'
     },
     {
-      id: 'privacy',
+      id: 'metadata',
       tag: 'METADATA & API',
       icon: Globe,
       title: 'Third-Party Metadata Attribution',
@@ -75,16 +82,20 @@ export default function LegalPage() {
 
   const faqs = [
     {
+      q: 'What information does WarayFlix collect when I sign in?',
+      a: 'We only access your email address and display name provided during sign up or Google OAuth. We never access your contacts, private files, or external account details. Your credentials are protected via encrypted OAuth 2.0 / PKCE tokens.'
+    },
+    {
+      q: 'How is my watchlist and watch progress stored?',
+      a: 'For guest visitors, watch history and bookmarks remain strictly in your local browser storage. When signed in, data is synced securely to your private database partition protected by Supabase Row-Level Security.'
+    },
+    {
       q: 'Does WarayFlix store or stream media from its own servers?',
       a: 'No. WarayFlix possesses zero servers containing media files. We operate purely as an indexing search engine that references publicly available embeds across the web.'
     },
     {
       q: 'How should copyright owners remove infringing content?',
       a: 'Because content resides on independent third-party web hosters, removal notices must be submitted directly to the hosting provider holding the file.'
-    },
-    {
-      q: 'How does WarayFlix handle user bookmarks and privacy?',
-      a: 'All bookmarks, watch history, and playlist states are stored on your local browser by default, using zero external tracking cookies.'
     }
   ];
 
@@ -99,15 +110,15 @@ export default function LegalPage() {
       <div className="space-y-4">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#121212] border border-white/[0.08] text-xs font-bold text-zinc-300">
           <ShieldCheck className="w-3.5 h-3.5 text-white" />
-          <span>COMPLIANCE & LEGAL FRAMEWORK</span>
+          <span>COMPLIANCE, AUTH & LEGAL FRAMEWORK</span>
         </div>
 
         <div className="space-y-2">
           <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-white leading-[1.05]">
-            Legal Information & Terms
+            Legal, Privacy & Terms
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400 max-w-3xl leading-relaxed font-normal">
-            Information regarding WarayFlix&apos;s non-hosting indexing architecture, digital copyright safe harbor guidelines, and third-party attribution.
+            Information regarding WarayFlix&apos;s non-hosting indexing architecture, user authentication privacy, cloud sync encryption, and digital copyright safe harbor guidelines.
           </p>
         </div>
       </div>
@@ -188,11 +199,11 @@ export default function LegalPage() {
         })}
       </div>
 
-      {/* ─── Legal FAQ Accordion ─── */}
+      {/* ─── Legal & Privacy FAQ Accordion ─── */}
       <div className="bg-[#121212] border border-white/[0.08] rounded-2xl p-6 sm:p-8 space-y-5">
         <div className="flex items-center gap-2.5 pb-3 border-b border-white/[0.08]">
           <FileCheck2 className="w-4 h-4 text-white stroke-[2]" />
-          <h3 className="text-sm font-bold uppercase tracking-wider text-white">Legal & Architectural FAQ</h3>
+          <h3 className="text-sm font-bold uppercase tracking-wider text-white">Legal, Auth & Privacy FAQ</h3>
         </div>
 
         <div className="space-y-3">
@@ -229,8 +240,8 @@ export default function LegalPage() {
             <Lock className="w-4 h-4 stroke-[1.75]" />
           </div>
           <div>
-            <span className="text-white font-bold block">Privacy-First Architecture</span>
-            <span className="text-zinc-400 text-[11px]">All watch activity is stored client-side in browser memory with zero tracking profiles.</span>
+            <span className="text-white font-bold block">Zero-Tracking Authentication</span>
+            <span className="text-zinc-400 text-[11px]">User profile and watchlist sync are encrypted end-to-end with zero ad tracking or data reselling.</span>
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
