@@ -47,42 +47,58 @@ export default function AnnouncementBanner() {
     }
   };
 
+  const textChunk = (
+    <span className="inline-flex items-center gap-2.5 px-6 text-xs whitespace-nowrap">
+      {announcement.title && (
+        <span className="font-bold text-white uppercase tracking-wider">
+          {announcement.title}
+        </span>
+      )}
+      {announcement.title && <span className="text-zinc-500">·</span>}
+      <span className="text-zinc-300 font-normal">
+        {announcement.message}
+      </span>
+      <span className="text-zinc-600 font-bold px-2">★</span>
+    </span>
+  );
+
   return (
     <aside
       aria-label="System Announcement"
-      className="w-full bg-[#121212] border-b border-white/15 px-4 py-2.5 sm:px-6 relative z-30 transition-all select-none shadow-md mt-16 md:mt-0 animate-fade-in"
+      className="w-full bg-[#121212] border-b border-white/15 relative z-30 transition-all select-none shadow-md mt-16 md:mt-0 animate-fade-in overflow-hidden"
     >
-      <div className="max-w-[1440px] mx-auto flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2.5 min-w-0 flex-1">
-          <div className="flex items-center gap-1.5 shrink-0">
-            {getIcon()}
-            <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border ${typeConfig.badgeColor}`}>
-              {typeConfig.label}
-            </span>
-          </div>
+      <div className="flex items-center justify-between h-9 sm:h-10">
+        
+        {/* Fixed Left Badge */}
+        <div className="flex items-center gap-1.5 px-3 sm:px-4 py-1 bg-[#121212] border-r border-white/10 z-10 shrink-0 shadow-md">
+          {getIcon()}
+          <span className={`text-[9px] sm:text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border ${typeConfig.badgeColor}`}>
+            {typeConfig.label}
+          </span>
+        </div>
 
-          <div className="min-w-0 flex items-center gap-2 text-xs truncate">
-            {announcement.title && (
-              <span className="font-bold text-white truncate shrink-0">
-                {announcement.title}
-              </span>
-            )}
-            {announcement.title && <span className="text-zinc-500 hidden sm:inline">·</span>}
-            <span className="text-zinc-300 font-normal truncate">
-              {announcement.message}
-            </span>
+        {/* Moving Marquee Ticker */}
+        <div className="flex-1 overflow-hidden relative h-full flex items-center">
+          <div className="animate-marquee-scroll cursor-default">
+            {textChunk}
+            {textChunk}
+            {textChunk}
+            {textChunk}
           </div>
         </div>
 
-        {/* Dismiss Button */}
-        <button
-          onClick={() => setDismissed(true)}
-          className="p-1 rounded-md text-zinc-400 hover:text-white hover:bg-white/10 transition cursor-pointer shrink-0"
-          title="Dismiss notification"
-          aria-label="Dismiss banner"
-        >
-          <X className="w-3.5 h-3.5" />
-        </button>
+        {/* Fixed Right Dismiss Button */}
+        <div className="px-2 sm:px-3 bg-[#121212] border-l border-white/10 z-10 shrink-0 h-full flex items-center shadow-md">
+          <button
+            onClick={() => setDismissed(true)}
+            className="p-1 rounded-md text-zinc-400 hover:text-white hover:bg-white/10 transition cursor-pointer shrink-0"
+            title="Dismiss notification"
+            aria-label="Dismiss banner"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
       </div>
     </aside>
   );
