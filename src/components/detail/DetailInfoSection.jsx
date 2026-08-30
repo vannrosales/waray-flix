@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Play, Star, Clock, Bookmark, Layers, QrCode, ArrowRight, Users2, Film } from 'lucide-react';
 
@@ -19,6 +19,7 @@ export default function DetailInfoSection({
   onOpenShare
 }) {
   const navigate = useNavigate();
+  const [synopsisExpanded, setSynopsisExpanded] = useState(false);
 
   return (
     <div className="flex flex-col md:flex-row gap-8 items-start -mt-20 sm:-mt-28">
@@ -69,6 +70,24 @@ export default function DetailInfoSection({
                   {g.name}
                 </span>
               ))}
+            </div>
+          )}
+
+          {/* Synopsis / Overview */}
+          {media.overview && (
+            <div className="pt-2 space-y-1.5 max-w-2xl">
+              <p className="text-[11px] uppercase tracking-widest font-bold text-zinc-500">Synopsis</p>
+              <p className={`text-sm text-zinc-300 leading-relaxed ${!synopsisExpanded ? 'line-clamp-3' : ''}`}>
+                {media.overview}
+              </p>
+              {media.overview.length > 180 && (
+                <button
+                  onClick={() => setSynopsisExpanded(!synopsisExpanded)}
+                  className="text-[11px] font-bold text-zinc-400 hover:text-white underline underline-offset-2 cursor-pointer transition"
+                >
+                  {synopsisExpanded ? 'Show less' : 'Read more'}
+                </button>
+              )}
             </div>
           )}
         </div>
