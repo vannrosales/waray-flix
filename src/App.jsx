@@ -89,10 +89,10 @@ export default function App() {
             </Routes>
           </Suspense>
 
-          {/* Global Analytics, Floating Picture-in-Picture Mini-Player & Smart TV Remote Bar */}
+          {/* Global Analytics & Floating Picture-in-Picture Mini-Player (CastRemoteBar commented out) */}
           <Analytics />
           <FloatingMiniPlayer />
-          <CastRemoteBar />
+          {/* <CastRemoteBar /> */}
         </PlayerProvider>
       </AuthProvider>
     </BrowserRouter>

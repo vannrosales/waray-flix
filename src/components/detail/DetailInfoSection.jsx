@@ -132,7 +132,8 @@ export default function DetailInfoSection({
             <span>{isAdded ? 'In Watchlist' : 'Add to Watchlist'}</span>
           </button>
 
-          {onOpenCast && (
+          {/* Cast to TV Button (Temporarily commented out until public domain deployment) */}
+          {/* {onOpenCast && (
             <button 
               onClick={onOpenCast}
               className="px-4 py-2.5 rounded-xl border border-white/10 bg-white/[0.06] text-zinc-300 hover:text-cyan-400 hover:bg-white/[0.12] text-xs font-medium uppercase tracking-wider flex items-center gap-2 transition cursor-pointer backdrop-blur-md shadow-sm"
@@ -141,7 +142,7 @@ export default function DetailInfoSection({
               <Tv className="w-3.5 h-3.5 stroke-[1.5]" />
               <span className="hidden sm:inline">Cast to TV</span>
             </button>
-          )}
+          )} */}
 
           <button 
             onClick={onOpenParty}
