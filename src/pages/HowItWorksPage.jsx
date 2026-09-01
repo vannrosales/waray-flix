@@ -13,7 +13,8 @@ import {
   Search,
   CheckCircle2,
   ArrowRight,
-  ChevronDown
+  ChevronDown,
+  Monitor
 } from 'lucide-react';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 
@@ -22,6 +23,18 @@ export default function HowItWorksPage() {
   const [openFaq, setOpenFaq] = useState(null);
 
   const guideCards = [
+    {
+      icon: Monitor,
+      badge: 'WINDOWS APP',
+      title: 'Native Windows Desktop Edition',
+      desc: 'Supercharge your movie marathon with zero browser lag.',
+      steps: [
+        'Visit the Windows App page or click the download link in the sidebar.',
+        'Run the installer (WarayFlix_1.0.0_x64-setup.exe) on Windows 10/11.',
+        'Enjoy lightweight RAM usage, system tray minimization, and instant playback.',
+        'Smart automatic server failover keeps your stream uninterrupted.'
+      ]
+    },
     {
       icon: Play,
       badge: 'STREAMING',

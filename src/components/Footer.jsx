@@ -30,6 +30,9 @@ export default function Footer() {
             <Link to="/tv" className="hover:text-white transition">Series</Link>
             <Link to="/watchlist" className="hover:text-white transition">Watchlist</Link>
             <Link to="/category/anime" className="hover:text-white transition">Anime</Link>
+            <Link to="/windows" className="text-white font-bold hover:underline underline-offset-4 transition">
+              Windows App
+            </Link>
             <Link to="/how-it-works" className="hover:text-white transition">How It Works</Link>
             <Link to="/legal" className="hover:text-white transition font-semibold text-white">Legal / DMCA</Link>
           </div>

@@ -29,6 +29,7 @@ const LegalPage = lazy(() => import('./pages/LegalPage'));
 const HowItWorksPage = lazy(() => import('./pages/HowItWorksPage'));
 const AdminPage = lazy(() => import('./pages/AdminPage'));
 const TvReceiverPage = lazy(() => import('./pages/TvReceiverPage'));
+const WindowsAppPage = lazy(() => import('./pages/WindowsAppPage'));
 
 function Layout() {
   return (
@@ -70,6 +71,9 @@ export default function App() {
                 <Route path="/anime" element={<AnimePage />} />
                 <Route path="/how-it-works" element={<HowItWorksPage />} />
                 <Route path="/guide" element={<HowItWorksPage />} />
+                <Route path="/windows" element={<WindowsAppPage />} />
+                <Route path="/desktop" element={<WindowsAppPage />} />
+                <Route path="/download" element={<WindowsAppPage />} />
                 <Route path="/legal" element={<LegalPage />} />
                 <Route path="/dmca" element={<LegalPage />} />
                 <Route path="/admin" element={<AdminPage />} />

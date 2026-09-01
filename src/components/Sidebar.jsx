@@ -12,13 +12,16 @@ import {
   Bookmark, 
   Clock, 
   ShieldCheck,
-  HelpCircle 
+  HelpCircle,
+  Download,
+  Monitor
 } from 'lucide-react';
 import SearchModal from './SearchModal';
 import SurpriseModal from './SurpriseModal';
 import ShortcutsModal from './ShortcutsModal';
 import AuthModal from './AuthModal';
 import SidebarProfileDeck from './sidebar/SidebarProfileDeck';
+import { CONFIG } from '../config/siteConfig';
 
 export default function Sidebar() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -61,6 +64,7 @@ export default function Sidebar() {
   ];
 
   const infoLinks = [
+    { name: 'Windows App', path: '/windows', icon: Monitor, badge: 'NEW' },
     { name: 'How It Works', path: '/how-it-works', icon: HelpCircle },
     { name: 'Legal / DMCA', path: '/legal', icon: ShieldCheck },
   ];
@@ -91,6 +95,31 @@ export default function Sidebar() {
                 </span>
               )}
             </button>
+          );
+        }
+
+        if (link.href) {
+          return (
+            <a
+              key={link.name}
+              href={link.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setMobileOpen(false)}
+              className="flex items-center justify-between px-3.5 py-2.5 rounded-none text-xs font-bold text-zinc-400 hover:text-white hover:bg-white/[0.05] transition group relative select-none"
+              title="Download WarayFlix for Windows"
+            >
+              <div className="flex items-center gap-3">
+                <Icon className="w-4 h-4 stroke-[2] shrink-0 text-zinc-400 group-hover:text-cyan-400 transition-colors" />
+                <span className="leading-none group-hover:text-cyan-400 transition-colors">{link.name}</span>
+              </div>
+
+              {link.badge && (
+                <span className="text-[9px] font-black tracking-widest uppercase px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 shadow-xs">
+                  {link.badge}
+                </span>
+              )}
+            </a>
           );
         }
 

@@ -7,6 +7,7 @@ const makeTimeQuery = (start) => {
 export const CONFIG = {
   websiteName: "WarayFlix",
   logoText: "waray-flix",
+  desktopAppUrl: "https://www.mediafire.com/file/p7razjd5dvs2jlx/WarayFlix_1.0.0_x64-setup.exe/file",
   tmdbApiKey: import.meta.env.VITE_TMDB_API_KEY || "40825dff55157fff1c3d07ca8c5daf34",
 
   players: [
