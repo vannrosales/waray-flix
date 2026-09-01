@@ -1,4 +1,4 @@
-﻿use tauri::{
+use tauri::{
   menu::{Menu, MenuItem},
   tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
   Manager, WindowEvent,
@@ -23,9 +23,16 @@ pub fn run() {
 
       let menu = Menu::with_items(app, &[&show_i, &hide_i, &quit_i])?;
 
+      let default_icon = app.default_window_icon().cloned();
+      if let Some(icon) = default_icon.as_ref() {
+        if let Some(window) = app.get_webview_window("main") {
+          let _ = window.set_icon(icon.clone());
+        }
+      }
+
       // Build System Tray Icon
       let _tray = TrayIconBuilder::new()
-        .icon(app.default_window_icon().unwrap().clone())
+        .icon(default_icon.unwrap_or_else(|| tauri::image::Image::new(&[], 0, 0)))
         .menu(&menu)
         .tooltip("WarayFlix — Cinema Streaming")
         .on_menu_event(|app, event| match event.id.as_ref() {
