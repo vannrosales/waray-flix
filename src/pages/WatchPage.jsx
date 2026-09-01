@@ -203,9 +203,14 @@ export default function WatchPage() {
     setInWatchlist(Array.isArray(updated) && updated.some(item => String(item.id || item.media_id) === String(id)));
   }, [user, id, openAuthModal]);
 
+  // Guaranteed reliable Back exit (bypasses browser history pollution from ad redirects)
+  const handleBack = useCallback(() => {
+    navigate(`/details/${type}/${id}`);
+  }, [navigate, type, id]);
+
   return (
     <div className="fixed inset-0 z-50 bg-black flex flex-col font-sans overflow-hidden select-none">
-      {/* ─── Fullscreen Video Layer ─── */}
+      {/* ─── Fullscreen Video Layer with Ad/Redirect Shield ─── */}
       <div className="absolute inset-0 z-0 bg-black">
         <iframe
           src={embedUrl}
@@ -213,7 +218,9 @@ export default function WatchPage() {
           title={`${activePlayer.name} Video Player`}
           className="w-full h-full border-0 pointer-events-auto"
           allowFullScreen
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts"
+          referrerPolicy="no-referrer"
         />
       </div>
 
@@ -230,7 +237,7 @@ export default function WatchPage() {
         type={type}
         currentSeason={currentSeason}
         currentEpisode={currentEpisode}
-        onBack={() => navigate(-1)}
+        onBack={handleBack}
         nextEpisodeInfo={nextEpisodeInfo}
         onNextEpisode={handleNextEpisode}
         epDrawerOpen={epDrawerOpen}
