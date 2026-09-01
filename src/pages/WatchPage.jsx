@@ -210,7 +210,7 @@ export default function WatchPage() {
 
   return (
     <div className="fixed inset-0 z-50 bg-black flex flex-col font-sans overflow-hidden select-none">
-      {/* ─── Fullscreen Video Layer with Ad/Redirect Shield ─── */}
+      {/* ─── Fullscreen Video Layer ─── */}
       <div className="absolute inset-0 z-0 bg-black">
         <iframe
           src={embedUrl}
@@ -218,9 +218,7 @@ export default function WatchPage() {
           title={`${activePlayer.name} Video Player`}
           className="w-full h-full border-0 pointer-events-auto"
           allowFullScreen
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts"
-          referrerPolicy="no-referrer"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         />
       </div>
 

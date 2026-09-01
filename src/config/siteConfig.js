@@ -19,14 +19,14 @@ export const CONFIG = {
     {
       id: 'vidsrc',
       name: 'VidSrc',
-      getMovieUrl: (id, start) => `https://vidsrc.to/embed/movie/${id}${makeTimeQuery(start)}`,
-      getTvUrl: (id, s, e, start) => `https://vidsrc.to/embed/tv/${id}/${s}/${e}${makeTimeQuery(start)}`
+      getMovieUrl: (id, start) => `https://vidsrc.cc/v2/embed/movie/${id}${makeTimeQuery(start)}`,
+      getTvUrl: (id, s, e, start) => `https://vidsrc.cc/v2/embed/tv/${id}/${s}/${e}${makeTimeQuery(start)}`
     },
     {
-      id: 'zoryva',
-      name: 'Zoryva',
-      getMovieUrl: (id, start) => `https://zoryva.me/embedded/movie/${id}${makeTimeQuery(start)}`,
-      getTvUrl: (id, s, e, start) => `https://zoryva.me/embedded/tv/${id}/${s}/${e}${makeTimeQuery(start)}`
+      id: 'videasy',
+      name: 'Videasy',
+      getMovieUrl: (id, start) => `https://player.videasy.to/movie/${id}${makeTimeQuery(start)}`,
+      getTvUrl: (id, s, e, start) => `https://player.videasy.to/tv/${id}/${s}/${e}${makeTimeQuery(start)}`
     },
     {
       id: 'vidcore',
@@ -35,10 +35,10 @@ export const CONFIG = {
       getTvUrl: (id, s, e, start) => `https://www.vidcore.org/embed/tv/${id}/${s}/${e}${makeTimeQuery(start)}`
     },
     {
-      id: 'videasy',
-      name: 'Videasy',
-      getMovieUrl: (id, start) => `https://player.videasy.to/movie/${id}${makeTimeQuery(start)}`,
-      getTvUrl: (id, s, e, start) => `https://player.videasy.to/tv/${id}/${s}/${e}${makeTimeQuery(start)}`
+      id: 'zoryva',
+      name: 'Zoryva X',
+      getMovieUrl: (id, start) => `https://zoryva.me/embedded/movie/${id}${makeTimeQuery(start)}`,
+      getTvUrl: (id, s, e, start) => `https://zoryva.me/embedded/tv/${id}/${s}/${e}${makeTimeQuery(start)}`
     }
   ]
 };
