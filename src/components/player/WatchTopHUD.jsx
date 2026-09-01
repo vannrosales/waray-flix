@@ -6,6 +6,7 @@ import {
   PictureInPicture2,
   Users2,
   QrCode,
+  Tv,
   Bookmark,
   BookmarkCheck,
   LogIn
@@ -32,6 +33,7 @@ export default function WatchTopHUD({
   onSignIn,
   onOpenParty,
   onOpenShare,
+  onOpenCast,
   onEnterPiP,
   players,
   selectedPlayerId,
@@ -116,6 +118,18 @@ export default function WatchTopHUD({
             )}
             <span className="hidden lg:inline">{inWatchlist ? 'Saved' : 'Watchlist'}</span>
           </button>
+
+          {/* Cast to TV Button */}
+          {onOpenCast && (
+            <button
+              onClick={onOpenCast}
+              className={`${pillDark} p-2 sm:px-3 sm:py-1.5 font-bold shrink-0 hover:text-cyan-400`}
+              title="Cast to Smart TV"
+            >
+              <Tv className="w-3.5 h-3.5 stroke-[2]" />
+              <span className="hidden xl:inline">Cast TV</span>
+            </button>
+          )}
 
           {/* PiP Mini Player — Hidden on small mobile */}
           <button

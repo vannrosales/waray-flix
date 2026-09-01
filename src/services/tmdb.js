@@ -191,18 +191,35 @@ export async function fetchPersonDetails(personId) {
 export async function fetchRandomMediaByGenre(genreIds, type = 'movie') {
   const page = Math.floor(Math.random() * 3) + 1;
   const endpoint = type === 'movie' ? '/discover/movie' : '/discover/tv';
+  const minVoteCount = type === 'movie' ? '100' : '30';
   const params = {
     sort_by: 'popularity.desc',
-    'vote_count.gte': '150',
-    'vote_average.gte': '6.5',
+    'vote_count.gte': minVoteCount,
+    'vote_average.gte': '5.5',
     page
   };
+
   if (genreIds && genreIds !== 'all') {
     params.with_genres = genreIds;
   }
-  const results = await fetchFromTMDB(endpoint, params);
-  const valid = (results || []).filter(item => item.poster_path && item.backdrop_path);
+
+  let results = await fetchFromTMDB(endpoint, params);
+
+  // Fallback without strict vote average if nothing was returned for niche genre
+  if (!results || results.length === 0) {
+    const fallbackParams = {
+      sort_by: 'popularity.desc',
+      page: 1
+    };
+    if (genreIds && genreIds !== 'all') {
+      fallbackParams.with_genres = genreIds;
+    }
+    results = await fetchFromTMDB(endpoint, fallbackParams);
+  }
+
+  const valid = (results || []).filter(item => item && item.poster_path);
   if (valid.length === 0) return null;
+
   const randomIndex = Math.floor(Math.random() * valid.length);
   return { ...valid[randomIndex], media_type: type };
 }

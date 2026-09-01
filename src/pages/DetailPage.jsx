@@ -11,6 +11,7 @@ import DetailHeroVisual from '../components/detail/DetailHeroVisual';
 import DetailInfoSection from '../components/detail/DetailInfoSection';
 import DetailCastSection from '../components/detail/DetailCastSection';
 import DetailSeasonPicker from '../components/detail/DetailSeasonPicker';
+import CastModal from '../components/cast/CastModal';
 
 export default function DetailPage() {
   const { type, id } = useParams();
@@ -26,6 +27,7 @@ export default function DetailPage() {
   const [showVideo, setShowVideo] = useState(false);
   const [watchProgress, setWatchProgress] = useState(null);
   const [shareOpen, setShareOpen] = useState(false);
+  const [castOpen, setCastOpen] = useState(false);
 
   const { isAdded, toggle } = usePlaylist(id);
 
@@ -140,6 +142,7 @@ export default function DetailPage() {
           onToggleWatchlist={() => toggle({ ...media, media_type: type })}
           onOpenParty={() => user ? navigate(`/party/${type}/${id}`) : openAuthModal()}
           onOpenShare={() => setShareOpen(true)}
+          onOpenCast={() => setCastOpen(true)}
         />
 
         <DetailCastSection castList={castList} />
@@ -169,6 +172,17 @@ export default function DetailPage() {
         isOpen={shareOpen} 
         onClose={() => setShareOpen(false)} 
         title={media.title || media.name} 
+      />
+
+      <CastModal 
+        isOpen={castOpen} 
+        onClose={() => setCastOpen(false)} 
+        media={media}
+        type={type}
+        id={id}
+        season={selectedSeason}
+        episode={1}
+        currentSeconds={totalSeconds}
       />
     </div>
   );

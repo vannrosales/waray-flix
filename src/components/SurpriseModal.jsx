@@ -4,12 +4,48 @@ import { fetchRandomMediaByGenre, getImageUrl } from '../services/tmdb';
 import { X, Play, Dices, Star, ArrowRight, Film, RefreshCw } from 'lucide-react';
 
 const MOODS = [
-  { id: 'random', label: 'Surprise Me', genres: 'all', desc: 'Any genre or masterpiece' },
-  { id: 'mind_bending', label: 'Mind-Bending', genres: '878,9648', desc: 'Sci-Fi & Psychological Mystery' },
-  { id: 'adrenaline', label: 'Adrenaline Rush', genres: '28,53', desc: 'High-Octane Action & Thrillers' },
-  { id: 'dark_gritty', label: 'Dark & Gritty', genres: '80,27', desc: 'Crime Noir & Horror' },
-  { id: 'cozy_fun', label: 'Cozy & Fun', genres: '35,16', desc: 'Feel-Good Comedy & Animation' },
-  { id: 'prestige', label: 'Prestige Drama', genres: '18', desc: 'Critically Acclaimed Masterpieces' },
+  { 
+    id: 'random', 
+    label: 'Surprise Me', 
+    movieGenres: 'all', 
+    tvGenres: 'all', 
+    desc: 'Any genre or masterpiece' 
+  },
+  { 
+    id: 'mind_bending', 
+    label: 'Mind-Bending', 
+    movieGenres: '878,9648', 
+    tvGenres: '10765,9648', // 10765 is Sci-Fi & Fantasy for TV
+    desc: 'Sci-Fi & Psychological Mystery' 
+  },
+  { 
+    id: 'adrenaline', 
+    label: 'Adrenaline Rush', 
+    movieGenres: '28,53', 
+    tvGenres: '10759', // 10759 is Action & Adventure for TV
+    desc: 'High-Octane Action & Thrillers' 
+  },
+  { 
+    id: 'dark_gritty', 
+    label: 'Dark & Gritty', 
+    movieGenres: '80,27', 
+    tvGenres: '80,9648', 
+    desc: 'Crime Noir, Thriller & Horror' 
+  },
+  { 
+    id: 'cozy_fun', 
+    label: 'Cozy & Fun', 
+    movieGenres: '35,16', 
+    tvGenres: '35,16', // 35 Comedy, 16 Animation
+    desc: 'Feel-Good Comedy & Animation' 
+  },
+  { 
+    id: 'prestige', 
+    label: 'Prestige Drama', 
+    movieGenres: '18', 
+    tvGenres: '18', 
+    desc: 'Critically Acclaimed Masterpieces' 
+  },
 ];
 
 export default function SurpriseModal({ isOpen, onClose }) {
@@ -19,21 +55,29 @@ export default function SurpriseModal({ isOpen, onClose }) {
   const [pickedMedia, setPickedMedia] = useState(null);
   const [isRolling, setIsRolling] = useState(false);
 
-  if (!isOpen) return null;
-
-  const handleRoll = async (mood = selectedMood, type = mediaType) => {
+  const handleRoll = React.useCallback(async (mood = selectedMood, type = mediaType) => {
     setIsRolling(true);
     try {
-      const data = await fetchRandomMediaByGenre(mood.genres, type);
+      const genres = type === 'tv' ? mood.tvGenres : mood.movieGenres;
+      const data = await fetchRandomMediaByGenre(genres, type);
       setTimeout(() => {
         setPickedMedia(data);
         setIsRolling(false);
-      }, 400);
+      }, 350);
     } catch (err) {
       console.error("Roll failed:", err);
       setIsRolling(false);
     }
-  };
+  }, [selectedMood, mediaType]);
+
+  // Automatically roll on first open
+  React.useEffect(() => {
+    if (isOpen) {
+      handleRoll(selectedMood, mediaType);
+    }
+  }, [isOpen]);
+
+  if (!isOpen) return null;
 
   const handleSelectMood = (mood) => {
     setSelectedMood(mood);

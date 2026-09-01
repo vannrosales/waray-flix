@@ -9,6 +9,7 @@ import FloatingMiniPlayer from './components/FloatingMiniPlayer';
 import AnnouncementBanner from './components/common/AnnouncementBanner';
 import PageLoader from './components/common/PageLoader';
 import { Analytics } from "@vercel/analytics/react";
+import CastRemoteBar from './components/cast/CastRemoteBar';
 
 // Dynamic route code-splitting for massive initial bundle reduction on mobile
 const Home = lazy(() => import('./pages/Home'));
@@ -27,6 +28,7 @@ const TimelinePage = lazy(() => import('./pages/TimelinePage'));
 const LegalPage = lazy(() => import('./pages/LegalPage'));
 const HowItWorksPage = lazy(() => import('./pages/HowItWorksPage'));
 const AdminPage = lazy(() => import('./pages/AdminPage'));
+const TvReceiverPage = lazy(() => import('./pages/TvReceiverPage'));
 
 function Layout() {
   return (
@@ -80,12 +82,17 @@ export default function App() {
               {/* P2P Synchronized Watch Party Rooms */}
               <Route path="/party/:type/:id" element={<WatchPartyPage />} />
               <Route path="/party/:type/:id/:season/:episode" element={<WatchPartyPage />} />
+
+              {/* 📺 Smart TV & Chromecast Receiver Mode */}
+              <Route path="/tv" element={<TvReceiverPage />} />
+              <Route path="/cast" element={<TvReceiverPage />} />
             </Routes>
           </Suspense>
 
-          {/* Global Analytics and Floating Picture-in-Picture Mini-Player */}
+          {/* Global Analytics, Floating Picture-in-Picture Mini-Player & Smart TV Remote Bar */}
           <Analytics />
           <FloatingMiniPlayer />
+          <CastRemoteBar />
         </PlayerProvider>
       </AuthProvider>
     </BrowserRouter>

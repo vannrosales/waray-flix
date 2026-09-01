@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Play, Star, Clock, Bookmark, Layers, QrCode, ArrowRight, Users2, Film } from 'lucide-react';
+import { Play, Star, Clock, Bookmark, Layers, QrCode, ArrowRight, Users2, Film, Tv } from 'lucide-react';
 
 export default function DetailInfoSection({
   media,
@@ -16,7 +16,8 @@ export default function DetailInfoSection({
   onPlayClick,
   onToggleWatchlist,
   onOpenParty,
-  onOpenShare
+  onOpenShare,
+  onOpenCast
 }) {
   const navigate = useNavigate();
   const [synopsisExpanded, setSynopsisExpanded] = useState(false);
@@ -130,6 +131,17 @@ export default function DetailInfoSection({
             <Bookmark className="w-3.5 h-3.5 stroke-[1.5]" />
             <span>{isAdded ? 'In Watchlist' : 'Add to Watchlist'}</span>
           </button>
+
+          {onOpenCast && (
+            <button 
+              onClick={onOpenCast}
+              className="px-4 py-2.5 rounded-xl border border-white/10 bg-white/[0.06] text-zinc-300 hover:text-cyan-400 hover:bg-white/[0.12] text-xs font-medium uppercase tracking-wider flex items-center gap-2 transition cursor-pointer backdrop-blur-md shadow-sm"
+              title="Cast to Smart TV or Chromecast"
+            >
+              <Tv className="w-3.5 h-3.5 stroke-[1.5]" />
+              <span className="hidden sm:inline">Cast to TV</span>
+            </button>
+          )}
 
           <button 
             onClick={onOpenParty}

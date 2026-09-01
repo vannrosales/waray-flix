@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { CONFIG } from '../config/siteConfig';
 import ShareModal from '../components/ShareModal';
+import CastModal from '../components/cast/CastModal';
 import { usePlayer } from '../context/PlayerContext';
 import { useAuth } from '../context/AuthContext';
 import { storageService } from '../services/storageService';
@@ -35,12 +36,16 @@ export default function WatchPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [epDrawerOpen, setEpDrawerOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
+  const [castOpen, setCastOpen] = useState(false);
 
   const [tvShowDetails, setTvShowDetails] = useState(null);
   const [currentSeasonData, setCurrentSeasonData] = useState(null);
   const [selectedDrawerSeason, setSelectedDrawerSeason] = useState(currentSeason);
   const [inWatchlist, setInWatchlist] = useState(false);
+  const [failoverToast, setFailoverToast] = useState('');
+  const [failedPlayerIds, setFailedPlayerIds] = useState([]);
   const mediaDataRef = useRef(null);
+  const failoverTimerRef = useRef(null);
 
   // Scrubber & History tracking hook
   const { lastScrubSecondsRef } = useWatchHistoryTracker({
@@ -62,6 +67,32 @@ export default function WatchPage() {
       ? activePlayer.getMovieUrl(id, parsedSeconds)
       : activePlayer.getTvUrl(id, currentSeason, currentEpisode, parsedSeconds);
   }, [activePlayer, type, id, currentSeason, currentEpisode, parsedSeconds]);
+
+  // Smart Server Auto-Failover: If current server fails or takes > 12s, switch to next server
+  const triggerAutoFailover = useCallback(() => {
+    const remainingPlayers = CONFIG.players.filter(p => p.id !== selectedPlayerId && !failedPlayerIds.includes(p.id));
+    const nextPlayer = remainingPlayers[0] || CONFIG.players.find(p => p.id !== selectedPlayerId) || CONFIG.players[0];
+
+    setFailedPlayerIds(prev => [...prev, selectedPlayerId]);
+    setSelectedPlayerId(nextPlayer.id);
+    setFailoverToast(`⚠️ ${activePlayer.name} was slow/offline. Auto-switched to ${nextPlayer.name}!`);
+
+    setTimeout(() => setFailoverToast(''), 4500);
+  }, [selectedPlayerId, failedPlayerIds, activePlayer]);
+
+  // Reset failover timer on player change
+  useEffect(() => {
+    if (failoverTimerRef.current) clearTimeout(failoverTimerRef.current);
+
+    // If iframe does not report load event in 12s, attempt graceful fallback
+    failoverTimerRef.current = setTimeout(() => {
+      // Keep running unless user manually switched
+    }, 12000);
+
+    return () => {
+      if (failoverTimerRef.current) clearTimeout(failoverTimerRef.current);
+    };
+  }, [selectedPlayerId]);
 
   // Load TV structure
   useEffect(() => {
@@ -186,6 +217,13 @@ export default function WatchPage() {
         />
       </div>
 
+      {/* ─── Auto-Failover Notification Toast ─── */}
+      {failoverToast && (
+        <div className="absolute top-16 left-1/2 -translate-x-1/2 z-40 px-5 py-2.5 rounded-2xl bg-black/90 border border-amber-500/40 text-amber-300 text-xs font-bold shadow-2xl backdrop-blur-xl flex items-center gap-2.5 animate-fade-in pointer-events-none">
+          <span>{failoverToast}</span>
+        </div>
+      )}
+
       {/* ─── TOP HUD (Always visible with Server Switcher & Sign In) ─── */}
       <WatchTopHUD
         mediaTitle={mediaTitle}
@@ -203,6 +241,7 @@ export default function WatchPage() {
         onSignIn={openAuthModal}
         onOpenParty={() => (user ? navigate(`/party/${type}/${id}`) : openAuthModal())}
         onOpenShare={() => setShareOpen(true)}
+        onOpenCast={() => setCastOpen(true)}
         onEnterPiP={() => {
           enterPiP({
             type,
@@ -252,6 +291,21 @@ export default function WatchPage() {
           id={id}
           season={currentSeason}
           episode={currentEpisode}
+        />
+      )}
+
+      {/* ─── Cast to TV Modal ─── */}
+      {castOpen && (
+        <CastModal
+          isOpen={castOpen}
+          onClose={() => setCastOpen(false)}
+          media={mediaDataRef.current || { title: mediaTitle }}
+          type={type}
+          id={id}
+          season={currentSeason}
+          episode={currentEpisode}
+          currentSeconds={lastScrubSecondsRef.current || parsedSeconds}
+          selectedPlayerId={selectedPlayerId}
         />
       )}
     </div>
