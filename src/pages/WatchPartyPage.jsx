@@ -23,14 +23,6 @@ export default function WatchPartyPage() {
   const [roomId] = useState(() => searchParams.get('room') || `PARTY-${id}-${Math.floor(1000 + Math.random() * 9000)}`);
   const [username] = useState(() => authUser || `Viewer-${Math.floor(100 + Math.random() * 900)}`);
 
-  // Auth guard — redirect unauthenticated users back and prompt sign-in
-  useEffect(() => {
-    if (user === null) {
-      navigate(`/details/${type}/${id}`, { replace: true });
-      openAuthModal();
-    }
-  }, [user, type, id, navigate, openAuthModal]);
-
   // Ensure address bar always has ?room= parameter for 1-click sharing
   useEffect(() => {
     if (!searchParams.get('room')) {
