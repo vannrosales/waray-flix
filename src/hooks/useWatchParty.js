@@ -240,9 +240,44 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
     });
   }, [isHost, username, hostUsername, isHostOnlyLock, broadcastData]);
 
+  const adjustPlaybackTime = useCallback((deltaSecs) => {
+    if (isHostOnlyLock && !isHost && username !== hostUsername) return;
+    const currentSecs = getCurrentSeconds();
+    const newTime = Math.max(0, currentSecs + deltaSecs);
+    setManualTime(newTime);
+    setAppliedTime(newTime);
+    setCurrentPlaybackSecs(newTime);
+    setSyncKey((k) => k + 1);
+
+    broadcastData({
+      type: 'SYNC_PLAYBACK',
+      hostTime: newTime,
+      selectedPlayerId,
+      isHost,
+      hostUsername,
+      isHostOnlyLock,
+      forceApply: true,
+    });
+  }, [isHostOnlyLock, isHost, username, hostUsername, selectedPlayerId, broadcastData, getCurrentSeconds, setManualTime]);
+
+  const syncToHost = useCallback(() => {
+    if (hostTime > 0) {
+      setManualTime(hostTime);
+      setAppliedTime(hostTime);
+      setCurrentPlaybackSecs(hostTime);
+      setSyncKey((k) => k + 1);
+    } else {
+      broadcastData({
+        type: 'REQUEST_HOST_SYNC',
+        origin: username,
+      });
+    }
+  }, [hostTime, setManualTime, broadcastData, username]);
+
   return {
     selectedPlayerId,
     setSelectedPlayerId: handlePlayerChange,
+    changePlayer: handlePlayerChange,
     connectionStatus,
     currentPlaybackSecs,
     hostTime,
@@ -252,11 +287,16 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
     isHostOnlyLock,
     hostUsername,
     toggleHostOnlyLock,
+    toggleHostLock: toggleHostOnlyLock,
     syncAllPeers,
+    broadcastSync: syncAllPeers,
+    syncToHost,
+    adjustPlaybackTime,
     messages,
     sendMessage,
     floatingReactions,
     triggerReaction,
     activePeers: Object.values(activePeers),
+    peersList: Object.values(activePeers),
   };
 }

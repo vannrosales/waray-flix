@@ -1,5 +1,6 @@
 import { connectWatchPartyMqtt } from './watchPartyMqtt';
 import { setupWatchPartyPeer } from './watchPartyPeer';
+import { setupWatchPartySupabase } from './watchPartySupabase';
 
 export function setupWatchPartyNetworking({
   roomId,
@@ -35,6 +36,12 @@ export function setupWatchPartyNetworking({
     onHostStatusChange
   });
 
+  const supabaseManager = setupWatchPartySupabase({
+    roomId,
+    onPacketReceived,
+    onConnected
+  });
+
   const broadcastData = (data) => {
     const packetId = data.packetId || `${Date.now()}-${Math.random()}`;
     const packet = { ...data, packetId, origin: username };
@@ -42,6 +49,7 @@ export function setupWatchPartyNetworking({
     if (channel) channel.postMessage(packet);
     if (mqttManager) mqttManager.publish(packet);
     if (peerManager) peerManager.sendData(packet);
+    if (supabaseManager) supabaseManager.sendData(packet);
   };
 
   const hbInterval = setInterval(() => {
@@ -77,6 +85,7 @@ export function setupWatchPartyNetworking({
       if (channel) channel.close();
       mqttManager.disconnect();
       peerManager.destroy();
+      if (supabaseManager) supabaseManager.destroy();
     }
   };
 }
