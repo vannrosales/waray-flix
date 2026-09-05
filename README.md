@@ -11,7 +11,6 @@
 * **Live Application:** [https://waray-flix.vercel.app](https://waray-flix.vercel.app)
 * **Interactive User Guide:** [https://waray-flix.vercel.app/how-it-works](https://waray-flix.vercel.app/how-it-works)
 * **Compliance & Legal:** [https://waray-flix.vercel.app/legal](https://waray-flix.vercel.app/legal)
-* **Admin Control Center:** [https://waray-flix.vercel.app/admin](https://waray-flix.vercel.app/admin)
 * **Recommended Browser:** Brave Browser (or Chrome/Firefox with uBlock Origin) for 100% pop-up free third-party video embeds.
 
 ---
