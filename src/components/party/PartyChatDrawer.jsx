@@ -123,67 +123,70 @@ export default function PartyChatDrawer({
           </div>
         )}
 
-        {/* Sync Controls Card */}
-        <div className="p-2.5 rounded-xl bg-[#0E1017] border border-white/[0.06] space-y-2">
-          <div className="flex items-center justify-between text-[10px] sm:text-[11px]">
-            <span className="text-zinc-500">Sync Position:</span>
+        {/* Sync Controls Card (Host Controls vs Guest Status) */}
+        {isHost ? (
+          <div className="p-2.5 rounded-xl bg-[#0E1017] border border-white/[0.06] space-y-2">
+            <div className="flex items-center justify-between text-[10px] sm:text-[11px]">
+              <div className="flex items-center gap-1.5 text-zinc-400">
+                <Crown className="w-3 h-3 text-white stroke-[2]" />
+                <span className="font-semibold text-white">Host Controls:</span>
+              </div>
+              <span className="text-zinc-200 font-bold">{formatTime(currentPlaybackSecs || hostTime)}</span>
+            </div>
+            
             <div className="flex items-center gap-1.5">
-              {isHostOnlyLock && (
-                <span className="text-[9px] text-zinc-400 px-1.5 py-0.2 rounded bg-white/[0.04] border border-white/10 flex items-center gap-1">
-                  <Lock className="w-2.5 h-2.5 stroke-[1.5]" /> Host Lock
-                </span>
-              )}
-              <span className="text-zinc-200 font-semibold">{formatTime(currentPlaybackSecs || hostTime)}</span>
+              <button
+                onClick={onBroadcastSync}
+                className="w-full py-1.5 rounded-lg text-[10px] sm:text-xs font-semibold bg-white text-black hover:bg-zinc-200 transition cursor-pointer flex items-center justify-center gap-1.5 shadow-sm"
+                title="Force synchronize all viewers to your exact position"
+              >
+                <Zap className="w-3.5 h-3.5 stroke-[2]" />
+                <span>Sync All Viewers</span>
+              </button>
+            </div>
+
+            {/* Host Quick Time Adjusters */}
+            <div className="flex items-center justify-between gap-1 pt-1 border-t border-white/[0.04]">
+              {[-30, -10, 10, 30, 60].map((delta) => {
+                const label = delta > 0 ? (delta === 60 ? '+1m' : `+${delta}s`) : `${delta}s`;
+                return (
+                  <button
+                    key={delta}
+                    onClick={() => onAdjustTime && onAdjustTime(delta)}
+                    className="flex-1 py-1 rounded text-[9px] font-medium bg-white/[0.03] hover:bg-white/[0.08] text-zinc-300 hover:text-white border border-white/[0.06] transition cursor-pointer"
+                    title={`Jump ${label} for all viewers`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
             </div>
           </div>
-          
-          <div className="flex items-center gap-1.5">
-            <button
-              onClick={onBroadcastSync}
-              disabled={isControlsDisabled}
-              className={`flex-1 py-1.5 rounded-lg text-[10px] sm:text-xs font-medium transition cursor-pointer flex items-center justify-center gap-1 shadow-sm ${
-                isControlsDisabled
-                  ? 'bg-white/10 text-zinc-500 cursor-not-allowed border border-white/5'
-                  : 'bg-white text-black hover:bg-zinc-200'
-              }`}
-              title={isControlsDisabled ? "Host Lock is Active" : "Force synchronize all viewers to this exact position"}
-            >
-              <Zap className="w-3 h-3 stroke-[2]" />
-              <span>Sync All</span>
-            </button>
-
-            <button
-              onClick={onSyncToHost}
-              className="flex-1 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 text-[10px] sm:text-xs transition cursor-pointer flex items-center justify-center gap-1 border border-white/10"
-              title="Catch up to room timestamp"
-            >
-              <RotateCw className="w-3 h-3 stroke-[1.5]" />
-              <span>Catch Up</span>
-            </button>
+        ) : (
+          /* Guest Mode Status Info Card */
+          <div className="p-2.5 rounded-xl bg-[#0E1017] border border-white/[0.06] space-y-1.5">
+            <div className="flex items-center justify-between text-[10px] sm:text-[11px]">
+              <span className="text-zinc-500">Host Position:</span>
+              <span className="text-zinc-200 font-semibold">{formatTime(hostTime || currentPlaybackSecs)}</span>
+            </div>
+            
+            {hostTime > 0 && Math.abs(hostTime - currentPlaybackSecs) > 3 ? (
+              <button
+                onClick={onSyncToHost}
+                className="w-full py-1.5 rounded-lg bg-white text-black font-semibold text-[10px] sm:text-xs transition cursor-pointer flex items-center justify-center gap-1.5 shadow-sm hover:bg-zinc-200"
+                title="Catch up to Host playback"
+              >
+                <RotateCw className="w-3 h-3 stroke-[2]" />
+                <span>Catch Up ({formatTime(hostTime)})</span>
+              </button>
+            ) : (
+              <div className="text-[10px] text-zinc-500 flex items-center gap-1 pt-0.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                <span>Playback is controlled by the room host</span>
+              </div>
+            )}
           </div>
-
-          {/* Quick Time Adjusters */}
-          <div className="flex items-center justify-between gap-1 pt-1 border-t border-white/[0.04]">
-            {[-30, -10, 10, 30, 60].map((delta) => {
-              const label = delta > 0 ? (delta === 60 ? '+1m' : `+${delta}s`) : `${delta}s`;
-              return (
-                <button
-                  key={delta}
-                  onClick={() => !isControlsDisabled && onAdjustTime && onAdjustTime(delta)}
-                  disabled={isControlsDisabled}
-                  className={`px-2 py-0.5 rounded text-[9px] border transition ${
-                    isControlsDisabled
-                      ? 'bg-white/[0.01] text-zinc-600 border-white/[0.02] cursor-not-allowed'
-                      : 'bg-white/[0.03] hover:bg-white/[0.08] text-zinc-400 hover:text-white border-white/[0.06]'
-                  }`}
-                  title={isControlsDisabled ? "Host Lock Active" : `Jump ${label} for all`}
-                >
-                  {label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
+        )}
 
         {/* Quick Reactions Bar */}
         <div className="flex items-center justify-between bg-[#0E1017] p-1 rounded-xl border border-white/[0.06]">

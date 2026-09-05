@@ -51,80 +51,71 @@ export default function PartyHeader({
       {/* Right Action Island */}
       <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
         
-        {/* Host Lock Control (Host Toggle or Guest Status) */}
+        {/* Host Controls: Lock Toggle, Sync Button & Server Selector (Host Only) */}
         {isHost ? (
-          <button
-            onClick={onToggleHostLock}
-            className={`flex items-center gap-1 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-full border text-[10px] sm:text-xs transition cursor-pointer ${
-              isHostOnlyLock 
-                ? 'bg-white text-black font-semibold border-white' 
-                : 'bg-white/[0.04] text-zinc-400 hover:text-white border-white/[0.08]'
-            }`}
-            title={isHostOnlyLock ? "Host Lock Enabled: Only you can control playback" : "Host Lock Disabled: Anyone can sync"}
-          >
-            {isHostOnlyLock ? <Lock className="w-3 h-3 stroke-[2]" /> : <Unlock className="w-3 h-3 stroke-[1.5]" />}
-            <span className="hidden md:inline">{isHostOnlyLock ? 'Host Locked' : 'Host Lock'}</span>
-          </button>
-        ) : isHostOnlyLock ? (
-          <div 
-            className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/[0.04] border border-white/10 text-[10px] text-zinc-400"
-            title="Host has locked playback controls"
-          >
-            <Lock className="w-3 h-3 stroke-[1.5] text-zinc-400" />
-            <span className="hidden sm:inline">Host Locked</span>
+          <>
+            <button
+              onClick={onToggleHostLock}
+              className={`flex items-center gap-1 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-full border text-[10px] sm:text-xs transition cursor-pointer ${
+                isHostOnlyLock 
+                  ? 'bg-white text-black font-semibold border-white' 
+                  : 'bg-white/[0.04] text-zinc-400 hover:text-white border-white/[0.08]'
+              }`}
+              title={isHostOnlyLock ? "Host Lock Enabled: Only you can control playback" : "Host Lock Disabled: Anyone can sync"}
+            >
+              {isHostOnlyLock ? <Lock className="w-3 h-3 stroke-[2]" /> : <Unlock className="w-3 h-3 stroke-[1.5]" />}
+              <span className="hidden md:inline">{isHostOnlyLock ? 'Host Locked' : 'Host Lock'}</span>
+            </button>
+
+            <button
+              onClick={onBroadcastSync}
+              className="flex items-center gap-1 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-semibold uppercase tracking-wider bg-white text-black hover:bg-zinc-200 shadow-sm transition cursor-pointer"
+              title="Broadcast your exact playback timestamp to all viewers"
+            >
+              <Zap className="w-3 h-3 sm:w-3.5 sm:h-3.5 stroke-[2]" />
+              <span className="hidden xs:inline">Sync All</span>
+            </button>
+
+            {/* Server Selector for Host */}
+            <div className="hidden lg:flex items-center gap-1 bg-[#11131A] p-1 rounded-full border border-white/[0.06] text-xs">
+              <div className="flex items-center gap-1 px-2 text-zinc-500 text-[10px]">
+                <Server className="w-3 h-3 stroke-[1.5] text-zinc-400" />
+                <span>Server:</span>
+              </div>
+              {CONFIG.players.slice(0, 3).map((player) => (
+                <button
+                  key={player.id}
+                  onClick={() => onPlayerChange(player.id)}
+                  className={`px-2.5 py-0.5 rounded-full text-[11px] font-medium transition cursor-pointer ${
+                    selectedPlayerId === player.id 
+                      ? 'bg-white text-black font-semibold' 
+                      : 'text-zinc-400 hover:text-white'
+                  }`}
+                >
+                  {player.name}
+                </button>
+              ))}
+            </div>
+          </>
+        ) : (
+          /* Guest Mode Status Indicator */
+          <div className="hidden sm:flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-[10px] text-zinc-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+            <span>Synced to Host</span>
           </div>
-        ) : null}
-
-        {/* Host Broadcast Sync Action */}
-        <button
-          onClick={onBroadcastSync}
-          disabled={isHostOnlyLock && !isHost}
-          className={`flex items-center gap-1 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-semibold uppercase tracking-wider transition cursor-pointer ${
-            isHostOnlyLock && !isHost
-              ? 'bg-white/10 text-zinc-500 cursor-not-allowed border border-white/5'
-              : 'bg-white text-black hover:bg-zinc-200 shadow-sm'
-          }`}
-          title={isHostOnlyLock && !isHost ? "Host Lock is Active" : "Broadcast your exact playback timestamp to all viewers"}
-        >
-          <Zap className="w-3 h-3 sm:w-3.5 sm:h-3.5 stroke-[2]" />
-          <span className="hidden xs:inline">Sync</span>
-        </button>
-
-        {/* Guest Sync To Host Button */}
-        {hostTime > 0 && Math.abs(hostTime - currentPlaybackSecs) > 3 && (
-          <button
-            onClick={onSyncToHost}
-            className="flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-full bg-white/[0.06] border border-white/20 text-white text-[10px] sm:text-xs transition cursor-pointer hover:bg-white/10"
-            title="Jump to Host's playback position"
-          >
-            <RotateCw className="w-3 h-3 stroke-[1.5]" />
-            <span className="hidden sm:inline">Catch Up ({formatTime(hostTime)})</span>
-          </button>
         )}
 
-        {/* Server Selector (Tablet / Desktop) */}
-        <div className="hidden lg:flex items-center gap-1 bg-[#11131A] p-1 rounded-full border border-white/[0.06] text-xs">
-          <div className="flex items-center gap-1 px-2 text-zinc-500 text-[10px]">
-            <Server className="w-3 h-3 stroke-[1.5] text-zinc-400" />
-            <span>Server:</span>
-          </div>
-          {CONFIG.players.slice(0, 3).map((player) => (
-            <button
-              key={player.id}
-              onClick={() => onPlayerChange(player.id)}
-              disabled={isHostOnlyLock && !isHost}
-              className={`px-2.5 py-0.5 rounded-full text-[11px] font-medium transition cursor-pointer ${
-                selectedPlayerId === player.id 
-                  ? 'bg-white text-black font-semibold' 
-                  : isHostOnlyLock && !isHost
-                  ? 'text-zinc-600 cursor-not-allowed'
-                  : 'text-zinc-400 hover:text-white'
-              }`}
-            >
-              {player.name}
-            </button>
-          ))}
-        </div>
+        {/* Guest Catch Up Button (Visible only to guests if desynced from host) */}
+        {!isHost && hostTime > 0 && Math.abs(hostTime - currentPlaybackSecs) > 3 && (
+          <button
+            onClick={onSyncToHost}
+            className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-white text-black font-semibold text-[10px] sm:text-xs transition cursor-pointer hover:bg-zinc-200 shadow-sm"
+            title="Jump to Host's current playback position"
+          >
+            <RotateCw className="w-3 h-3 stroke-[2]" />
+            <span>Catch Up ({formatTime(hostTime)})</span>
+          </button>
+        )}
 
         {/* Copy Invite Link */}
         <button

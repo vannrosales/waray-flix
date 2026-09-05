@@ -194,7 +194,7 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
   }, [roomId, username, handleIncomingPacket, getCurrentSeconds]);
 
   const syncAllPeers = useCallback(() => {
-    if (isHostOnlyLock && !isHost && username !== hostUsername) return;
+    if (!isHost && username !== hostUsername) return;
     const currentSecs = getCurrentSeconds();
     setAppliedTime(currentSecs);
     setSyncKey((k) => k + 1);
@@ -203,15 +203,15 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
       type: 'SYNC_PLAYBACK',
       hostTime: currentSecs,
       selectedPlayerId,
-      isHost,
-      hostUsername,
-      isHostOnlyLock,
+      isHost: true,
+      hostUsername: username,
+      isHostOnlyLock: true,
       forceApply: true,
     });
-  }, [isHostOnlyLock, isHost, username, hostUsername, selectedPlayerId, broadcastData, getCurrentSeconds]);
+  }, [isHost, username, hostUsername, selectedPlayerId, broadcastData, getCurrentSeconds]);
 
   const handlePlayerChange = useCallback((newPlayerId) => {
-    if (isHostOnlyLock && !isHost && username !== hostUsername) return;
+    if (!isHost && username !== hostUsername) return;
     setSelectedPlayerId(newPlayerId);
     localPlayerRef.current = newPlayerId;
 
@@ -220,12 +220,12 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
       type: 'SYNC_PLAYBACK',
       hostTime: currentSecs,
       selectedPlayerId: newPlayerId,
-      isHost,
-      hostUsername,
-      isHostOnlyLock,
+      isHost: true,
+      hostUsername: username,
+      isHostOnlyLock: true,
       forceApply: true,
     });
-  }, [isHostOnlyLock, isHost, username, hostUsername, broadcastData, getCurrentSeconds]);
+  }, [isHost, username, hostUsername, broadcastData, getCurrentSeconds]);
 
   const toggleHostOnlyLock = useCallback(() => {
     if (!isHost && username !== hostUsername) return;
@@ -241,7 +241,7 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
   }, [isHost, username, hostUsername, isHostOnlyLock, broadcastData]);
 
   const adjustPlaybackTime = useCallback((deltaSecs) => {
-    if (isHostOnlyLock && !isHost && username !== hostUsername) return;
+    if (!isHost && username !== hostUsername) return;
     const currentSecs = getCurrentSeconds();
     const newTime = Math.max(0, currentSecs + deltaSecs);
     setManualTime(newTime);
@@ -253,12 +253,12 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
       type: 'SYNC_PLAYBACK',
       hostTime: newTime,
       selectedPlayerId,
-      isHost,
-      hostUsername,
-      isHostOnlyLock,
+      isHost: true,
+      hostUsername: username,
+      isHostOnlyLock: true,
       forceApply: true,
     });
-  }, [isHostOnlyLock, isHost, username, hostUsername, selectedPlayerId, broadcastData, getCurrentSeconds, setManualTime]);
+  }, [isHost, username, hostUsername, selectedPlayerId, broadcastData, getCurrentSeconds, setManualTime]);
 
   const syncToHost = useCallback(() => {
     if (hostTime > 0) {
