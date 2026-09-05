@@ -20,13 +20,15 @@ export default function WatchPartyPage() {
   const currentSeason = season ? parseInt(season) : 1;
   const currentEpisode = episode ? parseInt(episode) : 1;
   
+  // Host role is strictly true only if ?host=true is present or when first creating a room without ?room= param
+  const [isHostRole] = useState(() => searchParams.get('host') === 'true' || !searchParams.get('room'));
   const [roomId] = useState(() => searchParams.get('room') || `PARTY-${id}-${Math.floor(1000 + Math.random() * 9000)}`);
-  const [username] = useState(() => authUser || `Viewer-${Math.floor(100 + Math.random() * 900)}`);
+  const [username] = useState(() => authUser || (isHostRole ? `Host-${Math.floor(100 + Math.random() * 900)}` : `Guest-${Math.floor(100 + Math.random() * 900)}`));
 
-  // Ensure address bar always has ?room= parameter for 1-click sharing
+  // Ensure address bar has room query (and preserves host param if host)
   useEffect(() => {
     if (!searchParams.get('room')) {
-      navigate(`/party/${type}/${id}?room=${roomId}`, { replace: true });
+      navigate(`/party/${type}/${id}?room=${roomId}&host=true`, { replace: true });
     }
   }, [searchParams, type, id, roomId, navigate]);
 
@@ -55,7 +57,7 @@ export default function WatchPartyPage() {
     broadcastSync,
     adjustPlaybackTime,
     changePlayer
-  } = useWatchParty(roomId, username);
+  } = useWatchParty(roomId, username, CONFIG.players[0].id, isHostRole);
 
   const activePlayer = CONFIG.players.find(p => p.id === selectedPlayerId) || CONFIG.players[0];
   const embedUrl = type === 'movie'

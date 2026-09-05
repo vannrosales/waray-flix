@@ -2,68 +2,71 @@ import { Peer } from 'peerjs';
 
 export function setupWatchPartyPeer({
   roomId,
+  isHost,
   onPacketReceived,
-  onConnected,
-  onHostStatusChange
+  onConnected
 }) {
   const cleanRoom = roomId.toLowerCase().replace(/[^a-z0-9]/g, '');
   const hostPeerId = `wf-wp-room-${cleanRoom}`;
   const connections = [];
   let hostConn = null;
+  let activePeer = null;
 
-  // Try hosting
-  const peer = new Peer(hostPeerId, {
+  const peerConfig = {
     config: {
       iceServers: [
         { urls: 'stun:stun.l.google.com:19302' },
         { urls: 'stun:global.stun.twilio.com:3478' }
       ]
     }
-  });
+  };
 
-  peer.on('open', () => {
-    if (onHostStatusChange) onHostStatusChange(true);
-    if (onConnected) onConnected();
-  });
+  if (isHost) {
+    // Room Host: Register hostPeerId
+    const peer = new Peer(hostPeerId, peerConfig);
+    activePeer = peer;
 
-  peer.on('connection', (conn) => {
-    connections.push(conn);
-    conn.on('data', (data) => {
-      if (onPacketReceived) onPacketReceived(data);
-      // Relay to other peers
-      connections.forEach((c) => {
-        if (c !== conn && c.open) c.send(data);
-      });
+    peer.on('open', () => {
+      if (onConnected) onConnected();
     });
-    conn.on('close', () => {
-      const idx = connections.indexOf(conn);
-      if (idx !== -1) connections.splice(idx, 1);
-    });
-  });
 
-  peer.on('error', (err) => {
-    if (err.type === 'unavailable-id') {
-      // Room host already exists, connect as guest
-      if (onHostStatusChange) onHostStatusChange(false);
-      const guestPeer = new Peer({
-        config: {
-          iceServers: [
-            { urls: 'stun:stun.l.google.com:19302' },
-            { urls: 'stun:global.stun.twilio.com:3478' }
-          ]
-        }
-      });
-      guestPeer.on('open', () => {
-        hostConn = guestPeer.connect(hostPeerId, { reliable: true });
-        hostConn.on('open', () => {
-          if (onConnected) onConnected();
-        });
-        hostConn.on('data', (data) => {
-          if (onPacketReceived) onPacketReceived(data);
+    peer.on('connection', (conn) => {
+      connections.push(conn);
+      conn.on('data', (data) => {
+        if (onPacketReceived) onPacketReceived(data);
+        // Relay to other connected peers
+        connections.forEach((c) => {
+          if (c !== conn && c.open) c.send(data);
         });
       });
-    }
-  });
+      conn.on('close', () => {
+        const idx = connections.indexOf(conn);
+        if (idx !== -1) connections.splice(idx, 1);
+      });
+    });
+
+    peer.on('error', (err) => {
+      console.warn('Host Peer error:', err?.type || err);
+    });
+  } else {
+    // Guest: Connect directly to hostPeerId
+    const guestPeer = new Peer(peerConfig);
+    activePeer = guestPeer;
+
+    guestPeer.on('open', () => {
+      hostConn = guestPeer.connect(hostPeerId, { reliable: true });
+      hostConn.on('open', () => {
+        if (onConnected) onConnected();
+      });
+      hostConn.on('data', (data) => {
+        if (onPacketReceived) onPacketReceived(data);
+      });
+    });
+
+    guestPeer.on('error', (err) => {
+      console.warn('Guest Peer error:', err?.type || err);
+    });
+  }
 
   return {
     sendData: (packet) => {
@@ -76,7 +79,7 @@ export function setupWatchPartyPeer({
     },
     destroy: () => {
       try {
-        peer.destroy();
+        if (activePeer) activePeer.destroy();
       } catch {
         // ignore
       }

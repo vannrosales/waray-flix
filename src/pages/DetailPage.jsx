@@ -140,7 +140,7 @@ export default function DetailPage() {
           user={user}
           onPlayClick={handlePlayClick}
           onToggleWatchlist={() => toggle({ ...media, media_type: type })}
-          onOpenParty={() => user ? navigate(`/party/${type}/${id}`) : openAuthModal()}
+          onOpenParty={() => user ? navigate(`/party/${type}/${id}?host=true`) : openAuthModal()}
           onOpenShare={() => setShareOpen(true)}
           onOpenCast={() => setCastOpen(true)}
         />

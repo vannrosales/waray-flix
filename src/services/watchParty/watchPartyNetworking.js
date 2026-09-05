@@ -31,9 +31,9 @@ export function setupWatchPartyNetworking({
 
   const peerManager = setupWatchPartyPeer({
     roomId,
+    isHost: isHostRef.current,
     onPacketReceived,
-    onConnected,
-    onHostStatusChange
+    onConnected
   });
 
   const supabaseManager = setupWatchPartySupabase({

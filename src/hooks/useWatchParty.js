@@ -5,7 +5,7 @@ import { useWatchPartyScrubber } from './watchParty/useWatchPartyScrubber';
 import { setupWatchPartyNetworking } from '../services/watchParty/watchPartyNetworking';
 export { formatPlaybackTime as formatTime } from '../utils/formatters';
 
-export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players[0].id) {
+export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players[0].id, isHostInitial = false) {
   const [selectedPlayerId, setSelectedPlayerId] = useState(initialPlayerId);
   const [connectionStatus, setConnectionStatus] = useState('connecting');
 
@@ -16,9 +16,9 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
   const [syncKey, setSyncKey] = useState(0);
 
   // Host-Only Control Lock State
-  const [isHost, setIsHost] = useState(true);
-  const [isHostOnlyLock, setIsHostOnlyLock] = useState(false);
-  const [hostUsername, setHostUsername] = useState(username);
+  const [isHost, setIsHost] = useState(isHostInitial);
+  const [isHostOnlyLock, setIsHostOnlyLock] = useState(true);
+  const [hostUsername, setHostUsername] = useState(isHostInitial ? username : 'Host');
 
   // Chat & Reactions hook
   const {
@@ -31,18 +31,18 @@ export function useWatchParty(roomId, username, initialPlayerId = CONFIG.players
   
   // Real-Time Active Peers Presence
   const [activePeers, setActivePeers] = useState({
-    [username]: { username, lastSeen: Date.now(), isHost: true }
+    [username]: { username, lastSeen: Date.now(), isHost: isHostInitial }
   });
 
   const networkingRef = useRef(null);
   const processedPacketIdsRef = useRef(new Set());
   const localPlayerRef = useRef(selectedPlayerId);
-  const isHostOnlyLockRef = useRef(false);
-  const hostUsernameRef = useRef(username);
-  const isHostRef = useRef(true);
+  const isHostOnlyLockRef = useRef(true);
+  const hostUsernameRef = useRef(isHostInitial ? username : 'Host');
+  const isHostRef = useRef(isHostInitial);
 
   const activePeersRef = useRef({
-    [username]: { username, lastSeen: Date.now(), isHost: true }
+    [username]: { username, lastSeen: Date.now(), isHost: isHostInitial }
   });
 
   useEffect(() => { localPlayerRef.current = selectedPlayerId; }, [selectedPlayerId]);

@@ -244,7 +244,7 @@ export default function WatchPage() {
         onToggleWatchlist={handleToggleWatchlist}
         user={user}
         onSignIn={openAuthModal}
-        onOpenParty={() => (user ? navigate(`/party/${type}/${id}`) : openAuthModal())}
+        onOpenParty={() => (user ? navigate(`/party/${type}/${id}?host=true`) : openAuthModal())}
         onOpenShare={() => setShareOpen(true)}
         onOpenCast={() => setCastOpen(true)}
         onEnterPiP={() => {
