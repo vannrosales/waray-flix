@@ -38,8 +38,8 @@ export const CONFIG = {
     {
       id: 'zoryva',
       name: 'Zoryva X',
-      getMovieUrl: (id, start) => `https://zoryva.me/embedded/movie/${id}${makeTimeQuery(start)}`,
-      getTvUrl: (id, s, e, start) => `https://zoryva.me/embedded/tv/${id}/${s}/${e}${makeTimeQuery(start)}`
+      getMovieUrl: (id, start) => `https://zoryva.me/embed/movie/${id}${makeTimeQuery(start)}`,
+      getTvUrl: (id, s, e, start) => `https://zoryva.me/embed/tv/${id}/${s}/${e}${makeTimeQuery(start)}`
     }
   ]
 };
