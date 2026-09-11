@@ -20,8 +20,8 @@ export const CONFIG = {
     {
       id: 'vidsrc',
       name: 'VidSrc',
-      getMovieUrl: (id, start) => `https://vidsrc.cc/v2/embed/movie/${id}${makeTimeQuery(start)}`,
-      getTvUrl: (id, s, e, start) => `https://vidsrc.cc/v2/embed/tv/${id}/${s}/${e}${makeTimeQuery(start)}`
+      getMovieUrl: (id, start) => `https://vidsrc.to/embed/movie/${id}${makeTimeQuery(start)}`,
+      getTvUrl: (id, s, e, start) => `https://vidsrc.to/embed/tv/${id}/${s}/${e}${makeTimeQuery(start)}`
     },
     {
       id: 'videasy',
