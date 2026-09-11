@@ -116,8 +116,15 @@ export default function SubtitleSwitcher({
               );
             })}
           </div>
+
+          {/* Helpful Subtitle Tip Footer */}
+          <div className="mt-2 pt-2 border-t border-white/10 px-2 text-[10px] text-zinc-400 flex items-start gap-1.5 leading-relaxed">
+            <span className="text-cyan-400 font-bold">💡 Tip:</span>
+            <span>You can also tap the <b>[CC]</b> button on the bottom-right of the video stream controls to customize font & language.</span>
+          </div>
         </div>
       )}
     </div>
   );
 }
+

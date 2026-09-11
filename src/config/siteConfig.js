@@ -13,8 +13,14 @@ export const CONFIG = {
 
   players: [
     {
+      id: 'vidlink',
+      name: 'VidLink (Auto-Subtitles)',
+      getMovieUrl: (id, start, sub) => `https://vidlink.pro/movie/${id}${makeTimeAndSubtitleQuery(start, sub)}&primaryColor=38bdf8&secondaryColor=ffffff&iconColor=38bdf8`,
+      getTvUrl: (id, s, e, start, sub) => `https://vidlink.pro/tv/${id}/${s}/${e}${makeTimeAndSubtitleQuery(start, sub)}&primaryColor=38bdf8&secondaryColor=ffffff&iconColor=38bdf8`
+    },
+    {
       id: 'videasy',
-      name: 'Videasy (Subtitles)',
+      name: 'Videasy',
       getMovieUrl: (id, start, sub) => `https://player.videasy.to/movie/${id}${makeTimeAndSubtitleQuery(start, sub)}`,
       getTvUrl: (id, s, e, start, sub) => `https://player.videasy.to/tv/${id}/${s}/${e}${makeTimeAndSubtitleQuery(start, sub)}`
     },

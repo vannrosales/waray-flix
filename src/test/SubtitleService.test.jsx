@@ -89,3 +89,4 @@ describe('SubtitleSwitcher Component', () => {
     expect(subtitleService.getPreferredLanguage()).toBe('es');
   });
 });
+
