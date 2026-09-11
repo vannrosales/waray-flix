@@ -11,6 +11,7 @@ import WatchTopHUD from '../components/player/WatchTopHUD';
 import EpisodeDrawer from '../components/player/EpisodeDrawer';
 import { useWatchHistoryTracker } from '../hooks/useWatchHistoryTracker';
 import { useWatchHUD } from '../hooks/useWatchHUD';
+import { subtitleService } from '../services/subtitleService';
 
 export default function WatchPage() {
   const { type, id, season, episode } = useParams();
@@ -33,6 +34,7 @@ export default function WatchPage() {
 
   const [mediaTitle, setMediaTitle] = useState('');
   const [selectedPlayerId, setSelectedPlayerId] = useState(CONFIG.players[0].id);
+  const [subtitleLang, setSubtitleLang] = useState(() => subtitleService.getPreferredLanguage());
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [epDrawerOpen, setEpDrawerOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
@@ -64,9 +66,9 @@ export default function WatchPage() {
 
   const embedUrl = useMemo(() => {
     return type === 'movie'
-      ? activePlayer.getMovieUrl(id, parsedSeconds)
-      : activePlayer.getTvUrl(id, currentSeason, currentEpisode, parsedSeconds);
-  }, [activePlayer, type, id, currentSeason, currentEpisode, parsedSeconds]);
+      ? activePlayer.getMovieUrl(id, parsedSeconds, subtitleLang)
+      : activePlayer.getTvUrl(id, currentSeason, currentEpisode, parsedSeconds, subtitleLang);
+  }, [activePlayer, type, id, currentSeason, currentEpisode, parsedSeconds, subtitleLang]);
 
   // Smart Server Auto-Failover: If current server fails or takes > 12s, switch to next server
   const triggerAutoFailover = useCallback(() => {
@@ -214,7 +216,7 @@ export default function WatchPage() {
       <div className="absolute inset-0 z-0 bg-black">
         <iframe
           src={embedUrl}
-          key={`${selectedPlayerId}-${type}-${id}-${currentSeason}-${currentEpisode}`}
+          key={`${selectedPlayerId}-${type}-${id}-${currentSeason}-${currentEpisode}-${subtitleLang}`}
           title={`${activePlayer.name} Video Player`}
           className="w-full h-full border-0 pointer-events-auto"
           allowFullScreen
@@ -256,12 +258,15 @@ export default function WatchPage() {
             title: mediaTitle,
             selectedPlayerId,
             currentTime: lastScrubSecondsRef.current,
+            subtitleLang,
           });
           navigate(`/details/${type}/${id}`);
         }}
         players={CONFIG.players}
         selectedPlayerId={selectedPlayerId}
         onSelectPlayer={setSelectedPlayerId}
+        subtitleLang={subtitleLang}
+        onSelectSubtitle={setSubtitleLang}
         mobileMenuOpen={mobileMenuOpen}
         setMobileMenuOpen={setMobileMenuOpen}
         menuRef={menuRef}

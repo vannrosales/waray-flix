@@ -1,7 +1,8 @@
-const makeTimeQuery = (start) => {
-  if (!start || start <= 0) return '';
-  const s = Math.floor(start);
-  return `?t=${s}&startAt=${s}&time=${s}&start=${s}`;
+import { subtitleService } from '../services/subtitleService';
+
+const makeTimeAndSubtitleQuery = (start, subLang) => {
+  const effectiveSub = subLang !== undefined ? subLang : subtitleService.getPreferredLanguage();
+  return subtitleService.buildPlayerQueryParams(start, effectiveSub);
 };
 
 export const CONFIG = {
@@ -12,34 +13,34 @@ export const CONFIG = {
 
   players: [
     {
-      id: 'cinesrc',
-      name: 'CineSrc',
-      getMovieUrl: (id, start) => `https://cinesrc.st/embed/movie/${id}${makeTimeQuery(start)}`,
-      getTvUrl: (id, s, e, start) => `https://cinesrc.st/embed/tv/${id}/${s}/${e}${makeTimeQuery(start)}`
-    },
-    {
-      id: 'vidsrc',
-      name: 'VidSrc',
-      getMovieUrl: (id, start) => `https://vidsrc.to/embed/movie/${id}${makeTimeQuery(start)}`,
-      getTvUrl: (id, s, e, start) => `https://vidsrc.to/embed/tv/${id}/${s}/${e}${makeTimeQuery(start)}`
-    },
-    {
       id: 'videasy',
-      name: 'Videasy',
-      getMovieUrl: (id, start) => `https://player.videasy.to/movie/${id}${makeTimeQuery(start)}`,
-      getTvUrl: (id, s, e, start) => `https://player.videasy.to/tv/${id}/${s}/${e}${makeTimeQuery(start)}`
+      name: 'Videasy (Subtitles)',
+      getMovieUrl: (id, start, sub) => `https://player.videasy.to/movie/${id}${makeTimeAndSubtitleQuery(start, sub)}`,
+      getTvUrl: (id, s, e, start, sub) => `https://player.videasy.to/tv/${id}/${s}/${e}${makeTimeAndSubtitleQuery(start, sub)}`
     },
     {
       id: 'vidcore',
-      name: 'VidCore',
-      getMovieUrl: (id, start) => `https://www.vidcore.org/embed/movie/${id}${makeTimeQuery(start)}`,
-      getTvUrl: (id, s, e, start) => `https://www.vidcore.org/embed/tv/${id}/${s}/${e}${makeTimeQuery(start)}`
+      name: 'VidCore (Multi-Sub)',
+      getMovieUrl: (id, start, sub) => `https://www.vidcore.org/embed/movie/${id}${makeTimeAndSubtitleQuery(start, sub)}`,
+      getTvUrl: (id, s, e, start, sub) => `https://www.vidcore.org/embed/tv/${id}/${s}/${e}${makeTimeAndSubtitleQuery(start, sub)}`
     },
     {
       id: 'zoryva',
       name: 'Zoryva X',
-      getMovieUrl: (id, start) => `https://zoryva.me/embed/movie/${id}${makeTimeQuery(start)}`,
-      getTvUrl: (id, s, e, start) => `https://zoryva.me/embed/tv/${id}/${s}/${e}${makeTimeQuery(start)}`
+      getMovieUrl: (id, start, sub) => `https://zoryva.me/embed/movie/${id}${makeTimeAndSubtitleQuery(start, sub)}`,
+      getTvUrl: (id, s, e, start, sub) => `https://zoryva.me/embed/tv/${id}/${s}/${e}${makeTimeAndSubtitleQuery(start, sub)}`
+    },
+    {
+      id: 'vidsrc',
+      name: 'VidSrc',
+      getMovieUrl: (id, start, sub) => `https://vidsrc.to/embed/movie/${id}${makeTimeAndSubtitleQuery(start, sub)}`,
+      getTvUrl: (id, s, e, start, sub) => `https://vidsrc.to/embed/tv/${id}/${s}/${e}${makeTimeAndSubtitleQuery(start, sub)}`
+    },
+    {
+      id: 'cinesrc',
+      name: 'CineSrc',
+      getMovieUrl: (id, start, sub) => `https://cinesrc.st/embed/movie/${id}${makeTimeAndSubtitleQuery(start, sub)}`,
+      getTvUrl: (id, s, e, start, sub) => `https://cinesrc.st/embed/tv/${id}/${s}/${e}${makeTimeAndSubtitleQuery(start, sub)}`
     }
   ]
 };

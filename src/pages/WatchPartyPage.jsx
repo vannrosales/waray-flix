@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { CONFIG } from '../config/siteConfig';
 import { fetchMediaDetails } from '../services/tmdb';
-import { useWatchParty } from '../hooks/useWatchParty';
+import { useWatchParty, formatTime } from '../hooks/useWatchParty';
+import { subtitleService } from '../services/subtitleService';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 import { useAuth } from '../context/AuthContext';
 import { storageService } from '../services/storageService';
@@ -59,10 +60,12 @@ export default function WatchPartyPage() {
     changePlayer
   } = useWatchParty(roomId, username, CONFIG.players[0].id, isHostRole);
 
+  const [subtitleLang, setSubtitleLang] = useState(() => subtitleService.getPreferredLanguage());
+
   const activePlayer = CONFIG.players.find(p => p.id === selectedPlayerId) || CONFIG.players[0];
   const embedUrl = type === 'movie'
-    ? activePlayer.getMovieUrl(id, appliedTime)
-    : activePlayer.getTvUrl(id, currentSeason, currentEpisode, appliedTime);
+    ? activePlayer.getMovieUrl(id, appliedTime, subtitleLang)
+    : activePlayer.getTvUrl(id, currentSeason, currentEpisode, appliedTime, subtitleLang);
 
   useDocumentTitle(media ? `Watch Party: ${media.title || media.name} — WarayFlix` : 'Watch Party');
 
@@ -192,6 +195,8 @@ export default function WatchPartyPage() {
         onOpenQR={() => setShareOpen(true)}
         chatOpen={chatOpen}
         onToggleChat={() => setChatOpen(!chatOpen)}
+        subtitleLang={subtitleLang}
+        onSelectSubtitle={setSubtitleLang}
       />
 
       {/* Main Body: Responsive Video Player + Chat Drawer */}
@@ -205,7 +210,7 @@ export default function WatchPartyPage() {
         }`}>
           <iframe 
             src={embedUrl}
-            key={`${selectedPlayerId}-${appliedTime}-${syncKey}`}
+            key={`${selectedPlayerId}-${appliedTime}-${syncKey}-${subtitleLang}`}
             title="Watch Party Player"
             className="w-full h-full border-0 pointer-events-auto"
             allowFullScreen

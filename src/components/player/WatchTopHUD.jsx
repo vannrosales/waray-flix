@@ -12,6 +12,7 @@ import {
   LogIn
 } from 'lucide-react';
 import ServerSwitcher from './ServerSwitcher';
+import SubtitleSwitcher from './SubtitleSwitcher';
 
 /**
  * Highly responsive Top HUD navigation, title badge, action buttons, server switcher, and Sign In for WatchPage.
@@ -38,6 +39,8 @@ export default function WatchTopHUD({
   players,
   selectedPlayerId,
   onSelectPlayer,
+  subtitleLang,
+  onSelectSubtitle,
   mobileMenuOpen,
   setMobileMenuOpen,
   menuRef,
@@ -160,6 +163,13 @@ export default function WatchTopHUD({
             <QrCode className="w-3.5 h-3.5 stroke-[2]" />
             <span className="hidden xl:inline">Sync</span>
           </button>
+
+          {/* Subtitle / Caption Switcher */}
+          <SubtitleSwitcher
+            subtitleLang={subtitleLang}
+            onSelectSubtitle={onSelectSubtitle}
+            pillDark={pillDark}
+          />
 
           {/* Server Switcher */}
           <ServerSwitcher

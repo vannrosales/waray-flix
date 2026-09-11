@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Zap, RotateCw, Server, Check, Copy, QrCode, MessageSquare, Lock, Unlock } from 'lucide-react';
 import { CONFIG } from '../../config/siteConfig';
 import { formatTime } from '../../hooks/useWatchParty';
+import SubtitleSwitcher from '../player/SubtitleSwitcher';
 
 export default function PartyHeader({
   media,
@@ -20,7 +21,9 @@ export default function PartyHeader({
   onCopyLink,
   onOpenQR,
   chatOpen,
-  onToggleChat
+  onToggleChat,
+  subtitleLang,
+  onSelectSubtitle
 }) {
   const navigate = useNavigate();
 
@@ -116,6 +119,13 @@ export default function PartyHeader({
             <span>Catch Up ({formatTime(hostTime)})</span>
           </button>
         )}
+
+        {/* Subtitle / Caption Switcher */}
+        <SubtitleSwitcher
+          subtitleLang={subtitleLang}
+          onSelectSubtitle={onSelectSubtitle}
+          align="right"
+        />
 
         {/* Copy Invite Link */}
         <button

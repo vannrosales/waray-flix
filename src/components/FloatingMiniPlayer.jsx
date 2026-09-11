@@ -13,12 +13,12 @@ export default function FloatingMiniPlayer() {
     return null;
   }
 
-  const { type, id, season, episode, title, selectedPlayerId, currentTime } = activeMedia;
+  const { type, id, season, episode, title, selectedPlayerId, currentTime, subtitleLang } = activeMedia;
   const activePlayer = CONFIG.players.find((p) => p.id === selectedPlayerId) || CONFIG.players[0];
 
   const embedUrl = type === 'movie'
-    ? activePlayer.getMovieUrl(id, currentTime)
-    : activePlayer.getTvUrl(id, season || 1, episode || 1, currentTime);
+    ? activePlayer.getMovieUrl(id, currentTime, subtitleLang)
+    : activePlayer.getTvUrl(id, season || 1, episode || 1, currentTime, subtitleLang);
 
   return (
     <div 
