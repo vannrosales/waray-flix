@@ -14,21 +14,21 @@ export const CONFIG = {
   players: [
     {
       id: 'vidlink',
-      name: 'VidLink (Auto-Subtitles)',
-      getMovieUrl: (id, start, sub) => `https://vidlink.pro/movie/${id}${makeTimeAndSubtitleQuery(start, sub)}&primaryColor=38bdf8&secondaryColor=ffffff&iconColor=38bdf8`,
-      getTvUrl: (id, s, e, start, sub) => `https://vidlink.pro/tv/${id}/${s}/${e}${makeTimeAndSubtitleQuery(start, sub)}&primaryColor=38bdf8&secondaryColor=ffffff&iconColor=38bdf8`
-    },
-    {
-      id: 'videasy',
-      name: 'Videasy',
-      getMovieUrl: (id, start, sub) => `https://player.videasy.to/movie/${id}${makeTimeAndSubtitleQuery(start, sub)}`,
-      getTvUrl: (id, s, e, start, sub) => `https://player.videasy.to/tv/${id}/${s}/${e}${makeTimeAndSubtitleQuery(start, sub)}`
+      name: 'VidLink (Auto-Sub)',
+      getMovieUrl: (id, start, sub) => `https://vidlink.pro/movie/${id}${makeTimeAndSubtitleQuery(start, sub)}&primaryColor=38bdf8&secondaryColor=ffffff&iconColor=38bdf8&title=true&poster=true`,
+      getTvUrl: (id, s, e, start, sub) => `https://vidlink.pro/tv/${id}/${s}/${e}${makeTimeAndSubtitleQuery(start, sub)}&primaryColor=38bdf8&secondaryColor=ffffff&iconColor=38bdf8&title=true&poster=true`
     },
     {
       id: 'vidcore',
       name: 'VidCore (Multi-Sub)',
       getMovieUrl: (id, start, sub) => `https://www.vidcore.org/embed/movie/${id}${makeTimeAndSubtitleQuery(start, sub)}`,
       getTvUrl: (id, s, e, start, sub) => `https://www.vidcore.org/embed/tv/${id}/${s}/${e}${makeTimeAndSubtitleQuery(start, sub)}`
+    },
+    {
+      id: 'multiembed',
+      name: 'MultiEmbed',
+      getMovieUrl: (id, start, sub) => `https://multiembed.mov/?video_id=${id}&tmdb=1${makeTimeAndSubtitleQuery(start, sub).replace('?', '&')}`,
+      getTvUrl: (id, s, e, start, sub) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}${makeTimeAndSubtitleQuery(start, sub).replace('?', '&')}`
     },
     {
       id: 'zoryva',
@@ -41,6 +41,18 @@ export const CONFIG = {
       name: 'VidSrc',
       getMovieUrl: (id, start, sub) => `https://vidsrc.to/embed/movie/${id}${makeTimeAndSubtitleQuery(start, sub)}`,
       getTvUrl: (id, s, e, start, sub) => `https://vidsrc.to/embed/tv/${id}/${s}/${e}${makeTimeAndSubtitleQuery(start, sub)}`
+    },
+    {
+      id: 'vidsrcpm',
+      name: 'VidSrc PM',
+      getMovieUrl: (id, start, sub) => `https://vidsrc.pm/embed/movie/${id}${makeTimeAndSubtitleQuery(start, sub)}`,
+      getTvUrl: (id, s, e, start, sub) => `https://vidsrc.pm/embed/tv/${id}/${s}/${e}${makeTimeAndSubtitleQuery(start, sub)}`
+    },
+    {
+      id: 'videasy',
+      name: 'Videasy',
+      getMovieUrl: (id, start, sub) => `https://player.videasy.to/movie/${id}${makeTimeAndSubtitleQuery(start, sub)}`,
+      getTvUrl: (id, s, e, start, sub) => `https://player.videasy.to/tv/${id}/${s}/${e}${makeTimeAndSubtitleQuery(start, sub)}`
     },
     {
       id: 'cinesrc',

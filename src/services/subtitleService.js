@@ -73,6 +73,8 @@ export const subtitleService = {
       const lang = encodeURIComponent(subLang);
       params.push(
         `sub=${lang}`,
+        `sub_info=true`,
+        `sub_info=${lang}`,
         `subtitle=true`,
         `subtitles=true`,
         `sub_lang=${lang}`,
@@ -100,4 +102,3 @@ export const subtitleService = {
     };
   }
 };
-
