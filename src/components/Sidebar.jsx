@@ -14,7 +14,8 @@ import {
   ShieldCheck,
   HelpCircle,
   Download,
-  Monitor
+  Monitor,
+  ListVideo
 } from 'lucide-react';
 import SearchModal from './SearchModal';
 import SurpriseModal from './SurpriseModal';
@@ -61,6 +62,7 @@ export default function Sidebar() {
     { name: 'TV Shows', path: '/tv', icon: Tv },
     { name: 'Anime', path: '/category/anime', icon: Sparkles },
     { name: 'Watchlist', path: '/watchlist', icon: Bookmark },
+    { name: 'Playlists', path: '/playlists', icon: ListVideo },
   ];
 
   const infoLinks = [

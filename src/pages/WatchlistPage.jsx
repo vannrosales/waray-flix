@@ -9,8 +9,6 @@ import WatchlistHistorySection from '../components/watchlist/WatchlistHistorySec
 import WatchlistFilterBar from '../components/watchlist/WatchlistFilterBar';
 import WatchlistCard from '../components/watchlist/WatchlistCard';
 
-import CustomPlaylistsSection from '../components/playlist/CustomPlaylistsSection';
-
 export default function WatchlistPage() {
   useDocumentTitle('My Library & Watchlist — WarayFlix');
   const navigate = useNavigate();
@@ -114,37 +112,34 @@ export default function WatchlistPage() {
           onSearchChange={setSearchQuery}
         />
 
-        {activeTab === 'playlists' ? (
-          <CustomPlaylistsSection searchQuery={searchQuery} />
-        ) : (
-          filteredWatchlist.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6">
-              {filteredWatchlist.map((item) => (
-                <WatchlistCard
-                  key={item.id}
-                  item={item}
-                  onRemove={handleRemoveFromWatchlist}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="border border-white/[0.06] rounded-xl bg-[#121212] shadow-sm overflow-hidden">
-              <EmptyState
-                icon={Bookmark}
-                title={searchQuery ? 'No matching titles found' : 'Your Watchlist is Empty'}
-                description={
-                  searchQuery
-                    ? `No titles match "${searchQuery}". Try searching for another movie or show.`
-                    : 'Save movies and series you want to watch later and they will appear here.'
-                }
-                actionText={!searchQuery ? 'Explore Movies' : null}
-                onAction={!searchQuery ? () => navigate('/movies') : null}
+        {filteredWatchlist.length > 0 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-6">
+            {filteredWatchlist.map((item) => (
+              <WatchlistCard
+                key={item.id}
+                item={item}
+                onRemove={handleRemoveFromWatchlist}
               />
-            </div>
-          )
+            ))}
+          </div>
+        ) : (
+          <div className="border border-white/[0.06] rounded-xl bg-[#121212] shadow-sm overflow-hidden">
+            <EmptyState
+              icon={Bookmark}
+              title={searchQuery ? 'No matching titles found' : 'Your Watchlist is Empty'}
+              description={
+                searchQuery
+                  ? `No titles match "${searchQuery}". Try searching for another movie or show.`
+                  : 'Save movies and series you want to watch later and they will appear here.'
+              }
+              actionText={!searchQuery ? 'Explore Movies' : null}
+              onAction={!searchQuery ? () => navigate('/movies') : null}
+            />
+          </div>
         )}
       </section>
     </div>
   );
 }
+
 

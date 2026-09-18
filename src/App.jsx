@@ -24,6 +24,8 @@ const PersonPage = lazy(() => import('./pages/PersonPage'));
 const CollectionPage = lazy(() => import('./pages/CollectionPage'));
 const WatchPartyPage = lazy(() => import('./pages/WatchPartyPage'));
 const WatchlistPage = lazy(() => import('./pages/WatchlistPage'));
+const PlaylistsPage = lazy(() => import('./pages/PlaylistsPage'));
+const PlaylistDetailPage = lazy(() => import('./pages/PlaylistDetailPage'));
 const TimelinePage = lazy(() => import('./pages/TimelinePage'));
 const LegalPage = lazy(() => import('./pages/LegalPage'));
 const HowItWorksPage = lazy(() => import('./pages/HowItWorksPage'));
@@ -60,6 +62,8 @@ export default function App() {
                 <Route path="/movies" element={<Movies />} />
                 <Route path="/tv" element={<TVShows />} />
                 <Route path="/watchlist" element={<WatchlistPage />} />
+                <Route path="/playlists" element={<PlaylistsPage />} />
+                <Route path="/playlist/:id" element={<PlaylistDetailPage />} />
                 <Route path="/details/:type/:id" element={<DetailPage />} />
                 <Route path="/person/:id" element={<PersonPage />} />
                 <Route path="/collection/:id" element={<CollectionPage />} />

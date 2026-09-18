@@ -46,17 +46,6 @@ export default function WatchlistFilterBar({
         >
           Series ({tvCount})
         </button>
-
-        <button
-          onClick={() => onTabChange('playlists')}
-          className={`px-4 py-2 rounded-xl text-xs transition cursor-pointer ${
-            activeTab === 'playlists'
-              ? 'bg-white text-black font-semibold shadow-sm'
-              : 'bg-white/[0.06] hover:bg-white/[0.12] text-zinc-400 hover:text-white border border-white/[0.08]'
-          }`}
-        >
-          Playlists
-        </button>
       </div>
 
       {/* Library Search */}
