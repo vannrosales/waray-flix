@@ -1,0 +1,60 @@
+name: Release
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  release:
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [macos-latest, ubuntu-22.04, windows-latest]
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install dependencies (Ubuntu only)
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build frontend & Tauri app
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: "WarayFlix ${{ github.ref_name }}"
+          releaseBody: |
+            ## 🎉 What's New in v1.5
+
+            This release brings the highly anticipated **Custom Playlists** feature!
+
+            ### ✨ Features
+            - **Custom Named Playlists**: You can now create your own named playlists (e.g. "Action Movies", "Friday Night") directly from any movie or series detail page.
+            - **Save to Playlist Modal**: A beautiful new modal allows you to quickly check/uncheck titles across multiple playlists at once.
+            - **Playlists Hub**: Added a dedicated `/playlists` hub page that beautifully showcases all your curated collections as interactive cards.
+            - **Playlist Detail View**: View all the movies and TV shows within a specific custom playlist seamlessly.
+            - **Sidebar Navigation**: Added a quick link in the sidebar to jump straight to your Playlists.
+            
+            ### 🔧 Enhancements
+            - Upgraded version to 1.5 across the application.
+            
+          releaseDraft: true
+          prerelease: false
