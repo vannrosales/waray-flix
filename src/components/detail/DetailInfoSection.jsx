@@ -15,6 +15,7 @@ export default function DetailInfoSection({
   user,
   onPlayClick,
   onToggleWatchlist,
+  onOpenSave,
   onOpenParty,
   onOpenShare,
   onOpenCast
@@ -120,17 +121,14 @@ export default function DetailInfoSection({
           </button>
 
           <button 
-            onClick={onToggleWatchlist}
-            className={`px-5 py-2.5 rounded-xl border text-xs font-medium uppercase tracking-wider flex items-center gap-2 transition cursor-pointer backdrop-blur-md shadow-sm ${
-              isAdded 
-                ? 'bg-white border-white text-black font-bold' 
-                : 'bg-white/[0.06] border-white/10 text-zinc-300 hover:text-white hover:bg-white/[0.12]'
-            }`}
-            title={user ? (isAdded ? 'Remove from Watchlist' : 'Add to Watchlist') : 'Sign in to save to Watchlist'}
+            onClick={onOpenSave}
+            className={`px-5 py-2.5 rounded-xl border text-xs font-medium uppercase tracking-wider flex items-center gap-2 transition cursor-pointer backdrop-blur-md shadow-sm bg-white/[0.06] border-white/10 text-zinc-300 hover:text-white hover:bg-white/[0.12]`}
+            title={user ? 'Save to Playlist' : 'Sign in to save to Playlist'}
           >
             <Bookmark className="w-3.5 h-3.5 stroke-[1.5]" />
-            <span>{isAdded ? 'In Watchlist' : 'Add to Watchlist'}</span>
+            <span>Save</span>
           </button>
+
 
           {/* Cast to TV Button (Temporarily commented out until public domain deployment) */}
           {/* {onOpenCast && (

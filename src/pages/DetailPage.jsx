@@ -12,8 +12,10 @@ import DetailInfoSection from '../components/detail/DetailInfoSection';
 import DetailCastSection from '../components/detail/DetailCastSection';
 import DetailSeasonPicker from '../components/detail/DetailSeasonPicker';
 import CastModal from '../components/cast/CastModal';
+import SaveToPlaylistModal from '../components/playlist/SaveToPlaylistModal';
 
 export default function DetailPage() {
+
   const { type, id } = useParams();
   const navigate = useNavigate();
   const { user, openAuthModal } = useAuth();
@@ -28,6 +30,7 @@ export default function DetailPage() {
   const [watchProgress, setWatchProgress] = useState(null);
   const [shareOpen, setShareOpen] = useState(false);
   const [castOpen, setCastOpen] = useState(false);
+  const [saveModalOpen, setSaveModalOpen] = useState(false);
 
   const { isAdded, toggle } = usePlaylist(id);
 
@@ -140,6 +143,7 @@ export default function DetailPage() {
           user={user}
           onPlayClick={handlePlayClick}
           onToggleWatchlist={() => toggle({ ...media, media_type: type })}
+          onOpenSave={() => setSaveModalOpen(true)}
           onOpenParty={() => user ? navigate(`/party/${type}/${id}?host=true`) : openAuthModal()}
           onOpenShare={() => setShareOpen(true)}
           onOpenCast={() => setCastOpen(true)}
@@ -184,6 +188,14 @@ export default function DetailPage() {
         episode={1}
         currentSeconds={totalSeconds}
       />
+
+      <SaveToPlaylistModal
+        isOpen={saveModalOpen}
+        onClose={() => setSaveModalOpen(false)}
+        media={media}
+        type={type}
+      />
     </div>
   );
 }
+

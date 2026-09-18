@@ -1,6 +1,7 @@
 import { playlistStorage } from './storage/playlistStorage';
 import { historyStorage } from './storage/historyStorage';
 import { watchPartyStorage } from './storage/watchPartyStorage';
+import { customPlaylistStorage } from './storage/customPlaylistStorage';
 import { resolveUserId } from './storage/userResolver';
 
 /**
@@ -10,6 +11,13 @@ import { resolveUserId } from './storage/userResolver';
 export const storageService = {
   // User Resolver
   resolveUserId,
+
+  // Custom Playlists
+  getCustomPlaylists: customPlaylistStorage.getPlaylists,
+  createCustomPlaylist: customPlaylistStorage.createPlaylist,
+  deleteCustomPlaylist: customPlaylistStorage.deletePlaylist,
+  toggleMediaInCustomPlaylist: customPlaylistStorage.toggleMediaInPlaylist,
+  isInCustomPlaylist: customPlaylistStorage.isInCustomPlaylist,
 
   // Playlist / Watchlist
   getPlaylist: playlistStorage.getPlaylist,
